@@ -1,31 +1,26 @@
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    font-size: 10px;
-    font-weight: 300;
-    margin: 1px;
-    padding: 1px;	 
-}
-
-#maincontainer {
-	background-color: #fff;
+ 
+#div_search_content {
 	position: relative;
-	margin: 1px;
-    padding: 1px;
-	margin-top: 9%;
+    float: left;
+    clear: none;
+	display: block;
+	height: fit-content;
 	width: auto;
-	height: 95%;
-	float: left;
-    clear: both;	
-	left: 50%;
-	transform: translate(-50%);
+	margin-top: 20px;
 }
 
 #div_container { 
+	margin: 1px;
+    padding: 1px;
+	background-color: #fcfcfc;
+	position: relative;
+	width: fit-content;
+	height: 95%;
+	float: left;
+    clear: both;
+}
+
+#div_admin_search_container { 
 	margin: 1px;
     padding: 1px;
 	background-color: #fcfcfc;
@@ -41,8 +36,8 @@ div#div_messages {
     background-color: #d3d3d3;
     background-image: linear-gradient(15deg, transparent 28%, rgba(243, 244, 245, 0.5) 28%);
     background-size: 50px;
-    float: right;
-    clear: none;
+    float: left;
+    clear: both;
     width: fit-content;
     margin: 1px;
     padding: 1px;
@@ -103,47 +98,6 @@ div.div_error_message_item {
 
 div.div_error_message_item {
     border: 1px solid rgb(241, 10, 10);
-}
-
-div#div_navigation {
-    background-color: #009ED5;
-	display: flex;
-	padding: 1px;
-	margin: 1px;
-	align-items: center;
-	justify-content: space-between;
-	color: white;
-	position: fixed;
-	top: 0px;
-	z-index: 9999;
-	width: 97%;
-}
-
-#progress_bar
-{
-	position: fixed;
-    clear: none;
-    float: left;
-	padding: 1px;
-    margin: 1px;
-	display: block;
-	background-color: #3cc352;
-	border-radius: 5px;
-    height: 10px;
-	animation: progress-indeterminate 1s linear infinite;
-	top: 2px;
-}
-
-@keyframes progress-indeterminate
-{
-	from { left: 10%; width: 20%; }
-	to { left: 60%; width: 20%; }
-}
-
-#img_logo {
-    width: 200px;
-	float: left;
-    clear: both;
 }
 
 #page_header { 
@@ -213,7 +167,7 @@ div#div_footer {
     position: relative;
     clear: none;
     float: left;
-    left: 10%;
+    left: 30%;
     overflow: visible;
     height: auto;
 }
@@ -235,7 +189,7 @@ div#div_footer {
     font-size: 10px;
     color: #000;
     font-family: verdana;
-    display: block;
+    display: none;
     position: relative;
     clear: none;
     float: left;
@@ -261,7 +215,7 @@ div#div_footer {
     font-size: 10px;
     color: #000;
     font-family: verdana;
-    display: block;
+    display: none;
     position: relative;
     clear: none;
     float: left;
@@ -287,7 +241,7 @@ div#div_footer {
     font-size: 10px;
     color: #000;
     font-family: verdana;
-    display: block;
+    display: none;
     position: relative;
     clear: none;
     float: left;
@@ -302,7 +256,7 @@ div#div_footer {
     border-width: 5px;
     background-color: #BCF309;
 }
-
+ 
 #background_img {
 	position: relative;
     float: left;
@@ -321,41 +275,8 @@ div#div_footer {
 	object-position: center;
 }
  
-#div_logggin_info {
-	margin-right: 1px;
-	margin-top: 5px;
-	position: relative;
-    float: right;
-    clear: none; 
-	width: auto;
-}
 
-#lbllogginuser {
-	position: relative;
-    float: left;
-    clear: both;
-	padding: 5px;
-	margin: 1px;
-	cursor: text;
-}
- 
-#lblloggedintime {
-	position: relative;
-    float: left;
-    clear: both;
-	padding: 5px;
-	margin: 1px;
-	cursor: text;
-}
-
-#btn_logout {
-	position: relative;
-    float: left;
-    clear: both;
-	padding: 5px;
-	margin: 2px;
-}
-
+	
 .crud_buttons {
 	position: relative;
     float: left;
@@ -398,17 +319,6 @@ div#div_footer {
 	width: auto;
 }
 
-#cbo_records_to_display {
-	position: relative;
-    float: left;
-    clear: both;
-	padding: 1px;
-    margin: 1px;
-	display: block;
-	height: fit-content;
-	width: auto;
-}
-
 #table_extensions td {
 	position: relative; 
 	padding: 5px;
@@ -441,56 +351,21 @@ div#div_footer {
     overflow-wrap: break-word;
 }
 
-.div_search { 
-	position: relative;
-    float: left;
-    clear: none;
-	padding: 1px;
-    margin: 10px;
-	display: block;
-	height: fit-content;
-	width: auto;
-}
 
-.div_search label { 
-	font-size: 14px;
-	font-weight: bold;
-	line-height: 1.42857143;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: middle; 
-	word-break: break-all;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
-
-#div_search_content {
+#cbo_search_records_to_display {
 	position: relative;
     float: left;
     clear: both;
 	padding: 1px;
     margin: 1px;
-	display: block;
-	height: fit-content;
-	width: auto;	
+	display: none;
+	width: fit-content; 
 }
- 
+
 #table_search_extensions {
 	width: fit-content;
 	margin-right: 20%;
 }	
-
-#div_search_content_container {
-	position: relative;
-    float: left;
-    clear: both;
-	padding: 1px;
-    margin: 1px;
-	display: block;
-	height: fit-content;
-	width: 100%; 
-	left: 30%; 
-}
 
 #table_search_extensions td {
 	position: relative; 
@@ -540,5 +415,680 @@ div#div_footer {
 #txt_edt_id {
 	display: none;
 }
+ 
+#dashboard-container {
+	position: relative;
+    float: left;
+    clear: both;
+	padding: 1px;
+	margin: 1px;
+	width: 60%;
+	height: auto;
+	top: 50px;
+	left: 30%;
+	overflow-x: hidden; /* Disable horizontal scroll */
+}
+
+.dashboard-card {
+	width: 100px;
+	height: 200px;
+	box-shadow: -10px 5px 20px rgba(0, 0, 0, 0.3);
+	border-radius: 15px; 
+	background: white;
+	display: block;  
+	transition: box-shadow 0.2s ease-in;
+	cursor: pointer;
+	position: relative;
+	float: left;
+	clear: none;
+	padding: 1px;
+	margin: 10px;
+}
+
+.dashboard-card:hover {
+	box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.dashboard-card p {
+	font-weight: bold;
+	padding: 5px;
+	margin: 5px;
+}
+.div_dashboard-card {
+		
+}
+
+
+
+
+
+
+
+/* The sidebar menu */
+.sidebar {
+  height: 100%; /* 100% Full-height */
+  width: 0; /* 0 width - change this with JavaScript */
+  position: fixed; /* Stay in place */
+  z-index: 100; /* Stay on top */
+  top: 90px;
+  left: 0;
+  background-color: #111; /* Black*/
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 60px; /* Place content 60px from the top */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+}
+
+/* The sidebar links */
+.sidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidebar .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+/* The button used to open the sidebar */
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+}
+
+.openbtn:hover {
+  background-color: #444;
+}
+
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#main {
+  transition: margin-left .5s; /* If you want a transition effect */
+  padding: 20px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidebar {padding-top: 15px;}
+  .sidebar a {font-size: 18px;}
+}
+
+
+
+
+ 
+
+*{
+    list-style: none;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
+body{
+    background: #f5f6fa;
+}
+
+
+
+
+#maincontainer {
+	background-color: #fff;
+	position: relative;
+	margin: 1px;
+    padding: 1px;
+	top: 10px;
+	width: 60%;
+	height: 95%;
+	float: left;
+    clear: both; 
+	left: 30%; 
+}
+
+#div_navigation {
+    background-color: inherit;
+	display: block;
+	padding: 1px;
+	margin: 0px;
+	align-items: center;
+	justify-content: space-between;
+	color: white;
+	position: fixed;
+	top: 0px;
+	z-index: 2;
+	width: 100%;
+	left: 30%;
+}
+
+#lbl_search_count {
+	position: relative;
+    float: left;
+    clear: none;
+	padding: 1px;
+	margin: 1px;
+	cursor: text;
+	background-color: inherit;
+	color: black;
+	border: 0px solid rgb(157, 216, 49);
+}
+
+#progress_bar
+{
+	position: relative;
+    clear: none;
+    float: left;
+	left: 10px;
+	padding: 1px;
+    margin: 1px;
+	display: block;
+	background-color: #3cc352;
+	border-radius: 5px;
+    height: 10px;
+	animation: progress-indeterminate 1s linear infinite;
+	top: 2px;
+}
+
+@keyframes progress-indeterminate
+{
+	from { left: 10%; width: 20%; }
+	to { left: 60%; width: 20%; }
+}
+
+#lst_help_content {
+	 
+}
+
+
+
+
+
+.wrapper .sidebar{
+    background: rgb(6 104 4);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    padding: 20px 0;
+    transition: all 0.5s ease; 	
+	box-shadow: -10px 5px 20px rgba(0, 0, 0, 0.3); 
+}
+ 
+.wrapper .sidebar .profile{ 
+    text-align: center;
+}
+
+.wrapper .sidebar .profile img{
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto; 
+}
+
+.wrapper .sidebar .profile h3{
+    color: #ffffff;
+    margin: 10px 0 5px;
+	clear: both;
+}
+
+.wrapper .sidebar .profile p{
+    color: rgb(206, 240, 253);
+    font-size: 14px;
+	clear: both;
+}
+
+.wrapper .sidebar ul li a{
+    display: block;
+    padding: 13px 30px;
+    border-bottom: 1px solid #10558d;
+    color: rgb(241, 237, 237);
+    font-size: 16px;
+    position: relative;
+}
+
+.wrapper .sidebar ul li a .icon{
+    color: #dee4ec;
+    width: 30px;
+    display: inline-block;
+}
+
+
+.wrapper .sidebar ul li a:hover,
+.wrapper .sidebar ul li a.active{
+    color: #0c7db1;
+    background:white;
+    border-right: 2px solid rgb(5, 68, 104);
+}
+
+.wrapper .sidebar ul li a:hover .icon,
+.wrapper .sidebar ul li a.active .icon{
+    color: #0c7db1;
+}
+
+.wrapper .sidebar ul li a:hover:before,
+.wrapper .sidebar ul li a.active:before{
+    display: block;
+}
+
+
+.wrapper .section{
+    width: calc(100% - 225px);
+    margin-left: 225px;
+    transition: all 0.5s ease;
+}
+
+.wrapper .section .top_navbar{
+    background: rgb(7, 105, 185);
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+
+}
+
+.wrapper .section .top_navbar .hamburger a{
+    font-size: 28px;
+    color: #f4fbff;
+}
+
+.wrapper .section .top_navbar .hamburger a:hover{
+    color: #a2ecff;
+}
+
+
+body.active .wrapper .sidebar{
+    left: -225px;
+}
+
+body.active .wrapper .section{
+    margin-left: 0;
+    width: 100%;
+}
+
+
+.wrapper .sidebar ul li{
+    display: block;
+    padding: 13px 30px;
+    border-bottom: 1px solid #10558d;
+    color: rgb(241, 237, 237);
+    font-size: 16px;
+    position: relative;
+	width: calc(100%);
+	background: transparent;
+}
+ 
+
+
+.wrapper .sidebar #div_search_content_container {
+	position: relative;
+    float: left;
+    clear: both;
+	padding: 1px;
+    margin: 1px;
+	display: block;
+	height: fit-content;
+	width: 100%; 
+}
+
+
+.wrapper .sidebar #div_search_content_container .div_search { 
+	position: relative;
+    float: left;
+    clear: both; 
+    margin: 5px;
+	display: block;
+	height: fit-content;
+	width: 97%;
+}
+
+.wrapper .sidebar #div_search_content_container .div_search label { 
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 1.42857143;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle; 
+	word-break: break-all;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+	color: rgb(241, 237, 237);
+}
+
+
+#img_logo {
+    width: 200px; 
+    clear: both;
+}
+
+
+.wrapper .sidebar button{
+    display: block; 
+	padding: 10px;
+    color: rgb(241, 237, 237);
+    font-size: 16px;
+    position: relative;
+	border-radius: 8px;
+	background: inherit;
+	border: 1px solid rgb(6 104 4);
+}
+ 
+.wrapper .sidebar select{
+    display: block; 
+    color: rgb(0,0,0);
+    font-size: 16px;
+    position: relative;
+	border-radius: 8px; 
+	border: 1px solid rgb(6 104 4);
+}
+ 
+.wrapper .sidebar input{
+    display: block; 
+    color: rgb(0,0,0);
+    font-size: 16px;
+    position: relative;
+	border-radius: 8px; 
+	border: 1px solid rgb(6 104 4);
+}
+ 
+
+.wrapper .sidebar button:hover{
+    color: rgb(0,0,0);
+    background:white;
+    border: 1px solid #008CBA;
+}
+ 
+.wrapper .sidebar select:hover{
+    color: rgb(0,0,0);
+    background:white;
+    border: 1px solid #008CBA;
+}
+
+.wrapper .sidebar input:hover{
+    color: rgb(0,0,0);
+    background:white;
+    border: 1px solid #008CBA;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.side-bar ul {
+    list-style: none;
+    padding: 0px;
+}
+.side-bar ul li.menu-head {
+    padding: 20px;
+    background-color: #ECECEA;
+}
+.side-bar ul .menu li a {
+    color:#fff;
+    text-decoration: none;
+    display: inline-table;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.side-bar ul .menu li a:hover {
+    border-left:3px solid #ECECEA;    
+    padding-left:17px;
+}
+.content {
+    overflow:hidden;
+    transition: padding-left 0.5s;
+}
+#toggle {
+position:absolute;right:100vw;/* off sight*/}
+
+#toggle:checked ~ div    .hide {
+display:none!important;
+}
+#toggle:checked ~ div .side-bar {
+max-width:0;
+margin-right:-30vw!important}
+
+
+
+
+
+
+
+
+
+
+
+.user-card {
+  width: 300px;
+  height: 400px;
+  box-shadow: -10px 5px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  overflow: hidden;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  transition: box-shadow 0.2s ease-in;
+  cursor: pointer;
+}
+.user-card:hover {
+  box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+
+
+
+
+/* NAVBAR STYLING STARTS */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: teal;
+  color: #fff;
+}
+
+.nav-links a {
+  color: #fff;
+}
+
+/* LOGO */
+.logo {
+  font-size: 32px;
+}
+
+/* NAVBAR MENU */
+.menu {
+  display: flex;
+  gap: 1em;
+  font-size: 18px;
+}
+
+.menu li:hover {
+  background-color: #4c9e9e;
+  border-radius: 5px;
+  transition: 0.3s ease;
+}
+
+.menu li {
+  padding: 5px 14px;
+}
+
+/* DROPDOWN MENU */
+.services {
+  position: relative; 
+}
+
+.dropdown {
+  background-color: rgb(1, 139, 139);
+  padding: 1em 0;
+  position: absolute; /*WITH RESPECT TO PARENT*/
+  display: none;
+  border-radius: 8px;
+  top: 35px;
+}
+
+.dropdown li + li {
+  margin-top: 10px;
+}
+
+.dropdown li {
+  padding: 0.5em 1em;
+  width: 8em;
+  text-align: center;
+}
+
+.dropdown li:hover {
+  background-color: #4c9e9e;
+}
+
+.services:hover .dropdown {
+  display: block;
+}
+
+
+
+
+
+ /*
+thead, tfoot {
+	display: none;
+}
+
+table {
+	background: none !important;
+	border: none !important;
   
-  
+}
+
+tr {
+	display: inline-block;
+	padding: 1rem 0.5rem 1rem 0.5rem;
+	margin: 1.5rem;
+	border: 1px solid grey;
+	border-radius: 10px;
+	box-shadow: 0 0 10px;
+   
+ }
+ 
+ td {
+	display: block;
+}
+
+ td .tbl_label { 
+	font-weight: normal;
+	color: rgb(0,0,0);
+	font-size: 12px;
+}
+
+ td .tbl_data { 
+	font-weight: bold;
+	color: rgb(0,0,0);
+	font-size: 16px;
+}
+*/
+
+#div_help_content {
+	position: relative;
+	float: left;
+	clear: both; 
+	margin: 1px;
+	padding: 1px;
+	display: block;
+	height: fit-content;
+	width: 97%;
+	left: 20%;
+	margin-bottom: 2em;
+}
+
+#div_help_content p {
+	font-weight: bold;
+	color: rgb(0,0,0);
+	font-size: 16px;
+}
+
+#div_help_content #title {
+	text-decoration: underline dotted blue 5px;
+	text-transform: uppercase;
+}
+
+#div_pagination {
+	position: relative;
+	float: left;
+	clear: both; 
+	margin: 1px;
+	padding: 1px;
+	left: 5%;
+	display: inline-block;
+	height: auto;
+	width: auto;
+}
+
+#lst_pagination {
+	position: relative;
+	float: left;
+	clear: none; 
+	margin: 1px;
+	padding: 1px; 
+	display: block;
+	height: auto;
+	width: auto;
+}
+
+#div_page_navigation {
+	position: relative;
+	float: left;
+	clear: none; 
+	margin: 5px;
+	padding: 1px; 
+	display: block;
+	height: auto;
+	width: auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

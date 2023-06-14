@@ -8,7 +8,7 @@
 
 – __construct() and destruct() method to initiate our database connection variable.
  
-– create_extension() : Used to create an extension record in database.
+– create_user() : Used to create an user record in database.
  
 – get_user_role() : Use to get authenticate user role.
  */
@@ -34,44 +34,65 @@ class user_dal
     /*
      * Add new Record
      *
-	 * @param $code
-	 * @param $extension_number
-	 * @param $owner_assigned
-	 * @param $department
+	 * @param $email
+	 * @param $username
+	 * @param $password
+	 * @param $secretWord 
+	 
      * @return $string
      * */
-	public function create_extension($code, $extension_number, $owner_assigned, $department)
+	public function create_user($email, $username, $password, $secretWord)
     {
 		try{
 			
-			$extension_no = $this->get_extension_given_number($extension_number);
-			
-			if(!empty($extension_no))
+			$is_email = $this->check_if_email_exists($email);
+			 
+			if(!empty($is_email))
 			{
-				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Extension number [ ' . $extension_number . ' ] exists.</div>';
+				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>User with Email [ ' . $email . ' ] exists.</div>';
+				return $response;
+			}
+			
+			$is_username = $this->check_if_username_exists($username);
+			 
+			if(!empty($is_username))
+			{
+				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>User Name [ ' . $username . ' ] exists.</div>';
 				return $response;
 			}
 			
 			// insert query
-			$query = "INSERT INTO depts(
-			ccode, 
-			deptcode, 
-			ownerassigned, 
-			deptname) 
+			$query = "INSERT INTO telephoneadmin(
+			email, 
+			username, 
+			password,
+			secretWord,  
+			status, 			
+			created_date) 
 			VALUES(
-			:code, 
-			:extension_number, 
-			:owner_assigned, 
-			:department)";
+			:email, 
+			:username, 
+			:password,
+			:secretWord, 
+			:status,			
+			:created_date)";
+			
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);
+			
 			// bind the parameters
-			$stmt->bindParam(":code", $code, PDO::PARAM_STR);
-			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
-			$stmt->bindParam(":owner_assigned", $owner_assigned, PDO::PARAM_STR);
-			$stmt->bindParam(":department", $department, PDO::PARAM_STR);
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
+			$stmt->bindParam(":username", $username, PDO::PARAM_STR);
+			$stmt->bindParam(":secretWord", $secretWord, PDO::PARAM_STR);
+			$stmt->bindParam(":password", $password, PDO::PARAM_STR);
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+			$created_date = date('d-m-Y h:i:s A');
+			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  
+			
 			// Execute the query
 			$stmt->execute();
+			
 			// save lastInsertId in a variable
 			$lastInsertId = $this->db->lastInsertId();
 			
@@ -85,37 +106,109 @@ class user_dal
     }
 
     /*
+     * Get user Details
+     *
+     * @param $email
+     * */
+    public function check_if_email_exists($email)
+    {
+		try{
+			// select query
+			$query = "SELECT * FROM telephoneadmin WHERE email = :email";
+			// prepare query for execution			
+			$stmt = $this->db->prepare($query);
+			// bind the parameters
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
+			// Execute the query
+			$stmt->execute();
+			
+			$arr = $stmt->fetch(PDO::FETCH_ASSOC);
+			
+			if (!$arr) {
+				// array is empty.
+				return null;
+			}
+
+			extract($arr); 
+			
+			return $email;		
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+	
+    /*
+     * Get user Details
+     *
+     * @param $username
+     * */
+    public function check_if_username_exists($username)
+    {
+		try{
+			// select query
+			$query = "SELECT * FROM telephoneadmin WHERE username = :username";
+			// prepare query for execution			
+			$stmt = $this->db->prepare($query);
+			// bind the parameters
+			$stmt->bindParam(":username", $username, PDO::PARAM_STR);
+			// Execute the query
+			$stmt->execute();
+			
+			$arr = $stmt->fetch(PDO::FETCH_ASSOC);
+			
+			if (!$arr) {
+				// array is empty.
+				return null;
+			}
+
+			extract($arr); 
+			
+			return $username;		
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+	
+    /*
      * Update Record
      *
-	 * @param $code
-	 * @param $extension_number
-	 * @param $owner_assigned
-	 * @param $department
+	 * @param $email
+	 * @param $username
+	 * @param $password
+	 * @param $secretword 
 
      * @return $mixed
      * */
-    public function update_extension($code, $extension_number, $owner_assigned, $department, $id)
+    public function update_user($email, $username, $password, $secretword, $id)
     {
 		try{
 			// Update query
-			$query = "UPDATE depts SET 
-			ccode = :code, 
-			deptcode = :extension_number,  
-			ownerassigned = :owner_assigned, 
-			deptname = :department
+			$query = "UPDATE telephoneadmin SET 
+			email = :email, 
+			username = :username,  
+			password = :password, 
+			secretWord = :secretword 
 			WHERE id = :id";
+			
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);
+			
 			// bind the parameters
-			$stmt->bindParam(":code", $code, PDO::PARAM_STR);
-			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
-			$stmt->bindParam(":owner_assigned", $owner_assigned, PDO::PARAM_STR);
-			$stmt->bindParam(":department", $department, PDO::PARAM_STR);
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
+			$stmt->bindParam(":username", $username, PDO::PARAM_STR);
+			$stmt->bindParam(":password", $password, PDO::PARAM_STR); 
+			$stmt->bindParam(":secretword", $secretword, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
+			
 			// Execute the query
 			$stmt->execute();
  
 			$response = "<div class='alert alert-success'>record with id [ " . $id . " ] was successfully updated.</div>";
+			
 			return $response;
 			
 		} catch (Exception $e){
@@ -125,21 +218,25 @@ class user_dal
     }
 
     /*
-     * Get extension Details
+     * Get user Details
      *
      * @param $id
      * */
-    public function get_extension($id)
+    public function get_user($id)
     {
 		try{
 			// select query
-			$query = "SELECT * FROM depts WHERE id = :id";
+			$query = "SELECT * FROM telephoneadmin WHERE id = :id";
+			
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
+			
 			// bind the parameters
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
+			
 			// Execute the query
 			$stmt->execute();
+			
 			// return retrieved row as a json object
 			return json_encode($stmt->fetch(PDO::FETCH_ASSOC));
 			
@@ -150,42 +247,15 @@ class user_dal
     }
 	
     /*
-     * Get extension Details
-     *
-     * @param $extension_number
-     * */
-    public function get_extension_given_number($extension_number)
-    {
-		try{
-			// select query
-			$query = "SELECT * FROM depts WHERE deptcode = :extension_number";
-			// prepare query for execution			
-			$stmt = $this->db->prepare($query);
-			// bind the parameters
-			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
-			// Execute the query
-			$stmt->execute();
-			
-			$arr = $stmt->fetch(PDO::FETCH_ASSOC);
-			
-			return count($arr);			
-			
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-	
-    /*
-     * Read all extension records
+     * Read all user records
      *
      * @return $mixed
      * */
-    public function get_all_extensions()
+    public function get_all_users_arr()
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM depts ORDER BY id DESC";
+			$query = "SELECT * FROM telephoneadmin ORDER BY id DESC";
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
 			// Execute the query
@@ -208,11 +278,11 @@ class user_dal
      *
      * @param $id
      * */
-    public function delete_extension($id)
+    public function delete_user($id)
     {
 		try{
 			// delete query
-			$query = "DELETE FROM depts WHERE id = :id";
+			$query = "DELETE FROM telephoneadmin WHERE id = :id";
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);
 			// bind the parameters
@@ -229,7 +299,114 @@ class user_dal
 		}
     }
 
-	public function get_paginated_extensions_table($page, $records_to_display)
+    /*
+     * Get user Details
+     *
+     * @param $email
+     * */
+    public function get_user_given_email($email)
+    {
+		try{
+			// select query
+			$query = "SELECT * FROM telephoneadmin WHERE email = :email";
+			// prepare query for execution			
+			$stmt = $this->db->prepare($query);
+			// bind the parameters
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
+			// Execute the query
+			$stmt->execute();
+			// return retrieved row as a json object
+			return json_encode($stmt->fetch(PDO::FETCH_ASSOC));
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+	 
+
+    /*
+     * Read all user records
+     *
+     * @return $mixed
+     * */
+    public function get_all_users()
+    {
+		try{
+			// select query - select all data
+			$query = "SELECT * FROM telephoneadmin ORDER BY id DESC";
+			// prepare query for execution	
+			$stmt = $this->db->prepare($query);
+			// Execute the query
+			$stmt->execute();
+			// return retrieved rows as an array
+			$data = array();
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$data[] = $row;
+			}
+			//return $data;
+			return json_encode($data);
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+ 
+    /*
+     * Read all user names
+     *
+     * @return $mixed
+     * */
+    public function get_user_names()
+    {
+		try{
+			// select query - select all data
+			$query = "SELECT DISTINCT username FROM telephoneadmin ORDER BY id ASC";
+			// prepare query for execution	
+			$stmt = $this->db->prepare($query);
+			// Execute the query
+			$stmt->execute();
+			// return retrieved rows as an array
+			$data = array();
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$data[] = $row;
+			}
+			//return $data;
+			return json_encode($data);
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+    /*
+     * Read all emails
+     *
+     * @return $mixed
+     * */
+    public function get_user_emails()
+    {
+		try{
+			// select query - select all data
+			$query = "SELECT DISTINCT email FROM telephoneadmin ORDER BY id ASC";
+			// prepare query for execution	
+			$stmt = $this->db->prepare($query);
+			// Execute the query
+			$stmt->execute();
+			// return retrieved rows as an array
+			$data = array();
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$data[] = $row;
+			}
+			//return $data;
+			return json_encode($data);
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+ 
+	public function get_paginated_users_table($page, $records_to_display)
 	{		
 		// PAGINATION VARIABLES
 		// page is the current page, if there's nothing set, default is page 1
@@ -245,7 +422,7 @@ class user_dal
 		$from_record_num = ($records_per_page * $page) - $records_per_page;
 		
 		// select data for current page
-		$query = "SELECT * FROM depts ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
+		$query = "SELECT * FROM telephoneadmin ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
 		 
 		$stmt = $this->db->prepare($query);
 		
@@ -264,16 +441,18 @@ class user_dal
 		if($num>0){
 		 
 			// data from database will be here
-			echo "<table class='table table-dark table-striped table-hover table-bordered table-sm' id='table_extensions'>";//start table
+			echo "<table class='table table-dark table-striped table-hover table-bordered table-sm' id='table_users'>";//start table
 
 			//creating our table heading
 			echo "<thead class='thead-dark'>";
 			echo "<tr>";
-				echo "<th scope='col'>id</th>";
-				echo "<th scope='col'>campus</th>";
-				echo "<th scope='col'>extension no</th>";
-				echo "<th scope='col'>owner assigned</th>";
-				echo "<th scope='col'>department</th>"; 
+				echo "<th scope='col'>#</th>";
+				echo "<th scope='col'>Email</th>";
+				echo "<th scope='col'>User Name</th>"; 
+				echo "<th scope='col'>Password</th>"; 
+				echo "<th scope='col'>Secret Word</th>"; 
+				echo "<th scope='col'>Status</th>"; 
+				echo "<th scope='col'>Created Date</th>"; 
 				echo "<th scope='col'></th>";
 			echo "</tr>";
 			echo "</thead>";
@@ -292,13 +471,13 @@ class user_dal
 				extract($row);
 				 					
 				$id = $row['id'];
-				$code = $row['ccode'];
-				$extension_number = $row['deptcode'];
-				$owner_assigned = $row['ownerassigned'];
-				$department = $row['deptname'];
-
-				$campus_name = $this->get_campus_name_given_code($code);
-				 
+				$email = $row['email'];
+				$username = $row['username'];
+				$password = $row['password']; 
+				$secretword = $row['secretWord'];
+				$status = $row['status'];
+				$created_date = $row['created_date']; 
+ 
 				// creating new table row per record
 				echo "<tr class='table-primary'>";
 					
@@ -310,31 +489,316 @@ class user_dal
 			 
 				echo "<td class='table-success'>";
 					
-				echo htmlspecialchars($campus_name, ENT_QUOTES);
+				echo htmlspecialchars($email, ENT_QUOTES);
 
 				echo "</td>";
 					
-				echo "<td class='table-info'>";
+				echo "<td class='table-success'>";
 					
-				echo htmlspecialchars($extension_number, ENT_QUOTES);
+				echo htmlspecialchars($username, ENT_QUOTES);
 
 				echo "</td>";
 			 
 				echo "<td class='table-success'>";
 					
-				echo htmlspecialchars($owner_assigned, ENT_QUOTES);
+				echo htmlspecialchars($password, ENT_QUOTES);
 
-				echo "</td>";
+				echo "</td>"; 
+				
+				echo "<td class='table-success'>";
 					
-				echo "<td class='table-warning'>";
-					
-				echo htmlspecialchars($department, ENT_QUOTES);
+				echo htmlspecialchars($secretword, ENT_QUOTES);
 
-				echo "</td>";
+				echo "</td>"; 
+			 
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($status, ENT_QUOTES);
+
+				echo "</td>"; 
+			 
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($created_date, ENT_QUOTES);
+
+				echo "</td>"; 
 			 
 				echo "<td class='table-light'>";
 					
-				echo "<a onClick='edit_extension({$id})' style='cursor:hand !important;' 
+				echo "<a onClick='edit_user({$id})' style='cursor:hand !important;' 
+				class='btn btn-info m-r-1em crud_buttons btn_edit' 
+				title='edit'  
+				data-id='{$id}' 
+				data-toggle='popover' 
+				data-placement='auto' 
+				data-trigger='hover' 
+				data-content='edit user' >
+				edit
+					<span class='glyphicon'>
+					</span>
+				</a>";
+								
+				echo "<a onClick='delete_user({$id})' style='cursor:hand !important;' 
+				class='btn btn-danger m-r-1em crud_buttons btn_delete' 
+				title='delete'  
+				data-id='{$id}' 
+				data-toggle='popover' 
+				data-placement='auto' 
+				data-trigger='hover' 
+				data-content='delete user' >
+				delete
+					<span class='glyphicon'>
+					</span>
+				</a>";
+				
+				echo "</td>";
+			  			
+				echo "</tr>";
+				
+			} 
+
+			echo "</tbody>";
+			
+			echo "<tfoot>";
+			
+			echo "</tfoot>";
+			
+			// end table
+			echo "</table>";
+			
+			// PAGINATION
+			// count total number of rows
+			$query = "SELECT COUNT(*) as total_rows FROM telephoneadmin";
+			$stmt = $this->db->prepare($query);
+			 
+			// execute query
+			$stmt->execute();
+			 
+			// get total rows
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$total_rows = $row['total_rows'];
+
+			// paginate records
+			$page_url="users.php?";
+			include_once "paging_users_table.php";
+		}
+		 
+		// if no records found
+		else{
+			echo "<div class='alert alert-danger'>No records found.</div>";
+		}
+	}
+ 
+	public function search_users($page, $records_to_display, $email, $username)
+	{		
+		// PAGINATION VARIABLES
+		// page is the current page, if there's nothing set, default is page 1
+		//$page = isset($_POST['page']) ? $_POST['page'] : 1;
+		
+		// set records or rows of data per page
+		//$cards_to_display = isset($_POST['cards_to_display']) ? $_POST['cards_to_display'] : 6;
+		
+		// set records or rows of data per page
+		$records_per_page = (int)$records_to_display;
+		
+		// calculate for the query LIMIT clause
+		$from_record_num = ($records_per_page * $page) - $records_per_page;
+		 
+		//$total_rows = $this->count_search_users($user_code, $department, $extension_number);
+		 
+		// select data for current page
+		
+		/*SEARCH SENARIOS
+			1. all items are specified.
+			2. email only typed.
+			3. username only typed.		 
+			5. no item is specified.		
+		*/
+		 
+		//all items are specified.
+		if(!empty($email) && !empty($username))
+		{
+			$query = "SELECT * FROM telephoneadmin WHERE email LIKE :email AND username LIKE :username ORDER BY email, username ASC LIMIT :from_record_num, :records_per_page";
+						
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+			
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			 
+			$pattern  = '%' . $email . '%';
+			
+			$stmt->bindParam(":email", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $username . '%';
+			
+			$stmt->bindParam(":username", $pattern, PDO::PARAM_STR);
+				 
+		}
+		//email only typed.
+		else if(!empty($email) && empty($username))
+		{
+			$query = "SELECT * FROM telephoneadmin WHERE email LIKE :email ORDER BY email ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+			
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+						
+			$pattern  = '%' . $email . '%';
+			
+			$stmt->bindParam(":email", $pattern, PDO::PARAM_STR);
+				
+		}
+		//username only typed.
+		else if(empty($email) && !empty($username))
+		{
+			$query = "SELECT * FROM telephoneadmin WHERE username LIKE :username ORDER BY username ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+			
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+						
+			$pattern  = '%' . $username . '%';
+			
+			$stmt->bindParam(":username", $pattern, PDO::PARAM_STR);
+				
+		} 
+		//no item is specified.
+		else if(empty($email) && empty($username))
+		{				
+			$query = "SELECT * FROM telephoneadmin ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			
+			//$_SESSION['users_count'] = 0;			
+			//return;
+		}
+		else
+		{ 
+			$_SESSION['users_count'] = 0;
+			return;
+		}
+
+		$stmt->execute();
+				 
+		// this is how to get number of rows returned
+		$num = $stmt->rowCount();
+		
+		$_SESSION['users_count'] = $num;
+
+		$total_rows = $num;
+		
+		//echo $num;
+		// link to create record form
+		//echo "<a href='create.php' class='btn btn-primary m-b-1em'>Create New Product</a>";
+		 
+		//check if more than 0 record found
+		if($num>0){
+		 
+			// data from database will be here
+			echo "<table class='table table-dark table-striped table-hover table-bordered table-sm' id='table_users'>";//start table
+
+			//creating our table heading
+			echo "<thead class='thead-dark'>";
+			echo "<tr>";
+				echo "<th scope='col'>#</th>";
+				echo "<th scope='col'>Email</th>";
+				echo "<th scope='col'>User Name</th>"; 
+				echo "<th scope='col'>Password</th>"; 
+				echo "<th scope='col'>Secret Word</th>"; 
+				echo "<th scope='col'>Status</th>"; 
+				echo "<th scope='col'>Created Date</th>"; 
+				echo "<th scope='col'></th>";
+			echo "</tr>";
+			echo "</thead>";
+			echo "<tbody>";
+			
+			// table body will be here
+			// retrieve our table contents
+			// fetch() is faster than fetchAll()
+			// http://stackoverflow.com/questions/2770630/pdofetchall-vs-pdofetch-in-a-loop
+			
+			$counta = 0;
+			
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+				 
+				// extract row
+				// this will make $row['firstname'] to
+				// just $firstname only
+				extract($row);
+				 					
+				$id = $row['id'];
+				$email = $row['email'];
+				$username = $row['username'];
+				$password = $row['password']; 
+				$secretword = $row['secretWord'];
+				$status = $row['status'];
+				$created_date = $row['created_date']; 
+ 
+				$counta++;
+				
+				//$id = $counta;
+					
+				// creating new table row per record
+				echo "<tr class='table-primary'>";
+					
+				echo "<td class='table-success'>";
+								
+				echo htmlspecialchars($id, ENT_QUOTES);
+			
+				echo "</td>";
+			 
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($email, ENT_QUOTES);
+
+				echo "</td>";
+					
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($username, ENT_QUOTES);
+
+				echo "</td>";
+			 
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($password, ENT_QUOTES);
+
+				echo "</td>"; 
+				
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($secretword, ENT_QUOTES);
+
+				echo "</td>"; 
+			 
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($status, ENT_QUOTES);
+
+				echo "</td>"; 
+			 
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($created_date, ENT_QUOTES);
+
+				echo "</td>"; 
+			 
+				echo "<td class='table-light'>";
+					
+				echo "<a onClick='edit_user({$id})' style='cursor:hand !important;' 
 				class='btn btn-info m-r-1em crud_buttons btn_edit' 
 				title='edit'  
 				data-id='{$id}' 
@@ -347,7 +811,7 @@ class user_dal
 					</span>
 				</a>";
 								
-				echo "<a onClick='delete_extension({$id})' style='cursor:hand !important;' 
+				echo "<a onClick='delete_user({$id})' style='cursor:hand !important;' 
 				class='btn btn-danger m-r-1em crud_buttons btn_delete' 
 				title='delete'  
 				data-id='{$id}' 
@@ -377,19 +841,21 @@ class user_dal
 			
 			// PAGINATION
 			// count total number of rows
-			$query = "SELECT COUNT(*) as total_rows FROM depts";
-			$stmt = $this->db->prepare($query);
+			// $query = "SELECT COUNT(*) as total_rows FROM telephoneadmin";
+			// $stmt = $this->db->prepare($query);
 			 
-			// execute query
-			$stmt->execute();
+			// // execute query
+			// $stmt->execute();
 			 
-			// get total rows
-			$row = $stmt->fetch(PDO::FETCH_ASSOC);
-			$total_rows = $row['total_rows'];
-
+			// // get total rows
+			// $row = $stmt->fetch(PDO::FETCH_ASSOC);
+			// $total_rows = $row['total_rows'];
+			
+			//$total_rows = $this->count_search_users($user_code, $department, $extension_number);
+			
 			// paginate records
-			$page_url="admin_index.php?";
-			include_once "paging_extensions_table.php";
+			$page_url="users.php?";
+			include_once "paging_search_users_table.php";
 		}
 		 
 		// if no records found
@@ -397,336 +863,6 @@ class user_dal
 			echo "<div class='alert alert-danger'>No records found.</div>";
 		}
 	}
- 
-    /*
-     * Get campus Details
-     *
-     * @param $ccode
-     * */
-    public function get_campus_given_code($ccode)
-    {
-		try{
-			// select query
-			$query = "SELECT * FROM campuses WHERE ccode = :ccode";
-			// prepare query for execution			
-			$stmt = $this->db->prepare($query);
-			// bind the parameters
-			$stmt->bindParam(":ccode", $ccode, PDO::PARAM_STR);
-			// Execute the query
-			$stmt->execute();
-			// return retrieved row as a json object
-			return json_encode($stmt->fetch(PDO::FETCH_ASSOC));
-			
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-	
-    /*
-     * Get campus Details
-     *
-     * @param $ccode
-     * */
-    public function get_campus_name_given_code($ccode)
-    {
-		try{
-			// select query
-			$query = "SELECT cname  FROM campuses WHERE ccode = :ccode";
-			// prepare query for execution			
-			$stmt = $this->db->prepare($query);
-			// bind the parameters
-			$stmt->bindParam(":ccode", $ccode, PDO::PARAM_STR);
-			// Execute the query
-			$stmt->execute();
-			
-			$arr = $stmt->fetch(PDO::FETCH_ASSOC);
-			
-			extract($arr); 
-			
-			return $cname;
-			
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-	
-
-    /*
-     * Read all campus records
-     *
-     * @return $mixed
-     * */
-    public function get_all_campuses()
-    {
-		try{
-			// select query - select all data
-			$query = "SELECT * FROM campuses ORDER BY cid ASC";
-			// prepare query for execution	
-			$stmt = $this->db->prepare($query);
-			// Execute the query
-			$stmt->execute();
-			// return retrieved rows as an array
-			$data = array();
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-				$data[] = $row;
-			}
-			//return $data;
-			return json_encode($data);
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-
-    /*
-     * Read all campus codes
-     *
-     * @return $mixed
-     * */
-    public function get_campus_codes()
-    {
-		try{
-			// select query - select all data
-			$query = "SELECT ccode FROM campuses ORDER BY cid ASC";
-			// prepare query for execution	
-			$stmt = $this->db->prepare($query);
-			// Execute the query
-			$stmt->execute();
-			// return retrieved rows as an array
-			$data = array();
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-				$data[] = $row;
-			}
-			//return $data;
-			return json_encode($data);
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-
-    /*
-     * Read all campus names
-     *
-     * @return $mixed
-     * */
-    public function get_campus_names()
-    {
-		try{
-			// select query - select all data
-			$query = "SELECT DISTINCT cname FROM campuses ORDER BY cid ASC";
-			// prepare query for execution	
-			$stmt = $this->db->prepare($query);
-			// Execute the query
-			$stmt->execute();
-			// return retrieved rows as an array
-			$data = array();
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-				$data[] = $row;
-			}
-			//return $data;
-			return json_encode($data);
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-
-    /*
-     * Read all department names given campus
-     *
-     * @return $mixed
-     * */
-    public function get_department_names($campus_code)
-    {
-		try{
-			// select query - select all data
-			$query = "SELECT DISTINCT deptname FROM depts WHERE ccode = :campus_code ORDER BY id ASC";
-			// prepare query for execution	
-			$stmt = $this->db->prepare($query);
-			// bind the parameters
-			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
-			// Execute the query
-			$stmt->execute();
-			// return retrieved rows as an array
-			$data = array();
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-				$data[] = $row;
-			}
-			//return $data;
-			return json_encode($data);
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-
-	public function search_extensions($page, $records_to_display, $campus_code, $department, $extension_number)
-	{		
-		// PAGINATION VARIABLES
-		// page is the current page, if there's nothing set, default is page 1
-		//$page = isset($_POST['page']) ? $_POST['page'] : 1;
-		
-		// set records or rows of data per page
-		//$cards_to_display = isset($_POST['cards_to_display']) ? $_POST['cards_to_display'] : 6;
-		
-		// set records or rows of data per page
-		$records_per_page = (int)$records_to_display;
-		
-		// calculate for the query LIMIT clause
-		$from_record_num = ($records_per_page * $page) - $records_per_page;
-		
-		// select data for current page
-		
-		if(!empty($campus_code) && !empty($department) && !empty($extension_number))
-		{
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND deptcode LIKE :extension_number ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
-							
-			//echo $query;
-			
-			$stmt = $this->db->prepare($query);
-			
-			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
-			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-			
-			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
-			$stmt->bindParam(":department", $department, PDO::PARAM_STR);
-			
-			$pattern  = '%' . $extension_number . '%';
-			
-			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
-				
-		}
-		else if(empty($campus_code) && empty($department) && !empty($extension_number))
-		{
-			$query = "SELECT * FROM depts WHERE deptcode LIKE :extension_number ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
-							
-			//echo $query;
-			
-			$stmt = $this->db->prepare($query);
-			
-			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
-			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-						
-			$pattern  = '%' . $extension_number . '%';
-			
-			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
-				
-		}
-		else if(!empty($campus_code) && !empty($department) && empty($extension_number))
-		{				
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
-							
-			//echo $query;
-			
-			$stmt = $this->db->prepare($query);
-
-			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
-			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-			
-			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
-			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
-				
-		}
-		else
-		{
-			return;
-		}
-
-		$stmt->execute();
-				 
-		// this is how to get number of rows returned
-		$num = $stmt->rowCount();
-		
-		// link to create record form
-		//echo "<a href='create.php' class='btn btn-primary m-b-1em'>Create New Product</a>";
-		 
-		//check if more than 0 record found
-		if($num>0){
-		 
-			// data from database will be here
-			echo "<table class='table table-dark table-striped table-hover table-bordered table-sm' id='table_search_extensions'>";//start table
-
-			//creating our table heading
-			echo "<thead class='thead-dark'>";
-			echo "<tr>"; 
-				echo "<th scope='col'>extension no</th>";
-				echo "<th scope='col'>owner assigned</th>";  
-			echo "</tr>";
-			echo "</thead>";
-			echo "<tbody>";
-			
-			// table body will be here
-			// retrieve our table contents
-			// fetch() is faster than fetchAll()
-			// http://stackoverflow.com/questions/2770630/pdofetchall-vs-pdofetch-in-a-loop
-			 
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-				 
-				// extract row
-				// this will make $row['firstname'] to
-				// just $firstname only
-				extract($row);
-				 					
-				$id = $row['id'];
-				$code = $row['ccode'];
-				$extension_number = $row['deptcode'];
-				$owner_assigned = $row['ownerassigned'];
-				$department = $row['deptname'];
-
-				// creating new table row per record
-				echo "<tr class='table-primary'>";
-					  
-				echo "<td class='table-info'>";
-					
-				echo htmlspecialchars($extension_number, ENT_QUOTES);
-
-				echo "</td>";
-			 
-				echo "<td class='table-success'>";
-					
-				echo htmlspecialchars($owner_assigned, ENT_QUOTES);
-
-				echo "</td>";
-					  
-				echo "</tr>";
-				
-			} 
-
-			echo "</tbody>";
-			
-			echo "<tfoot>";
-			
-			echo "</tfoot>";
-			
-			// end table
-			echo "</table>";
-			
-			// PAGINATION
-			// count total number of rows
-			$query = "SELECT COUNT(*) as total_rows FROM depts";
-			$stmt = $this->db->prepare($query);
-			 
-			// execute query
-			$stmt->execute();
-			 
-			// get total rows
-			$row = $stmt->fetch(PDO::FETCH_ASSOC);
-			$total_rows = $row['total_rows'];
-
-			// paginate records
-			$page_url="user_index.php?";
-			//include_once "paging_extensions_search_table.php";
-		}
-		 
-		// if no records found
-		else{
-			//echo "<div class='alert alert-danger'>No records found.</div>";
-		}
-	}
- 
  
  
  

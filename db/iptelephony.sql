@@ -16,13 +16,209 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `tbl_campuses`
+--
+
+-- -- DROP TABLE IF EXISTS `tbl_campuses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tbl_campuses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `campus_name` varchar(200) NOT NULL COMMENT 'Campus Name',
+  `status` varchar(200) NOT NULL COMMENT 'Status',
+  `created_date` varchar(200) NOT NULL COMMENT 'Created Date',
+  `addedby` varchar(200) NOT NULL COMMENT 'Added By',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `campus_name` (`campus_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tbl_departments`
+--
+
+-- -- DROP TABLE IF EXISTS `tbl_departments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tbl_departments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `department_name` varchar(200) NOT NULL COMMENT 'Department Name',
+  `status` varchar(200) NOT NULL COMMENT 'Status',
+  `created_date` varchar(200) NOT NULL COMMENT 'Created Date',
+  `addedby` varchar(200) NOT NULL COMMENT 'Added By',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `department_name` (`department_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tbl_extensions`
+--
+
+-- DROP TABLE IF EXISTS `tbl_extensions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tbl_extensions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `campus_id` varchar(11) NOT NULL COMMENT 'Campus Foreign Key',
+  `department_id` varchar(11) NOT NULL COMMENT 'Department Foreign Key',
+  `owner_assigned` varchar(200) NOT NULL COMMENT 'Owner Assigned',
+  `extension_no` varchar(11) NOT NULL COMMENT 'Extension Number',
+  PRIMARY KEY (`id`),
+  KEY `extension_no` (`extension_no`),
+  CONSTRAINT `campus_foreign_key` FOREIGN KEY (`campus_id`) REFERENCES `tbl_campuses` (`id`),
+  CONSTRAINT `department_foreign_key` FOREIGN KEY (`department_id`) REFERENCES `tbl_departments` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1505 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tbl_users`
+--
+
+-- DROP TABLE IF EXISTS `tbl_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tbl_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `email` varchar(200) NOT NULL COMMENT 'Email',
+  `username` varchar(200) NOT NULL COMMENT 'User Name',
+  `password` varchar(200) NOT NULL COMMENT 'Password',
+  `secretWord` varchar(200) NOT NULL COMMENT 'Secret Word',
+  `role_id` varchar(200) NOT NULL COMMENT 'Role Foreign Key',
+  `status` varchar(200) NOT NULL COMMENT 'Status',
+  `created_date` varchar(200) NOT NULL COMMENT 'Created Date',
+  `addedby` varchar(200) NOT NULL COMMENT 'Added By',
+  `full_names` varchar(200) NOT NULL COMMENT 'Full Names',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tbl_roles`
+--
+
+-- DROP TABLE IF EXISTS `tbl_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tbl_roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `role_name` varchar(200) NOT NULL COMMENT 'Role Name',
+  `status` varchar(200) NOT NULL COMMENT 'Status',
+  `created_date` varchar(200) NOT NULL COMMENT 'Created Date',
+  `addedby` varchar(200) NOT NULL COMMENT 'Added By',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `role_name` (`role_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tbl_rights`
+--
+
+-- DROP TABLE IF EXISTS `tbl_rights`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tbl_rights` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `right_name` varchar(200) NOT NULL COMMENT 'Right Name', 
+  `status` varchar(200) NOT NULL COMMENT 'Status',
+  `created_date` varchar(200) NOT NULL COMMENT 'Created Date',
+  `addedby` varchar(200) NOT NULL COMMENT 'Added By',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `right_name` (`right_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tbl_role_rights`
+--
+
+-- DROP TABLE IF EXISTS `tbl_role_rights`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tbl_role_rights` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `right_id` varchar(200) NOT NULL COMMENT 'Right Foregn Key',
+  `role_id` varchar(200) NOT NULL COMMENT 'Role Foreign Key',
+  `status` varchar(200) NOT NULL COMMENT 'Status',
+  `created_date` varchar(200) NOT NULL COMMENT 'Created Date',
+  `addedby` varchar(200) NOT NULL COMMENT 'Added By',
+  PRIMARY KEY (`id`),
+  CONSTRAINT `rights_foreign_key` FOREIGN KEY (`right_id`) REFERENCES `tbl_rights` (`id`)
+  CONSTRAINT `role_foreign_key` FOREIGN KEY (`role_id`) REFERENCES `tbl_roles` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tbl_user_roles`
+--
+
+-- DROP TABLE IF EXISTS `tbl_user_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tbl_user_roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `user_id` varchar(200) NOT NULL COMMENT 'User Foregn Key',
+  `role_id` varchar(200) NOT NULL COMMENT 'Role Foreign Key',
+  `status` varchar(200) NOT NULL COMMENT 'Status',
+  `created_date` varchar(200) NOT NULL COMMENT 'Created Date',
+  `addedby` varchar(200) NOT NULL COMMENT 'Added By',
+  PRIMARY KEY (`id`),
+  CONSTRAINT `user_foreign_key` FOREIGN KEY (`user_id`) REFERENCES `tbl_users` (`id`)
+  CONSTRAINT `role_foreign_key` FOREIGN KEY (`role_id`) REFERENCES `tbl_roles` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+
+
+
+
+
+
+
+
+--
+-- Table structure for table `telephoneadmin`
+--
+
+-- DROP TABLE IF EXISTS `telephoneadmin`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `telephoneadmin` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `email` varchar(200) NOT NULL COMMENT 'Email',
+  `username` varchar(200) NOT NULL COMMENT 'User Name',
+  `password` varchar(200) NOT NULL COMMENT 'Password',
+  `secretWord` varchar(200) NOT NULL COMMENT 'Secret Word',
+  `status` varchar(200) NOT NULL COMMENT 'Status',
+  `created_date` varchar(200) NOT NULL COMMENT 'Created Date',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `usernme` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `telephoneadmin`
+--
+
+LOCK TABLES `telephoneadmin` WRITE;
+/*!40000 ALTER TABLE `telephoneadmin` DISABLE KEYS */;
+INSERT INTO `telephoneadmin` VALUES ('supreadmin@admin.ac.ke','superadmin','superadmin','normal pass',1),('chesoli.kenneth@students.dkut.ac.ke','chesol','chesol','chesoli',2),('123@gmail.com','hilda','hilda','nasiche',3),('group896@gmail.com','engefu','engefu','engefu',4),('csjkuat@gmail','comp','comp','comp',5);
+/*!40000 ALTER TABLE `telephoneadmin` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `adminregistration`
 --
 
-DROP TABLE IF EXISTS `adminregistration`;
+-- DROP TABLE IF EXISTS `adminregistration`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `adminregistration` (
+CREATE TABLE IF NOT EXISTS `adminregistration` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `fname` varchar(20) NOT NULL,
   `surname` varchar(20) NOT NULL,
@@ -46,26 +242,7 @@ INSERT INTO `adminregistration` VALUES (1,'chesol','kenneth','keny','chesoli.ken
 UNLOCK TABLES;
 
 --
--- Table structure for table `campuses`
---
-
-DROP TABLE IF EXISTS `campuses`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `campuses` (
-  `cid` int(11) NOT NULL AUTO_INCREMENT,
-  `ccode` varchar(11) NOT NULL,
-  `cname` varchar(15) NOT NULL,
-  `addedby` varchar(100) NOT NULL,
-  PRIMARY KEY (`ccode`),
-  UNIQUE KEY `cid` (`cid`),
-  KEY `ccode` (`ccode`),
-  KEY `ccode_2` (`ccode`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `campuses`
+-- Dumping data for table `tbl_campuses`
 --
 
 LOCK TABLES `campuses` WRITE;
@@ -75,13 +252,17 @@ INSERT INTO `campuses` VALUES (7,'kakamega1','Kakamega','Superadmin'),(3,'Karen1
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `depts`
+--
+
+--
 -- Table structure for table `depts`
 --
 
-DROP TABLE IF EXISTS `depts`;
+-- DROP TABLE IF EXISTS `depts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `depts` (
+CREATE TABLE IF NOT EXISTS `depts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ccode` varchar(11) NOT NULL,
   `deptcode` varchar(11) NOT NULL,
@@ -104,42 +285,13 @@ INSERT INTO `depts` VALUES (1,'main1','1002','Switchboard','Swicthboard'),(2,'ma
 UNLOCK TABLES;
 
 --
--- Table structure for table `telephoneadmin`
---
-
-DROP TABLE IF EXISTS `telephoneadmin`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `telephoneadmin` (
-  `email` varchar(50) NOT NULL,
-  `username` varchar(10) NOT NULL,
-  `password` varchar(20) NOT NULL,
-  `secretWord` varchar(20) NOT NULL,
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `usernme` (`username`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `telephoneadmin`
---
-
-LOCK TABLES `telephoneadmin` WRITE;
-/*!40000 ALTER TABLE `telephoneadmin` DISABLE KEYS */;
-INSERT INTO `telephoneadmin` VALUES ('supreadmin@admin.ac.ke','superadmin','superadmin','normal pass',1),('chesoli.kenneth@students.dkut.ac.ke','chesol','chesol','chesoli',2),('123@gmail.com','hilda','hilda','nasiche',3),('group896@gmail.com','engefu','engefu','engefu',4),('csjkuat@gmail','comp','comp','comp',5);
-/*!40000 ALTER TABLE `telephoneadmin` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `trialexcel`
 --
 
-DROP TABLE IF EXISTS `trialexcel`;
+-- DROP TABLE IF EXISTS `trialexcel`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `trialexcel` (
+CREATE TABLE IF NOT EXISTS `trialexcel` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ccode` varchar(80) NOT NULL,
   `extnumber` int(11) NOT NULL,

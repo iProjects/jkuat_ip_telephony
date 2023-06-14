@@ -37,13 +37,40 @@ $(document).ready(function () {
         search_extensions(1);
     });
 	
+    $('#txtdepartment').on('input', function(){
+        search_extensions(1);
+    });
+	
+    $('#txtowner_assigned').on('input', function(){
+        search_extensions(1);
+    });
+	
     $('#cbo_search_records_to_display').on('change', function(){
         search_extensions(1);
     });
 	 
-	$("#progress_bar").hide();
+    $('#btnclearsearch').on('click', function(){        
+		$('#cbocampus').val("");
+		$('#cbodepartment').val("");
+		$('#txtdepartment').val("");		
+		$('#txtextension_number').val("");
+		$('#div_search_content').html("");
+		$('#lbl_search_count').text("");
+    });
+ 
+	$('#txtextension_number').keypress(function(e){    
+
+		var charCode = (e.which) ? e.which : event.keyCode;
+		if (String.fromCharCode(charCode).match(/[^0-9]/g))    
+		{
+			return false;                        
+		}
+	}); 
 	
-    log_info_messages("finished load...");   
+	$('#lbl_search_count').text("");
+	
+	$("#progress_bar").hide();
+	 
 });
 
 var global_page_number_holder = 1;
@@ -98,7 +125,7 @@ function fetch_all_campuses() {
 		
 	// send data to server asynchronously.
 	$.ajax({
-		url: "user_controller.php",
+		url: "search_controller.php",
 		type: "POST",
 		data: {
 			"action": "fetch_all_campuses"
@@ -123,13 +150,9 @@ function fetch_all_campuses() {
 			select_options_arr += '<option value="' + code + '">' + name + '</option>';
 		}
  
-		$('#cbocampus').html(select_options_arr);
-		$('#cbo_create_campus').html(select_options_arr);
-		$('#cbo_edit_campus').html(select_options_arr);
+		$('#cbocampus').html(select_options_arr); 
  
-		fetch_department_names("cbocampus");
-		fetch_department_names("cbo_create_campus");
-		fetch_department_names("cbo_edit_campus");
+		fetch_department_names("cbocampus"); 
 		
 		hide_progress();
 		
@@ -144,20 +167,7 @@ function fetch_department_names(campus_name) {
 	
 	show_progress();
 	
-	var campus_code = "";
-	
-	switch(campus_name)
-	{
-		case "cbocampus":
-			 campus_code = $("#cbocampus").val();
-		break;
-		case "cbo_create_campus":
-			 campus_code = $("#cbo_create_campus").val();
-		break;
-		case "cbo_edit_campus":
-			 campus_code = $("#cbo_edit_campus").val();
-		break;
-	}
+	var campus_code = $("#cbocampus").val(); 
 	 
 	console.log("campus_code: " + campus_code); 
 	
@@ -168,7 +178,7 @@ function fetch_department_names(campus_name) {
 	
 	// send data to server asynchronously.
 	$.ajax({
-		url: "user_controller.php",
+		url: "search_controller.php",
 		type: "POST",
 		data: {
 			"campus_code": campus_code,
@@ -193,9 +203,7 @@ function fetch_department_names(campus_name) {
 			select_options_arr += '<option value="' + name + '">' + name + '</option>';
 		}
  		 
-		$('#cbodepartment').html(select_options_arr);
-		$('#cbo_create_department').html(select_options_arr);
-		$('#cbo_edit_department').html(select_options_arr);
+		$('#cbodepartment').html(select_options_arr); 
   
 		search_extensions(1);
 		
@@ -214,7 +222,7 @@ function search_extensions(page){
 	
 	global_page_number_holder = page;
 	
-	var records_to_display = -1;
+	var records_to_display = 10;
 	//records_to_display = $("#cbo_search_records_to_display").val();
 	
 	console.log("records_to_display: " + records_to_display);	
@@ -223,16 +231,20 @@ function search_extensions(page){
 	var campus_code = $("#cbocampus").val();
 	var department = $("#cbodepartment").val();
 	var extension_number = $("#txtextension_number").val();
+	var txtdepartment = $("#txtdepartment").val();
+	var txtowner_assigned = $("#txtowner_assigned").val();
 	
 	console.log("campus_code: " + campus_code);	
 	console.log("department: " + department);	
 	console.log("extension_number: " + extension_number);
+	console.log("txtdepartment: " + txtdepartment);
+	console.log("txtowner_assigned: " + txtowner_assigned);
 	
 	show_progress();
 	
 	// send data to server asynchronously.
 	$.ajax({
-		url: "user_controller.php",
+		url: "search_controller.php",
 		type: "POST",
 		data: {
 			"page": page,
@@ -240,6 +252,8 @@ function search_extensions(page){
 			"campus_code": campus_code,
 			"department": department,
 			"extension_number": extension_number,
+			"txtdepartment": txtdepartment,
+			"txtowner_assigned": txtowner_assigned,
 			"action": "search_extensions"
 		},//data to be posted
 	}).done(function(response){
@@ -248,6 +262,10 @@ function search_extensions(page){
 		console.log("response: " + response); 
 				
 		$('#div_search_content').html(response);
+ 
+		get_search_results_count();
+		
+		$("#div_search_content").scrollTop();
  
 		hide_progress();
 		
@@ -278,7 +296,35 @@ function populate_display_vectors()
 
 }
 
+function get_search_results_count(){
+	 
+	show_progress();
+	  
+	// send data to server asynchronously.
+	$.ajax({
+		url: "search_results_count.php",
+		type: "POST",
+	}).done(function(response){
+		response = response.trim();
+		
+		console.log("response: " + response); 
+		
+		$('#lbl_search_count').text(response);
+		
+		hide_progress();
+		
+	}).fail(function(jqXHR, textStatus){
+		log_error_messages(textStatus);
+		hide_progress();
+	});
+	
+}
 
+function go2Page()
+{
+	var page = document.getElementById("txt_page").value; 
+	search_extensions(page);
+}
 
 
 

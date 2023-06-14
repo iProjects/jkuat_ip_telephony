@@ -1,3 +1,27 @@
+<?php
+session_start();
+ 
+include_once "get_url.php";
+
+// 👇 check if cookie exists
+if (isset($_COOKIE["origin"])) {
+	$global_path = $_COOKIE["origin"];
+	//echo $global_path;
+	//header('Location: ' . $global_path . 'login.php'); 
+	//exit();
+}else{
+	$cookie_name = "origin";
+	$cookie_value = $server_path;
+	setcookie($cookie_name, $cookie_value, time() + (60*60*24*365), "/");
+
+	$global_path = $_COOKIE["origin"];
+	//echo $global_path; 
+	//header('Location: ' . $global_path . 'login.php'); 
+	//exit();
+}
+
+?>
+
 <!DOCTYPE html> 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -16,35 +40,107 @@
 	<!-- jQuery ui -->
 	<link rel="stylesheet" type="text/css" media="all" href="css/jquery-ui-1.12.1.css" />
 	
+	<link rel="stylesheet" type="text/css" media="all" href="css/style.css" />
+  
 	<link rel="stylesheet" type="text/css" media="all" href="css/login.css" />
   
 </head>
 <body>
-
-	<div id="div_navigation"> 
-		<div id="progress_bar" class="progress-bar progress-bar-striped indeterminate"></div>
-		<img id="img_logo" src="images/jkuat_logo.png" >
-		
-		<div id="page_header">
-			<span id="organization_name">JOMO KENYATTA UNIVERSITY OF AGRICULTURE AND TECHNOLOGY</span>
-			<span id="organization_slogan">Setting Trends in Higher Education, Research and Innovation.</span>  
-		</div>
-		<span id="app_title">JKUAT ONLINE TELEPHONY DIRECTORY</span>  
-	</div>
-	
+ 
+ 
 	<!-- container -->
 	<!-- Content Section -->
-	<div id="maincontainer" class="container">
-		<div id="div_container">
-	  
+	
+	
+	
+	
+	
+
+<div class="wrapper">
+
+	<!--Top menu -->
+	<div class="sidebar">
+ 
+		<!--profile image & text-->
+		<div class="profile">
+			<img id="img_logo" src="images/jkuat_logo.png" > 
+			<h3>JKUAT</h3>
+			<p> ONLINE TELEPHONY DIRECTORY</p>
 		</div>
+			 
+		<!--menu item-->
+		<ul>
+			<li>
+				<a id="btnsearch" class="active">
+					<span class="icon"><i class="fas fa-home"></i></span>
+					<span class="item">Search</span>
+				</a>
+			</li> 
+		</ul>
+
+		
+		
+    </div>
+
+</div>
+	
+	 
+	 
+	 
+	 <div id="dashboard_container">
+	 
+		<div id="div_edit_extension_container">
+ 
+ 
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="loginmodallabel">Login</h4>
+				</div>
+				   
+				<div class="modal-body">
+					<div class="form-group">
+						<h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
+					</div>
+
+					<div class="form-group">						
+						<div id="div_messages_modal"></div>			
+					</div>
+ 
+					<div class="form-group">
+						<label for="txtuser_name">Email <span class="text-danger">*</span></label>
+						<input type="email" id="txtemail" name="txtemail" placeholder="Email" class="form-control" required placeholder="Email" />
+					</div>
+
+					<div class="form-group">
+						<label for="txtpassword">Password <span class="text-danger">*</span></label>
+						<input type="password" id="txtpassword" name="txtpassword" placeholder="Password" class="form-control" required placeholder="Password" />
+					</div>
+
+				</div> 
+				<div class="modal-footer"> 
+					<button id="btnlogin" type="button" class="btn btn-success">Login</button>
+				</div>
+			</div>
+
+ 
+		</div>
+		
+	
 	</div>
+		
+		
+		
+		
+		
+		
 	<!-- // Content Section -->
 	<!-- end .container -->
 	
+	
+	
 	<!-- Bootstrap Modals -->
 
-	<!--  Login Modal -->
+	<!--  Login Modal
 	<div class="modal fade" id="login_modal" tabindex="-1" role="dialog" aria-labelledby="loginmodallabel">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -82,9 +178,10 @@
 	<!-- // Login Modal -->
 
 	<!-- // Bootstrap Modals -->
-
-	<div id="div_login_messages"></div>
-
+ 
+ 
+	<div id="div_messages"></div>
+ 
 
     <div id="div_footer"> 
         <span id="lblcopyright">copyright</span> 

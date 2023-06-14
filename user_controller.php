@@ -2,57 +2,60 @@
 
 require 'user_dal.php';
 
-if(isset($_POST['action'])){ 
-	if ($_POST['action'] == "fetch_extensions") 
+if(isset($_POST['action'])){
+	if ($_POST['action'] == "create_user") 
 	{ 
-		fetch_extensions(); 
-	} 
-	if ($_POST['action'] == "fetch_campus_codes") 
-	{ 
-		fetch_campus_codes(); 
-	} 
-	if ($_POST['action'] == "fetch_all_campuses") 
-	{ 
-		fetch_all_campuses(); 
-	} 
-	if ($_POST['action'] == "fetch_department_names") 
-	{ 
-		fetch_department_names(); 
-	} 
-	if ($_POST['action'] == "search_extensions") 
-	{ 
-		search_extensions(); 
-	} 
-	if ($_POST['action'] == "get_extension") 
-	{ 
-		get_extension(); 
+		create_user(); 
 	}
-	 	
+	if ($_POST['action'] == "update_user") 
+	{ 
+		update_user(); 
+	} 
+	if ($_POST['action'] == "search_users") 
+	{ 
+		search_users(); 
+	} 
+	if ($_POST['action'] == "get_user") 
+	{ 
+		get_user(); 
+	}
+	if ($_POST['action'] == "delete_user") 
+	{ 
+		delete_user(); 
+	} 
+	if ($_POST['action'] == "get_users_search_count") 
+	{ 
+		get_users_search_count(); 
+	}	
 }
 	
-function create_extension() {
+function create_user() {
  
 	$response = "";
 
 	if(isset($_POST)){
 	 
-		$code = trim(htmlspecialchars(strip_tags($_POST['code'])));
-		$extension_number = trim(htmlspecialchars(strip_tags($_POST['extension_number'])));
-		$owner_assigned = trim(htmlspecialchars(strip_tags($_POST['owner_assigned'])));
-		$department = trim(htmlspecialchars(strip_tags($_POST['department'])));  
+		$email = trim(htmlspecialchars(strip_tags($_POST['email'])));
+		$username = trim(htmlspecialchars(strip_tags($_POST['username'])));
+		$password = trim(htmlspecialchars(strip_tags($_POST['password'])));
+		$secretword = trim(htmlspecialchars(strip_tags($_POST['secretword']))); 
 		
-		if(!isset($code)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> code is mandatory field./div>';
+		if(!isset($email)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Email is mandatory field.</div>';
 		} 
-		if(!isset($extension_number)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> extension number is mandatory field./div>';
+		$regex = "/^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,6})+$/";
+		if (!preg_match_all($regex, $email)) {
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Please provide a valid email.</div>';
 		} 
-		if(!isset($owner_assigned)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> owner assigned is mandatory field./div>';
+		if(!isset($username)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> User Name is mandatory field.</div>';
 		} 
-		if(!isset($department)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> department is mandatory field./div>';
+		if(!isset($password)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Password is mandatory field.</div>';
 		} 
+		if(!isset($secretword)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Secret Word is mandatory field.</div>';
+		}  
 
 		if(!empty($response)){
 			echo $response;
@@ -61,13 +64,58 @@ function create_extension() {
 
 		$user_dal = new user_dal();
 
-		echo $user_dal->create_extension($code, $extension_number, $owner_assigned, $department);
+		echo $user_dal->create_user($email, $username, $password, $secretword);
+	 
+	}
+
+}
+ 
+function update_user() {
+ 
+	$response = "";
+
+	if(isset($_POST)){
+	 
+		$id = trim(htmlspecialchars(strip_tags($_POST['id'])));
+		$email = trim(htmlspecialchars(strip_tags($_POST['email'])));
+		$username = trim(htmlspecialchars(strip_tags($_POST['username'])));
+		$password = trim(htmlspecialchars(strip_tags($_POST['password'])));
+		$secretword = trim(htmlspecialchars(strip_tags($_POST['secretword']))); 
+		
+		if(!isset($id)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
+		} 
+		if(!isset($email)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Email is mandatory field.</div>';
+		} 
+		$regex = "/^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,6})+$/";
+		if (!preg_match_all($regex, $email)) {
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Please provide a valid email.</div>';
+		} 
+		if(!isset($username)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> User Name is mandatory field.</div>';
+		} 
+		if(!isset($password)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Password is mandatory field.</div>';
+		} 
+		if(!isset($secretword)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Secret Word is mandatory field.</div>';
+		}   
+
+		if(!empty($response)){
+			echo $response;
+			return;
+		}
+
+		$user_dal = new user_dal();
+
+		echo $user_dal->update_user($email, $username, $password, $secretword, $id);
 	 
 	}
 
 }
 
-function get_extension() {
+function get_user() {
  
 	$response = "";
 
@@ -76,7 +124,7 @@ function get_extension() {
 		$id = trim(htmlspecialchars(strip_tags($_POST['id']))); 
 		
 		if(!isset($id)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> id is mandatory field./div>';
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> id is mandatory field.</div>';
 		}  
 
 		if(!empty($response)){
@@ -86,81 +134,13 @@ function get_extension() {
 
 		$user_dal = new user_dal();
 
-		echo $user_dal->get_extension($id);
+		echo $user_dal->get_user($id);
 	 
 	}
 
 }
-
-function fetch_extensions() {
  
-	$response = "";
-
-	if(isset($_POST)){
-	 
-		$page = trim(htmlspecialchars(strip_tags($_POST['page'])));
-		$records_to_display = trim(htmlspecialchars(strip_tags($_POST['records_to_display'])));
- 
-		if(!isset($page)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> page is mandatory field./div>';
-		} 
-		if(!isset($records_to_display)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> records to display is mandatory field./div>';
-		} 
-
-		if(!empty($response)){
-			echo $response;
-			return;
-		}
-
-		$user_dal = new user_dal();
-
-		echo $user_dal->get_paginated_extensions_table($page, $records_to_display);
-	 
-	}
-
-}
-
-function fetch_campus_codes() {
-
-	$user_dal = new user_dal();
-
-	echo $user_dal->get_campus_codes();
-   
-}
-
-function fetch_all_campuses() {
-
-	$user_dal = new user_dal();
-
-	echo $user_dal->get_all_campuses();
-   
-}
-
-function fetch_department_names() {
-	
-	if(isset($_POST)){
-	 
-		$campus_code = trim(htmlspecialchars(strip_tags($_POST['campus_code']))); 
- 
-		if(!isset($campus_code)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> campus name is mandatory field./div>';
-		}  
-
-		if(!empty($response)){
-			//echo $response;
-			return;
-		}
-
-		$user_dal = new user_dal();
-
-		echo $user_dal->get_department_names($campus_code);
-	   
-	}
-
-}
-
-function search_extensions() {
+function search_users() {
  
 	$response = "";
 
@@ -168,15 +148,14 @@ function search_extensions() {
 		
 		$page = trim(htmlspecialchars(strip_tags($_POST['page'])));
 		$records_to_display = trim(htmlspecialchars(strip_tags($_POST['records_to_display'])));
-		$campus_code = trim(htmlspecialchars(strip_tags($_POST['campus_code'])));
-		$department = trim(htmlspecialchars(strip_tags($_POST['department'])));
-		$extension_number = trim(htmlspecialchars(strip_tags($_POST['extension_number'])));
+		$email = trim(htmlspecialchars(strip_tags($_POST['email'])));
+		$username = trim(htmlspecialchars(strip_tags($_POST['username']))); 
  
 		if(!isset($page)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> page is mandatory field./div>';
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> page is mandatory field.</div>';
 		} 
 		if(!isset($records_to_display)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> records to display is mandatory field./div>';
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> records to display is mandatory field.</div>';
 		} 
 		
 		if(!empty($response)){ 
@@ -185,12 +164,46 @@ function search_extensions() {
 
 		$user_dal = new user_dal();
 
-		echo $user_dal->search_extensions($page, $records_to_display, $campus_code, $department, $extension_number);
+		echo $user_dal->search_users($page, $records_to_display, $email, $username);
 	 
 	}
 
 }
+
+function delete_user() {
  
+	$response = "";
+
+	if(isset($_POST)){
+	 
+		$id = trim(htmlspecialchars(strip_tags($_POST['id']))); 
+		
+		if(!isset($id)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> id is mandatory field.</div>';
+		}  
+
+		if(!empty($response)){
+			echo $response;
+			return;
+		}
+
+		$user_dal = new user_dal();
+
+		echo $user_dal->delete_user($id);
+	 
+	}
+
+}
+
+function get_users_search_count() {
+
+	if (isset($_SESSION['users_count']))
+	{
+		echo "[ " . $_SESSION["users_count"] . " ] records";
+	}
+}
+
+
 
 
 

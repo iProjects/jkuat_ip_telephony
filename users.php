@@ -1,21 +1,43 @@
 <?php
+
 session_start();
-
-if (!isset($_SESSION['loggedinuser']))
+ 
+include_once "get_url.php";
+  
+if (isset($_COOKIE['loggedinuser']))
 {
-	header('Location: http://localhost:90/jkuat_ip_telephony/login.php');
-	exit();
-}
-        
-$logged_in_user_role = $_SESSION['logged_in_user_role'];
-
-if($logged_in_user_role == "LimitedAdmin")
-{
-	header('Location: http://localhost:90/jkuat_ip_telephony/extensions.php');
-	exit();
+	// 👇 check if cookie exists
+	if (isset($_COOKIE["origin"])) {
+		
+		//get the logged in user role from the session		
+		$logged_in_user_role = $_SESSION['logged_in_user_role'];
+		
+		if($logged_in_user_role == "LimitedAdmin" || $logged_in_user_role == "Superadmin")
+		{ 
+			$global_path = $_COOKIE["origin"];
+			//echo $global_path; 
+			//header('Location: ' . $global_path . 'users.php');
+			//exit(); 
+		}
+	}else{
+		$cookie_name = "origin";
+		$cookie_value = $server_path;
+		setcookie($cookie_name, $cookie_value, time() + (60*60*24*365), "/");
+		
+		$global_path = $_COOKIE["origin"];
+		echo $global_path; 
+		header('Location: ' . $global_path . 'users.php');
+		exit(); 
+	}
+}else{ 
+		$global_path = $_COOKIE["origin"];
+		echo $global_path; 
+		header('Location: ' . $global_path . 'login.php');
+		exit();
 }
 
 ?>
+
 <!DOCTYPE html> 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -34,7 +56,9 @@ if($logged_in_user_role == "LimitedAdmin")
 	<!-- jQuery ui -->
 	<link rel="stylesheet" type="text/css" media="all" href="css/jquery-ui-1.12.1.css" />
 	
-	<link rel="stylesheet" type="text/css" media="all" href="css/admin.css" /> 
+	<link rel="stylesheet" type="text/css" media="all" href="css/style.css" />
+  
+	<link rel="stylesheet" type="text/css" media="all" href="css/user.css" /> 
 	
   
 </head>
@@ -43,87 +67,181 @@ if($logged_in_user_role == "LimitedAdmin")
 	<!-- container -->
 	<!-- Content Section -->
 
+	
 	<div id="div_navigation"> 
+		<span id="lbl_search_count"></span>
 		<div id="progress_bar" class="progress-bar progress-bar-striped indeterminate"></div>
-		<img id="img_logo" src="images/jkuat_logo.png" >
-				
-		<div id="page_header">
-			<span id="organization_name">JOMO KENYATTA UNIVERSITY OF AGRICULTURE AND TECHNOLOGY</span>
-			<span id="organization_slogan">Setting Trends in Higher Education, Research and Innovation.</span>  
-			<span id="app_title">JKUAT ONLINE TELEPHONY DIRECTORY</span> 
-		</div> 
-			
+		 
 		<div id="div_logggin_info"> 						 
-			<span  id= "lbllogginuser" class="btn btn-success btn_logout" >
-				<i class="fa fa-fw fa-plus-circle">
-					<?php
-						echo "logged in user [ " . $_SESSION["loggedinuser"] . " ]";
-					?>
-				</i>
+			<span  id= "lbllogginuser">
+				<?php
+					echo "Logged in User [ " . $_SESSION["loggedinuser"] . " ]";
+				?>
 			</span>
-			<span  id= "lblloggedintime" class="btn btn-success btn_logout" >
-				<i class="fa fa-fw fa-plus-circle">
-					<?php
-						echo "[ " . $_SESSION["loggedintime"] . " ]";
-					?>
-				</i>
-			</span>				
-			<button id="btn_logout" type="button" class="btn btn-warning btn_logout"><i class="fa fa-fw fa-plus-circle"></i>Logout</button>  
+			<span  id= "lblloggedintime">
+				<?php
+					echo "[ " . $_SESSION["loggedintime"] . " ]";
+				?>
+			</span>				 
 		</div>
 
 	</div>
-			
-			
-	<div id="maincontainer" class="container">
-		<div id="div_container">
-		 
-			<button id="btnlist_users" type="button" class="btn btn-warning crud_buttons"><i class="fa fa-fw fa-plus-circle"></i>Users</button> 
-			<button id="btncreate_user_view" type="button" class="btn btn-success crud_buttons"><img src="images/add.png" alt="Create" title="Create" style="vertical-align:bottom;" />create user</button>		
-			<button id="btnlist_extensions" type="button" class="btn btn-warning crud_buttons"><i class="fa fa-fw fa-plus-circle"></i>Extensions</button> 
-			<button id="btnlist_departments" type="button" class="btn btn-warning crud_buttons"><i class="fa fa-fw fa-plus-circle"></i>Departments</button> 
-			<button id="btnlist_campuses" type="button" class="btn btn-warning crud_buttons"><i class="fa fa-fw fa-plus-circle"></i>Campuses</button> 
+			 
+		
+	<div class="wrapper">
+
+		<!--Top menu -->
+		<div class="sidebar">
+	 
+			<!--profile image & text-->
+			<div class="profile">
+				<img id="img_logo" src="images/jkuat_logo.png" > 
+				<h3>JKUAT</h3>
+				<p> ONLINE TELEPHONY DIRECTORY</p>
+			</div>
 				 
-		</div>
-		
-		<div id="div_admin_search_container">
-			 
-			<div class="div_search">
-				<label for="cbo_search_campus">Campus</label> 
-				<select id="cbo_search_campus" class="form-control"></select>
-			</div>
-				
-			<div class="div_search">
-				<label for="cbo_search_department">Department</label> 
-				<select id="cbo_search_department" class="form-control"></select>
-			</div>
-				
-			<div class="div_search">
-				<label for="txt_search_extension_number">Extension No</label> 
-				<input type="text" id="txt_search_extension_number" name="txt_search_extension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
-			</div>
-			 
-			<div class="div_search">
-				<label for="cbo_records_to_display">No of Records to Display</label> 
-				<select id="cbo_records_to_display" class="form-control"></select>
-			</div>
-			 
-		</div>
-		
-		<div id="div_search_content_container">
-			 
-			<div id="div_search_content"></div>
-			  
-		</div>
-		
-		<div id="div_content_container">
+			<!--menu item-->
+			<ul>
+				<li>
+					<a id="btndashboard">
+						<span class="icon"><i class="fas fa-home"></i></span>
+						<span class="item">Dashboard</span>
+					</a>
+				</li>
+				<li>
+					<a id="btnlist_extensions">
+						<span class="icon"><i class="fas fa-home"></i></span>
+						<span class="item">Extensions</span>
+					</a>
+				</li>
+				<li>
+					<a id="btnlist_campuses">
+						<span class="icon"><i class="fas fa-desktop"></i></span>
+						<span class="item">Campuses</span>
+					</a>
+				</li>
+				<li>
+					<a id="btnlist_departments">
+						<span class="icon"><i class="fas fa-user-friends"></i></span>
+						<span class="item">Departments</span>
+					</a>
+				</li>
+				<li>
+					<a id="btnlist_users" class="active">
+						<span class="icon"><i class="fas fa-tachometer-alt"></i></span>
+						<span class="item">Users</span>
+					</a>
+				</li> 
+				<li>
+					<a id="btn_logout">
+						<span class="icon"><i class="fas fa-cog"></i></span>
+						<span class="item">Logout</span>
+					</a>
+				</li>
+ 
 			
-			<div id="div_content"></div>
-			
-			<div id="div_messages"></div>
-			
 		</div>
-		
+
 	</div>
+	
+	 
+			
+	<div id="dashboard_container">
+
+			
+		<div id="user_container">
+			<div id="div_container"> 
+				<button id="btncreate_user_view" type="button" class="btn btn-success btn_create">Create User</button>	 
+			</div>
+			
+			<div id="div_admin_search_container">
+				  
+				<div class="div_search">
+					<label for="txt_search_email">Email</label> 
+					<input type="text" id="txt_search_email" name="txt_search_email" placeholder="Email" class="form-control" required placeholder="Email" />
+				</div>
+				 
+				<div class="div_search">
+					<label for="txt_search_username">User Name</label> 
+					<input type="text" id="txt_search_username" name="txt_search_username" placeholder="User Name" class="form-control" required placeholder="User Name" />
+				</div>
+					 
+				<div class="div_search">
+					<label for="cbo_search_records_to_display">No of Records to Display</label> 
+					<select id="cbo_search_records_to_display" class="form-control"></select>
+				</div>
+				 
+			</div>
+			 
+			<div id="div_content_container">
+				 
+				<div id="div_content"></div>
+				
+				<div id="div_messages"></div>
+				
+			</div>
+			
+		</div>
+
+ 
+
+
+		<div id="div_edit_user_container">
+ 
+ 
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="loginmodallabel">Edit User</h4>
+				</div>
+				   
+				<div class="modal-body">
+					<div class="form-group">
+						<h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
+						<div id="div_modal_msg"></div>
+					</div>
+
+					<div class="form-group">						
+						<div class="div_messages_modal"></div>			
+					</div>
+
+					<div class="form-group"> 
+						<input type="text" id="txt_edit_id" name="txt_edit_id" placeholder="id" class="form-control" required placeholder="id" />
+					</div>
+  
+					<div class="form-group">
+						<label for="txt_edit_email">Email<span class="text-danger">*</span></label> 
+						<input type="email" id="txt_edit_email" name="txt_edit_email" placeholder="Email" class="form-control" required placeholder="Email" />
+					</div>
+					 
+					<div class="form-group">
+						<label for="txt_edit_username">User Name<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_edit_username" name="txt_edit_username" placeholder="User Name" class="form-control" required placeholder="User Name" />
+					</div>
+						 
+					<div class="form-group">
+						<label for="txt_edit_password">Password<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_edit_password" name="txt_edit_password" placeholder="Password" class="form-control" required placeholder="Password" />
+					</div>
+						 
+					<div class="form-group">
+						<label for="txt_edit_secretword">Secret Word<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_edit_secretword" name="txt_edit_secretword" placeholder="Secret Word" class="form-control" required placeholder="Secret Word" />
+					</div>
+						 
+				</div> 
+				<div class="modal-footer"> 
+					<button id="btnupdate_user" type="button" class="btn btn-success" ><img src="images/add.png" alt="Update" title="Update" style="vertical-align:bottom;" />Update</button>
+					<button id="btnclose_edit_user_modal" type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
+				</div>
+			</div>
+
+ 
+		</div>
+		
+		 
+	</div>
+
+ 
 
 	<!-- // Content Section -->
 	<!-- end .container -->
@@ -134,10 +252,11 @@ if($logged_in_user_role == "LimitedAdmin")
 	<!-- create Modal -->
 	<div class="modal fade crud_modal" id="create_user_modal" tabindex="-1" role="dialog" aria-labelledby="create_user_modal_label">
 		<div class="modal-dialog" role="document">
+		
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="loginmodallabel">Create User</h4>
+					<h4 class="modal-title" id="loginmodallabel">Create Campus</h4>
 				</div>
 				  
 				<div class="modal-body">
@@ -146,92 +265,44 @@ if($logged_in_user_role == "LimitedAdmin")
 						<div id="div_modal_msg"></div>
 					</div>
 
-					<div class="form-group">
-						<label for="cbo_create_campus">Campus <span class="text-danger">*</span></label> 
-						<select id="cbo_create_campus" class="form-control"></select>
+					<div class="form-group">						
+						<div class="div_messages_modal"></div>			
 					</div>
 
 					<div class="form-group">
-						<label for="txtextension_number">Extension No <span class="text-danger">*</span></label>
-						<input type="text" id="txt_create_extension_number" name="txtextension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
+						<label for="txt_create_email">Email<span class="text-danger">*</span></label> 
+						<input type="email" id="txt_create_email" name="txt_create_email" placeholder="Email" class="form-control" required placeholder="Email" />
 					</div>
+					 
+					<div class="form-group">
+						<label for="txt_create_username">User Name<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_create_username" name="txt_create_username" placeholder="User Name" class="form-control" required placeholder="User Name" />
+					</div>
+						 
+					<div class="form-group">
+						<label for="txt_create_password">Password<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_create_password" name="txt_create_password" placeholder="Password" class="form-control" required placeholder="Password" />
+					</div>
+						 
+					<div class="form-group">
+						<label for="txt_create_secretword">Secret Word<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_create_secretword" name="txt_create_secretword" placeholder="Secret Word" class="form-control" required placeholder="Secret Word" />
+					</div>
+						
 
-					<div class="form-group">
-						<label for="txtowner_assigned">Owner Assigned <span class="text-danger">*</span></label>
-						<input type="text" id="txt_create_owner_assigned" name="txtowner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
-					</div>
-	 
-					<div class="form-group">
-						<label for="cbo_create_department">Department <span class="text-danger">*</span></label>
-						<select id="cbo_create_department" class="form-control"></select>
-					</div>
-	 
 				</div> 
 				<div class="modal-footer"> 
-					<button id="btncreate_extension" type="button" class="btn btn-primary" ><img src="images/add.png" alt="Create" title="Create" style="vertical-align:bottom;" />Create</button>
-					<button type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
+					<button id="btncreate_user" type="button" class="btn btn-success" ><img src="images/add.png" alt="Create" title="Create" style="vertical-align:bottom;" />Create</button>
+					<button id="btnclose_create_user_modal" type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
 				</div>
 			</div>
-			
-			<div id="div_messages_modal"></div>
 			
 		</div>
 	</div>
 	<!-- // create Modal -->
-
-	<!-- edit Modal -->
-	<div class="modal fade crud_modal" id="edit_user_modal" tabindex="-1" role="dialog" aria-labelledby="edit_user_modal_label">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="loginmodallabel">Edit User</h4>
-				</div>
-				  
-				<div class="modal-body">
-					<div class="form-group">
-						<h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
-						<div id="div_modal_msg"></div>
-					</div>
-
-					<div class="form-group"> 
-						<input type="text" id="txt_edt_id" name="txt_edt_id" placeholder="id" class="form-control" required placeholder="id" />
-					</div>
-
-					<div class="form-group">
-						<label for="cbo_edit_campus">Campus <span class="text-danger">*</span></label> 
-						<select id="cbo_edit_campus" class="form-control"></select>
-					</div>
-
-					<div class="form-group">
-						<label for="txt_edit_extension_number">Extension No <span class="text-danger">*</span></label>
-						<input type="text" id="txt_edit_extension_number" name="txt_edit_extension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
-					</div>
-
-					<div class="form-group">
-						<label for="txt_edit_owner_assigned">Owner Assigned <span class="text-danger">*</span></label>
-						<input type="text" id="txt_edit_owner_assigned" name="txt_edit_owner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
-					</div>
-	 
-					<div class="form-group">
-						<label for="cbo_edit_department">Department <span class="text-danger">*</span></label>
-						<select id="cbo_edit_department" class="form-control"></select>
-					</div>
-	 
-				</div> 
-				<div class="modal-footer"> 
-					<button id="btnupdate_extension" type="button" class="btn btn-primary" ><img src="images/add.png" alt="Update" title="Update" style="vertical-align:bottom;" />Update</button>
-					<button type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
-				</div>
-			</div>
-			
-			<div id="div_messages_modal"></div>
-			
-		</div>
-	</div>
-	<!-- // edit Modal -->
-
+ 
 	<!-- // Bootstrap Modals -->
+
 
     <div id="div_footer"> 
         <span id="lblcopyright">copyright</span> 
@@ -247,9 +318,9 @@ if($logged_in_user_role == "LimitedAdmin")
 		  
 	<!-- Latest compiled and minified Bootstrap JavaScript -->
 	<script src="js/bootstrap-3.3.7.js" type="text/javascript" language="javascript" defer></script>
-
+ 
 	<script src="js/utils.js" type="text/javascript" language="javascript" defer></script>
-	<script src="js/admin.js" type="text/javascript" language="javascript" defer></script>
+	<script src="js/user.js" type="text/javascript" language="javascript" defer></script>
 	
 </body>
 </html>

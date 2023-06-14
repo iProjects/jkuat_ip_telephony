@@ -1,0 +1,107 @@
+<?php
+echo "<div id='div_pagination'>";
+
+	echo "<ul class='pagination' id='lst_pagination'>";
+	 
+	// first page button will be here
+	// first page button
+	if($page>1){
+	 
+		$prev_page = $page - 1;
+		echo "<li>";
+			echo "<a onClick='search_extensions({$prev_page})' style='cursor: pointer !important;'>";
+				echo "&laquo;";
+			echo "</a>";
+			/* echo "<a href='{$page_url}page={$prev_page}'>";
+				echo "<span style='margin:0 .5em;'>&laquo;</span>";
+			echo "</a>"; */
+		echo "</li>";
+	}
+	 
+	// clickable page numbers will be here
+	// clickable page numbers
+	 
+	 $total_rows = $_SESSION['search_count'];
+	 echo $total_rows;
+	 
+	// find out total pages
+	$total_pages = ceil($total_rows / $records_per_page);
+
+	echo "<br />" . $records_per_page;
+	echo "<br />" . $total_pages;
+	  
+	// range of num links to show
+	// $range = 1;
+	$range = 5;
+	 
+	// display links to 'range of pages' around 'current page'
+	$initial_num = $page - $range;
+	$condition_limit_num = ($page + $range)  + 1;
+	 
+	for ($x=$initial_num; $x<$condition_limit_num; $x++) {
+	 
+		// be sure '$x is greater than 0' AND 'less than or equal to the $total_pages'
+		if (($x > 0) && ($x <= $total_pages)) {
+	 
+			// current page
+			if ($x == $page) {
+				echo "<li class='active'>";
+					echo "<a href='javascript::void();'>{$x}</a>";
+				echo "</li>";
+			}
+	 
+			// not current page
+			else {
+				echo "<li>";
+				echo " <a onClick='search_extensions({$x})' style='cursor:pointer !important;'>{$x}</a> ";
+					// echo " <a href='{$page_url}page={$x}' onClick='search_extensions({$x})' style='cursor:hand;'>{$x}</a> ";
+				echo "</li>";
+			}
+		}
+	}
+	 
+	// last page button will be here
+	// last page button
+	if($page<$total_pages){
+		$next_page = $page + 1;
+	 
+		echo "<li>";
+			echo "<a onClick='search_extensions({$next_page})' style='cursor: pointer !important;'>";
+				echo "&raquo;";
+			echo "</a>";
+			/* echo "<a href='{$page_url}page={$next_page}'>";
+				echo "<span style='margin:0.5em;'>&raquo;</span>";
+			echo "</a>"; */
+		echo "</li>";
+	}
+
+
+
+		echo "<li>";
+			echo "<a onClick='search_extensions({$next_page})' style='cursor: pointer !important;'>";
+				echo "&raquo;";
+			echo "</a>";
+			/* echo "<a href='{$page_url}page={$next_page}'>";
+				echo "<span style='margin:0.5em;'>&raquo;</span>";
+			echo "</a>"; */
+		echo "</li>";
+		
+				
+	echo "</ul>";
+
+
+
+		echo '<div id="div_page_navigation">';   
+
+			echo '<input id="txt_page" type="number" min="1" max="' . $total_pages . '" placeholder="' .  $page . '"/"' . $total_pages . '" required>';   
+
+		echo'<button onClick="go2Page();">Go</button>';
+
+	echo '</div>';
+
+
+
+
+echo '</div>';
+	
+?>

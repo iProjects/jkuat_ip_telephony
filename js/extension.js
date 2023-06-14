@@ -1,62 +1,36 @@
  
 $(document).ready(function () {
-   
-	$('#login_modal').modal({
-			backdrop: 'static', 
-			keyboard: false
-		},'show');
-	 
+    
 	//listen for enter key event in document.
 	document.addEventListener("keypress", documententerkeyglobalhandler, false);
- 
-    $('#btnlogin').on('click', function(){
-        login_ajax();
-    });
-	 
-    $('#btn_login').on('click', function(){        
-		window.location.href = 'http://localhost:90/jkuat_ip_telephony/login.php';		 
-    });
-
-    $('#btnhome').on('click', function(){        
-		window.location.href = 'http://localhost:90/jkuat_ip_telephony';		 
-    });
-
+  
     $('#btn_logout').on('click', function(){
         logout_ajax();
     });
-	  
-    $('#btnlist_extensions').on('click', function(){
-        fetch_extensions(1);
-    });
-
+	   
 	populate_display_vectors();
 	
 	fetch_all_campuses();
-	
-	//search_extensions(1);
-	
+	  
     $('#btncreate_extension_view').on('click', function(){
         $('#create_extension_modal').modal('show');
-		fetch_campus_codes();
+		fetch_campus_codes(); 
+		$("#cbo_create_campus").val("");
+		$("#txt_create_department").val(""); 
+		$("#txt_create_owner_assigned").val("");
+		$("#txt_create_extension_number").val(""); 
     });
-	  
-    $('#btncreate_user_view').on('click', function(){
-        $('#create_user_modal').modal('show');
-		fetch_campus_codes();
-    });
-	  
-    $('#btncreate_campus_view').on('click', function(){
-        $('#create_campus_modal').modal('show');
-		fetch_campus_codes();
-    });
-	  
-    $('#btncreate_department_view').on('click', function(){
-        $('#create_department_modal').modal('show');
-		fetch_campus_codes();
-    });
+	
+	$('#create_extension_modal').on('shown.bs.modal', function () {
+		$('#txt_create_owner_assigned').focus();
+	})  
 	  
     $('#btncreate_extension').on('click', function(){
         create_extension();
+    });
+	    
+    $('#btnupdate_extension').on('click', function(){
+        update_extension();
     });
 	    
 	resize_components();
@@ -68,11 +42,7 @@ $(document).ready(function () {
 	$(window).on('load', function(){
 		resize_components();
 	});
-	
-    $('#cbo_records_to_display').on('change', function(){
-        fetch_extensions(1);
-    });
-	
+	 
     $('#cbo_search_campus').on('change', function(){
         fetch_department_names("cbo_search_campus");
 		search_extensions(1);
@@ -94,6 +64,14 @@ $(document).ready(function () {
         search_extensions(1);
     });
 	
+    $('#txt_search_department').on('input', function(){
+        search_extensions(1);
+    });
+	
+    $('#txt_search_owner_assigned').on('input', function(){
+        search_extensions(1);
+    });
+	
     $('#cbo_search_records_to_display').on('change', function(){
         search_extensions(1);
     });
@@ -108,27 +86,44 @@ $(document).ready(function () {
         delete_extension(id);
     });
 		
+    $('#btndashboard').on('click', function(){
+        window.location.href = global_path + 'admin.php';
+    });
+	  
     $('#btnlist_extensions').on('click', function(){
-        window.location.href = 'http://localhost:90/jkuat_ip_telephony/extensions.php'
+        window.location.href = global_path + 'extensions.php';
     });
 	  
     $('#btnlist_users').on('click', function(){
-        window.location.href = 'http://localhost:90/jkuat_ip_telephony/users.php'
+        window.location.href = global_path + 'users.php';
     });
 	  
     $('#btnlist_departments').on('click', function(){
-        window.location.href = 'http://localhost:90/jkuat_ip_telephony/departments.php'
+        window.location.href = global_path + 'departments.php';
     });
 	  
     $('#btnlist_campuses').on('click', function(){
-        window.location.href = 'http://localhost:90/jkuat_ip_telephony/campuses.php'
+        window.location.href = global_path + 'campuses.php';
     });
 	
-	fetch_extensions(1);
+    $('#img_logo').on('click', function(){
+        window.location.href = global_path + 'admin.php';
+    });
 	  
+	search_extensions(1);
+	
+    $('#btnclose_create_extension_modal').on('click', function(){
+        clear_logs();
+    });
+	   
+    $('#btnclose_edit_extension_modal').on('click', function(){
+        clear_logs();
+		search_extensions(1);		
+    });
+ 
 	$("#progress_bar").hide();
 	
-    log_info_messages("finished load...");
+    //log_info_messages("finished load...");
 });
 
 var global_page_number_holder = 1;
@@ -160,68 +155,7 @@ function resize_components() {
 	});
  
 }
-  
-function login_ajax(){
-	 
-	show_progress();
-	
-	var email = $("#txtuser_name").val();
-	var pwd = $("#txtuser_password").val();
-
-	var isvalid = true;
-	if(email.length == 0)
-	{
-		log_error_messages("email cannot be null."); 
-		isvalid = false;
-	}
-	if(pwd.length == 0)
-	{ 
-		log_error_messages("password cannot be null."); 		
-		isvalid = false;
-	}
-
-	if(isvalid == false)
-	{	
-		hide_progress();
-		return;
-	}
-	
-	// send data to server asynchronously.
-	$.ajax({
-		url: "login_controller.php",
-		type: "POST",
-		data: {
-			"user_name": email,
-			"user_password": pwd
-		},//data to be posted
-	}).done(function(response){
-		response = response.trim();
-		
-		console.log("response: " + response); 
-		
-		if(response == "successfull")
-		{
-			log_info_messages("login successful Redirecting...");
-			window.location.href = 'http://localhost:90/jkuat_ip_telephony/extensions.php';
-		}
-		else if(response == "failure")
-		{
-			log_error_messages("error authenticating the user.");
-		}
-		else
-		{ 
-			log_error_messages(response);
-		}	
-		
-		hide_progress();
-		
-	}).fail(function(jqXHR, textStatus){
-		log_error_messages(textStatus);
-		hide_progress();
-	});
-	
-}
-
+   
 function logout_ajax(){
 	 
 	show_progress();
@@ -235,7 +169,7 @@ function logout_ajax(){
 		
 		console.log("response: " + response); 
 		
-		window.location.href = 'http://localhost:90/jkuat_ip_telephony/login.php';
+		window.location.href = global_path + 'login.php';
 		 
 		hide_progress();
 		
@@ -262,19 +196,10 @@ function documententerkeyglobalhandler(e){
 
 		var callingpagename = _patharr[4];
 
-		switch(callingpagename){
-			case "login.php":
-				login_ajax();
-			break;
-			case "index.php":
-				
-			break;
-			case "super_admin_index.php":
-				create_extension();
-			break;
-			case "limited_admin_index.php":
-				create_extension();
-			break;
+		switch(callingpagename){ 
+			case "extensions.php":
+				//create_extension();
+			break; 
 			default: 
 			break;
 		}
@@ -284,36 +209,43 @@ function documententerkeyglobalhandler(e){
 }
  
 function create_extension(){
-	 
-	show_progress();
 	
-	var code = $('#cbo_create_campus').val();
-	var extension_number = $("#txt_create_extension_number").val().trim();
-	var owner_assigned = $("#txt_create_owner_assigned").val().trim();
+	show_progress();
+	clear_logs();
+	
+	var campus = $('#cbo_create_campus').val();
 	var department = $("#cbo_create_department").val();
+	var owner_assigned = $("#txt_create_owner_assigned").val().trim();
+	var extension_number = $("#txt_create_extension_number").val().trim();
 
 	var isvalid = true;
-	if(code.length == 0)
+	
+	if(campus.length == 0)
 	{
-		log_error_messages("code cannot be null."); 
-		isvalid = false;
-	}
-	if(extension_number.length == 0)
-	{ 
-		log_error_messages("extension number cannot be null."); 		
-		isvalid = false;
-	}
-	if(owner_assigned.length == 0)
-	{ 
-		log_error_messages("owner assigned cannot be null."); 		
+		log_error_messages("Select Campus."); 
 		isvalid = false;
 	}
 	if(department.length == 0)
 	{ 
-		log_error_messages("department cannot be null."); 		
+		log_error_messages("Select Department."); 		
 		isvalid = false;
 	}
-	
+	if(owner_assigned.length == 0)
+	{ 
+		log_error_messages("Owner Assigned cannot be null."); 		
+		isvalid = false;
+	}
+	if(extension_number.length == 0)
+	{ 
+		log_error_messages("Extension Number cannot be null."); 		
+		isvalid = false;
+	}
+	if(!$.isNumeric(extension_number))
+	{ 
+		log_error_messages("Extension Number must be digits."); 		
+		isvalid = false;
+	}
+	 	
 	if(isvalid == false)
 	{	
 		hide_progress();
@@ -322,10 +254,10 @@ function create_extension(){
 	
 	// send data to server asynchronously.
 	$.ajax({
-		url: "admin_controller.php",
+		url: "extension_controller.php",
 		type: "POST",
 		data: {
-			"code": code,
+			"code": campus,
 			"extension_number": extension_number,
 			"owner_assigned": owner_assigned,
 			"department": department,
@@ -335,23 +267,72 @@ function create_extension(){
 		response = response.trim();
 		
 		console.log("response: " + response); 
+
+		log_info_messages(response);  
+
+		search_extensions(1);
 		
-		if(response == "successfull")
-		{
-			 log_info_messages(response); 
-		}
-		else if(response == "failure")
-		{
-			log_error_messages("error authenticating the user.");
-		}
-		else
-		{ 
-			log_error_messages(response);
-		}	
+		$('#create_extension_modal').modal('hide');
 		
-		fetch_extensions(1);
+		clear_logs();
+		
+		show_info_toast("Extension created successfully.");
 		
 		hide_progress();
+		
+	}).fail(function(jqXHR, textStatus){
+		log_error_messages(textStatus);
+		hide_progress();
+	});
+	
+}
+
+function get_extension_given_number(extension_number){
+	 
+	show_progress();
+	
+	console.log("extension_number: " + extension_number); 
+	
+	var isvalid = true;
+	if(extension_number.length == 0)
+	{
+		log_error_messages("Extension Number cannot be null."); 
+		isvalid = false;
+	}
+ 
+	if(isvalid == false)
+	{	
+		hide_progress();
+		return;
+	}
+	 
+	// send data to server asynchronously.
+	$.ajax({
+		url: "extension_controller.php",
+		type: "POST",
+		data: {
+			"extension_number": extension_number,
+			"action": "get_extension_given_number"
+		},//data to be posted
+	}).done(function(response){
+		response = response.trim();
+		
+		console.log("response: " + response); 
+		 
+		var ext = JSON.parse(response);
+				 
+		var id = ext.id;
+		var code = ext.ccode.trim();
+		var _extension_number = ext.deptcode.trim();
+		var owner_assigned = ext.ownerassigned.trim();
+		var department = ext.deptname.trim();
+ 
+		if(extension_number == _extension_number)
+		{
+			return true;
+		}
+		
+		return false;
 		
 	}).fail(function(jqXHR, textStatus){
 		log_error_messages(textStatus);
@@ -363,6 +344,7 @@ function create_extension(){
 function edit_extension(id){
 	 
 	show_progress();
+	clear_logs();
 	
 	console.log("id: " + id); 
 	
@@ -381,7 +363,7 @@ function edit_extension(id){
 	 
 	// send data to server asynchronously.
 	$.ajax({
-		url: "admin_controller.php",
+		url: "extension_controller.php",
 		type: "POST",
 		data: {
 			"id": id,
@@ -392,22 +374,24 @@ function edit_extension(id){
 		
 		console.log("response: " + response); 
 		
+		fetch_campus_codes();
 		fetch_campus_codes("cbo_edit_campus");
 		//fetch_department_names()
 				
-		var ext = JSON.parse(response);
+		var data = JSON.parse(response);
 				 
-		var id = ext.id;
-		var code = ext.ccode.trim();
-		var extension_number = ext.deptcode.trim();
-		var owner_assigned = ext.ownerassigned.trim();
-		var department = ext.deptname.trim();
+		var id = data.id;
+		var code = data.ccode.trim();
+		var extension_number = data.deptcode.trim();
+		var owner_assigned = data.ownerassigned.trim();
+		var department = data.deptname.trim();
 
-		$('#txt_edt_id').val(id);
+	  
+		$('#txt_edit_id').val(id);
 
-		$("#cbo_edit_campus").select2({
-			dropdownParent: $(".modal-content")
-		});
+		// $("#cbo_edit_campus").select2({
+			// dropdownParent: $(".modal-content")
+		// });
 		  
 		$('#cbo_edit_campus').val(code);
 		// $('#cbo_edit_campus').val(code).change();
@@ -442,7 +426,107 @@ function edit_extension(id){
 
 		//$("#edit_extension_modal #cbo_edit_department option[value=" + department + "]").attr('selected', 'selected');
 
-		$('#edit_extension_modal').modal('show');
+		//var div_edit_extension_container = $('#div_edit_extension_container');
+ 
+		//$('#dashboard-container').append(div_edit_extension_container);
+  
+		$('#div_edit_extension_container').css({'display' : 'block'});
+	 		
+		$('#extensions_container').css({'display' : 'none'});
+	 		
+		//$('#edit_extension_modal').modal('show');
+		
+		hide_progress();
+		
+	}).fail(function(jqXHR, textStatus){
+		log_error_messages(textStatus);
+		hide_progress();
+	});
+	
+}
+
+function update_extension(){
+	
+	show_progress();
+	clear_logs();  
+	
+	var id = $('#txt_edit_id').val();
+	var campus = $('#cbo_edit_campus').val();
+	var department = $("#cbo_edit_department").val();
+	var owner_assigned = $("#txt_edit_owner_assigned").val().trim();
+	var extension_number = $("#txt_edit_extension_number").val().trim();
+
+	var isvalid = true;
+	
+	if(id.length == 0)
+	{
+		log_error_messages("Error retieving primary key."); 
+		isvalid = false;
+	} 
+	if(campus.length == 0)
+	{
+		log_error_messages("Select campus."); 
+		isvalid = false;
+	}
+	if(department != null)
+	{ 
+		if(department.length == 0)
+		{ 
+			log_error_messages("Select Department."); 		
+			isvalid = false;
+		} 
+	}
+	if(department == null)
+	{ 
+		log_error_messages("Select Department."); 		
+		isvalid = false;
+	}
+	if(owner_assigned.length == 0)
+	{ 
+		log_error_messages("Owner Assigned cannot be null."); 		
+		isvalid = false;
+	}
+	if(extension_number.length == 0)
+	{ 
+		log_error_messages("Extension Number cannot be null."); 		
+		isvalid = false;
+	}
+	if(!$.isNumeric(extension_number))
+	{ 
+		log_error_messages("Extension Number must be digits."); 		
+		isvalid = false;
+	}
+	 	
+	if(isvalid == false)
+	{	
+		hide_progress();
+		return;
+	}
+	
+	// send data to server asynchronously.
+	$.ajax({
+		url: "extension_controller.php",
+		type: "POST",
+		data: {
+			"id": id,
+			"code": campus,
+			"extension_number": extension_number,
+			"owner_assigned": owner_assigned,
+			"department": department,
+			"action": "update_extension"
+		},//data to be posted
+	}).done(function(response){
+		response = response.trim();
+		
+		console.log("response: " + response); 
+
+		log_info_messages(response);  
+
+		search_extensions(1);
+		
+		clear_logs();
+		
+		show_info_toast("Extension updated successfully.");
 		
 		hide_progress();
 		
@@ -463,7 +547,7 @@ function delete_extension(id){
 	var okButtonTxt = "ok";
 	
 	var confirmModal = 
-		$('<div class="modal fade">' +        
+		$('<div id= "delete_modal" class="modal fade">' +        
 		  '<div class="modal-dialog">' +
 		  '<div class="modal-content">' +
 		  '<div class="modal-header">' +
@@ -493,7 +577,7 @@ function delete_extension(id){
 		
 		// send data to server asynchronously.
 		$.ajax({
-		url: "admin_controller.php",
+		url: "extension_controller.php",
 		type: "POST",
 		data: {
 			"id": id,
@@ -506,8 +590,10 @@ function delete_extension(id){
  
 			log_info_messages(response); 
 			
-			fetch_extensions(1);
+			search_extensions(1);
 			
+			show_info_toast("Extension deleted successfully.");
+		
 			hide_progress();
 
 		}).fail(function(jqXHR, textStatus){
@@ -528,7 +614,7 @@ function fetch_campus_codes() {
 		
 	// send data to server asynchronously.
 	$.ajax({
-		url: "admin_controller.php",
+		url: "extension_controller.php",
 		type: "POST",
 		data: {
 			"action": "fetch_all_campuses"
@@ -573,7 +659,7 @@ function fetch_all_campuses() {
 		
 	// send data to server asynchronously.
 	$.ajax({
-		url: "admin_controller.php",
+		url: "extension_controller.php",
 		type: "POST",
 		data: {
 			"action": "fetch_all_campuses"
@@ -625,15 +711,28 @@ function fetch_department_names(campus_name) {
 	{
 		case "cbo_search_campus":
 			 campus_code = $("#cbo_search_campus").val();
+			 if(campus_code.length == 0)
+			 {
+				$('#cbo_search_department').html("");
+				search_extensions(1);
+			 }
 		break;
 		case "cbo_create_campus":
 			 campus_code = $("#cbo_create_campus").val();
+			 if(campus_code.length == 0)
+			 {
+				$('#cbo_create_department').html("");				 
+			 }
 		break;
 		case "cbo_edit_campus":
 			 campus_code = $("#cbo_edit_campus").val();
+			 if(campus_code.length == 0)
+			 {
+				$('#cbo_edit_department').html(""); 				 
+			 }
 		break;
 	}
-	 
+	
 	console.log("campus_code: " + campus_code); 
 	
 	if(campus_code == undefined)
@@ -643,7 +742,7 @@ function fetch_department_names(campus_name) {
 	
 	// send data to server asynchronously.
 	$.ajax({
-		url: "admin_controller.php",
+		url: "extension_controller.php",
 		type: "POST",
 		data: {
 			"campus_code": campus_code,
@@ -672,7 +771,7 @@ function fetch_department_names(campus_name) {
 		$('#cbo_create_department').html(select_options_arr);
 		$('#cbo_edit_department').html(select_options_arr);
   
-		search_extensions(1);
+		//search_extensions(1);
 		
 		hide_progress();
 		
@@ -690,7 +789,7 @@ function fetch_extensions(page){
 	global_page_number_holder = page;
 	
 	var records_to_display = 5;
-	records_to_display = $("#cbo_records_to_display").val();
+	records_to_display = $("#cbo_search_records_to_display").val();
 	
 	console.log("records_to_display: " + records_to_display);
 	
@@ -698,7 +797,7 @@ function fetch_extensions(page){
 	
 	// send data to server asynchronously.
 	$.ajax({
-		url: "admin_controller.php",
+		url: "extension_controller.php",
 		type: "POST",
 		data: {
 			"page": page,
@@ -728,7 +827,7 @@ function search_extensions(page){
 	global_page_number_holder = page;
 	
 	var records_to_display = 5;
-	records_to_display = $("#cbo_records_to_display").val();
+	records_to_display = $("#cbo_search_records_to_display").val();
 	
 	console.log("records_to_display: " + records_to_display);	
 	console.log("page: " + page);
@@ -736,16 +835,20 @@ function search_extensions(page){
 	var campus_code = $("#cbo_search_campus").val();
 	var department = $("#cbo_search_department").val();
 	var extension_number = $("#txt_search_extension_number").val();
+	var txtdepartment = $("#txt_search_department").val();
+	var txtowner_assigned = $("#txt_search_owner_assigned").val();
 	
 	console.log("campus_code: " + campus_code);	
 	console.log("department: " + department);	
 	console.log("extension_number: " + extension_number);
+	console.log("txtdepartment: " + txtdepartment);
+	console.log("txtowner_assigned: " + txtowner_assigned);
 	
 	show_progress();
 	
 	// send data to server asynchronously.
 	$.ajax({
-		url: "admin_controller.php",
+		url: "extension_controller.php",
 		type: "POST",
 		data: {
 			"page": page,
@@ -753,15 +856,23 @@ function search_extensions(page){
 			"campus_code": campus_code,
 			"department": department,
 			"extension_number": extension_number,
+			"txtdepartment": txtdepartment,
+			"txtowner_assigned": txtowner_assigned,
 			"action": "search_extensions"
 		},//data to be posted
 	}).done(function(response){
 		response = response.trim();
 		
 		console.log("response: " + response); 
-				 
+				  
+		$('#extensions_container').css({'display' : 'block'});
+	 
+		$('#div_edit_extension_container').css({'display' : 'none'});
+	 		 
 		$('#div_content').html(response);
- 
+		
+		get_extensions_search_count();
+		
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -774,23 +885,42 @@ function search_extensions(page){
 function populate_display_vectors()
 {
 	var select_options_arr = "";
-	select_options_arr += '<option value="5">5</option>';
-	select_options_arr += '<option value="10">10</option>';
-	select_options_arr += '<option value="20">20</option>';
-	select_options_arr += '<option value="30">30</option>';
-	select_options_arr += '<option value="40">40</option>';
-	select_options_arr += '<option value="50">50</option>';
-	select_options_arr += '<option value="100">100</option>';
-	select_options_arr += '<option value="200">200</option>';
-	select_options_arr += '<option value="500">500</option>';
-	select_options_arr += '<option value="1000">1000</option>';
 	select_options_arr += '<option value="-1">All</option>';
+	select_options_arr += '<option value="5">5</option>';
+	select_options_arr += '<option value="10">10</option>'; 
 	
-	$('#cbo_records_to_display').html(select_options_arr);	
+	$('#cbo_search_records_to_display').html(select_options_arr);	
 	$('#cbo_search_records_to_display').html(select_options_arr);	 
 
 }
 
+function get_extensions_search_count(){
+	 
+	show_progress();
+	  
+	// send data to server asynchronously.
+	$.ajax({
+		url: "extension_controller.php",
+		type: "POST",
+		data: { 
+			"action": "get_extensions_search_count"
+		},//data to be posted
+	}).done(function(response){
+		response = response.trim();
+		
+		console.log("response: " + response); 
+		
+		$('#lbl_search_count').text(response);
+		
+		hide_progress();
+		
+	}).fail(function(jqXHR, textStatus){
+		log_error_messages(textStatus);
+		hide_progress();
+	});
+	
+}
+ 
 
 
 

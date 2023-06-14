@@ -1,80 +1,101 @@
 <?php
 
-require 'admin_dal.php';
+require 'campus_dal.php';
 
 if(isset($_POST['action'])){
-	if ($_POST['action'] == "create_extension") 
+	if ($_POST['action'] == "create_campus") 
 	{ 
-		create_extension(); 
+		create_campus(); 
 	}
-	if ($_POST['action'] == "fetch_extensions") 
+	if ($_POST['action'] == "update_campus") 
 	{ 
-		fetch_extensions(); 
+		update_campus(); 
+	}   
+	if ($_POST['action'] == "search_campuses") 
+	{ 
+		search_campuses(); 
 	} 
-	if ($_POST['action'] == "fetch_campus_codes") 
+	if ($_POST['action'] == "get_campus") 
 	{ 
-		fetch_campus_codes(); 
-	} 
-	if ($_POST['action'] == "fetch_all_campuses") 
-	{ 
-		fetch_all_campuses(); 
-	} 
-	if ($_POST['action'] == "fetch_department_names") 
-	{ 
-		fetch_department_names(); 
-	} 
-	if ($_POST['action'] == "search_extensions") 
-	{ 
-		search_extensions(); 
-	} 
-	if ($_POST['action'] == "get_extension") 
-	{ 
-		get_extension(); 
+		get_campus(); 
 	}
-	if ($_POST['action'] == "delete_extension") 
+	if ($_POST['action'] == "delete_campus") 
 	{ 
-		delete_extension(); 
+		delete_campus(); 
+	} 
+	if ($_POST['action'] == "get_campuses_search_count") 
+	{ 
+		get_campuses_search_count(); 
 	}	
 }
 	
-function create_extension() {
+function create_campus() {
  
 	$response = "";
 
 	if(isset($_POST)){
 	 
-		$code = trim(htmlspecialchars(strip_tags($_POST['code'])));
-		$extension_number = trim(htmlspecialchars(strip_tags($_POST['extension_number'])));
-		$owner_assigned = trim(htmlspecialchars(strip_tags($_POST['owner_assigned'])));
-		$department = trim(htmlspecialchars(strip_tags($_POST['department'])));  
+		$campus_code = trim(htmlspecialchars(strip_tags($_POST['campus_code'])));
+		$campus_name = trim(htmlspecialchars(strip_tags($_POST['campus_name'])));
+		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		
-		if(!isset($code)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> code is mandatory field./div>';
+		if(!isset($campus_code)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Code is mandatory field.</div>';
 		} 
-		if(!isset($extension_number)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> extension number is mandatory field./div>';
+		if(!isset($campus_name)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Name is mandatory field.</div>';
 		} 
-		if(!isset($owner_assigned)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> owner assigned is mandatory field./div>';
-		} 
-		if(!isset($department)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> department is mandatory field./div>';
-		} 
+		if(!isset($addedby)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Added By is mandatory field.</div>';
+		}  
 
 		if(!empty($response)){
 			echo $response;
 			return;
 		}
 
-		$admin_dal = new admin_dal();
+		$campus_dal = new campus_dal();
 
-		echo $admin_dal->create_extension($code, $extension_number, $owner_assigned, $department);
+		echo $campus_dal->create_campus($campus_code, $campus_name, $addedby);
 	 
 	}
 
 }
 
-function get_extension() {
+function update_campus() {
+ 
+	$response = "";
+
+	if(isset($_POST)){
+	 
+		$id = trim(htmlspecialchars(strip_tags($_POST['id'])));
+		$campus_code = trim(htmlspecialchars(strip_tags($_POST['campus_code'])));
+		$campus_name = trim(htmlspecialchars(strip_tags($_POST['campus_name']))); 
+		
+		if(!isset($id)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
+		} 
+		if(!isset($campus_code)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Code is mandatory field.</div>';
+		} 
+		if(!isset($campus_name)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Name is mandatory field.</div>';
+		}   
+
+		if(!empty($response)){
+			echo $response;
+			return;
+		}
+
+		$campus_dal = new campus_dal();
+
+		echo $campus_dal->update_campus($campus_code, $campus_name, $id);
+	 
+	}
+
+}
+
+function get_campus() {
  
 	$response = "";
 
@@ -83,7 +104,7 @@ function get_extension() {
 		$id = trim(htmlspecialchars(strip_tags($_POST['id']))); 
 		
 		if(!isset($id)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> id is mandatory field./div>';
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> id is mandatory field.</div>';
 		}  
 
 		if(!empty($response)){
@@ -91,83 +112,15 @@ function get_extension() {
 			return;
 		}
 
-		$admin_dal = new admin_dal();
+		$campus_dal = new campus_dal();
 
-		echo $admin_dal->get_extension($id);
+		echo $campus_dal->get_campus($id);
 	 
 	}
 
 }
-
-function fetch_extensions() {
  
-	$response = "";
-
-	if(isset($_POST)){
-	 
-		$page = trim(htmlspecialchars(strip_tags($_POST['page'])));
-		$records_to_display = trim(htmlspecialchars(strip_tags($_POST['records_to_display'])));
- 
-		if(!isset($page)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> page is mandatory field./div>';
-		} 
-		if(!isset($records_to_display)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> records to display is mandatory field./div>';
-		} 
-
-		if(!empty($response)){
-			echo $response;
-			return;
-		}
-
-		$admin_dal = new admin_dal();
-
-		echo $admin_dal->get_paginated_extensions_table($page, $records_to_display);
-	 
-	}
-
-}
-
-function fetch_campus_codes() {
-
-	$admin_dal = new admin_dal();
-
-	echo $admin_dal->get_campus_codes();
-   
-}
-
-function fetch_all_campuses() {
-
-	$admin_dal = new admin_dal();
-
-	echo $admin_dal->get_all_campuses();
-   
-}
-
-function fetch_department_names() {
-	
-	if(isset($_POST)){
-	 
-		$campus_code = trim(htmlspecialchars(strip_tags($_POST['campus_code']))); 
- 
-		if(!isset($campus_code)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> campus name is mandatory field./div>';
-		}  
-
-		if(!empty($response)){
-			//echo $response;
-			return;
-		}
-
-		$admin_dal = new admin_dal();
-
-		echo $admin_dal->get_department_names($campus_code);
-	   
-	}
-
-}
-
-function search_extensions() {
+function search_campuses() {
  
 	$response = "";
 
@@ -176,29 +129,28 @@ function search_extensions() {
 		$page = trim(htmlspecialchars(strip_tags($_POST['page'])));
 		$records_to_display = trim(htmlspecialchars(strip_tags($_POST['records_to_display'])));
 		$campus_code = trim(htmlspecialchars(strip_tags($_POST['campus_code'])));
-		$department = trim(htmlspecialchars(strip_tags($_POST['department'])));
-		$extension_number = trim(htmlspecialchars(strip_tags($_POST['extension_number'])));
+		$campus_name = trim(htmlspecialchars(strip_tags($_POST['campus_name']))); 
  
 		if(!isset($page)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> page is mandatory field./div>';
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> page is mandatory field.</div>';
 		} 
 		if(!isset($records_to_display)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> records to display is mandatory field./div>';
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> records to display is mandatory field.</div>';
 		} 
 		
 		if(!empty($response)){ 
 			return;
 		}
 
-		$admin_dal = new admin_dal();
+		$campus_dal = new campus_dal();
 
-		echo $admin_dal->search_extensions($page, $records_to_display, $campus_code, $department, $extension_number);
+		echo $campus_dal->search_campuses($page, $records_to_display, $campus_code, $campus_name);
 	 
 	}
 
 }
 
-function delete_extension() {
+function delete_campus() {
  
 	$response = "";
 
@@ -207,7 +159,7 @@ function delete_extension() {
 		$id = trim(htmlspecialchars(strip_tags($_POST['id']))); 
 		
 		if(!isset($id)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> id is mandatory field./div>';
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> id is mandatory field.</div>';
 		}  
 
 		if(!empty($response)){
@@ -215,13 +167,22 @@ function delete_extension() {
 			return;
 		}
 
-		$admin_dal = new admin_dal();
+		$campus_dal = new campus_dal();
 
-		echo $admin_dal->delete_extension($id);
+		echo $campus_dal->delete_campus($id);
 	 
 	}
 
 }
+
+function get_campuses_search_count() {
+
+	if (isset($_SESSION['campuses_count']))
+	{
+		echo "[ " . $_SESSION["campuses_count"] . " ] records";
+	}
+}
+
 
 
 

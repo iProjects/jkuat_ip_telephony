@@ -19,6 +19,8 @@ if($page>1){
 // clickable page numbers will be here
 // clickable page numbers
  
+ $total_rows = $_SESSION['extensions_count'];
+ 
 // find out total pages
 $total_pages = ceil($total_rows / $records_per_page);
  

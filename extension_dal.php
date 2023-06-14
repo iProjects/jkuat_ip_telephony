@@ -16,7 +16,7 @@
  
 require 'database.php';
 		 
-class admin_dal
+class extension_dal
 {
 
     protected $db;
@@ -38,17 +38,18 @@ class admin_dal
 	 * @param $extension_number
 	 * @param $owner_assigned
 	 * @param $department
+	 
      * @return $string
      * */
 	public function create_extension($code, $extension_number, $owner_assigned, $department)
     {
 		try{
 			
-			$extension_no = $this->get_extension_given_number($extension_number);
-			
+			$extension_no = $this->check_if_extension_number_exists($extension_number);
+			 
 			if(!empty($extension_no))
 			{
-				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Extension number [ ' . $extension_number . ' ] exists.</div>';
+				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Extension Number [ ' . $extension_number . ' ] exists.</div>';
 				return $response;
 			}
 			
@@ -63,19 +64,159 @@ class admin_dal
 			:extension_number, 
 			:owner_assigned, 
 			:department)";
+			
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);
+			
 			// bind the parameters
 			$stmt->bindParam(":code", $code, PDO::PARAM_STR);
 			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
 			$stmt->bindParam(":owner_assigned", $owner_assigned, PDO::PARAM_STR);
 			$stmt->bindParam(":department", $department, PDO::PARAM_STR);
+			
 			// Execute the query
 			$stmt->execute();
+			
 			// save lastInsertId in a variable
 			$lastInsertId = $this->db->lastInsertId();
 			
 			$response = "<div class='alert alert-success'>record was successfully created. Last Insert Id = [ " . $lastInsertId . " ]</div>";
+			return $response;
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+    /*
+     * Add new Record from upload
+     *
+	 * @param $code
+	 * @param $extension_number
+	 * @param $owner_assigned
+	 * @param $department
+	 
+     * @return $string
+     * */
+	public function create_extension_from_upload($code, $extension_number, $owner_assigned, $department)
+    {
+		try{
+			
+			$extension_no = $this->check_if_extension_number_exists($extension_number);
+			 
+			if(!empty($extension_no))
+			{
+				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Extension Number [ ' . $extension_number . ' ] exists.</div>';
+				return $response;
+			}
+			
+			// insert query
+			$query = "INSERT INTO depts(
+			ccode, 
+			deptcode, 
+			ownerassigned, 
+			deptname) 
+			VALUES(
+			:code, 
+			:extension_number, 
+			:owner_assigned, 
+			:department)";
+			
+			// prepare query for execution
+			$stmt = $this->db->prepare($query);
+			
+			// bind the parameters
+			$stmt->bindParam(":code", $code, PDO::PARAM_STR);
+			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
+			$stmt->bindParam(":owner_assigned", $owner_assigned, PDO::PARAM_STR);
+			$stmt->bindParam(":department", $department, PDO::PARAM_STR);
+			
+			// Execute the query
+			$stmt->execute();
+			
+			// save lastInsertId in a variable
+			$lastInsertId = $this->db->lastInsertId();
+			
+			$response = "<div class='alert alert-success'>record was successfully created. Last Insert Id = [ " . $lastInsertId . " ]</div>";
+			return $response;
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+    /*
+     * Get extension Details
+     *
+     * @param $extension_number
+     * */
+    public function check_if_extension_number_exists($extension_number)
+    {
+		try{
+			// select query
+			$query = "SELECT * FROM depts WHERE deptcode = :extension_number";
+			// prepare query for execution			
+			$stmt = $this->db->prepare($query);
+			// bind the parameters
+			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
+			// Execute the query
+			$stmt->execute();
+			
+			$arr = $stmt->fetch(PDO::FETCH_ASSOC);
+			
+			if (!$arr) {
+				// array is empty.
+				return null;
+			}
+
+			extract($arr); 
+			
+			return $deptcode;		
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+	
+    /*
+     * Update Record
+     *
+	 * @param $code
+	 * @param $extension_number
+	 * @param $owner_assigned
+	 * @param $department
+	 * @param $id
+
+     * @return $mixed
+     * */
+    public function update_extension($code, $extension_number, $owner_assigned, $department, $id)
+    {
+		try{
+			// Update query
+			$query = "UPDATE depts SET 
+			ccode = :code, 
+			deptcode = :extension_number,  
+			ownerassigned = :owner_assigned, 
+			deptname = :department
+			WHERE id = :id";
+			
+			// prepare query for execution
+			$stmt = $this->db->prepare($query);
+			
+			// bind the parameters
+			$stmt->bindParam(":code", $code, PDO::PARAM_STR);
+			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
+			$stmt->bindParam(":owner_assigned", $owner_assigned, PDO::PARAM_STR);
+			$stmt->bindParam(":department", $department, PDO::PARAM_STR);
+			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
+			
+			// Execute the query
+			$stmt->execute();
+ 
+			$response = "<div class='alert alert-success'>record with id [ " . $id . " ] was successfully updated.</div>";
 			return $response;
 			
 		} catch (Exception $e){
@@ -94,28 +235,29 @@ class admin_dal
 
      * @return $mixed
      * */
-    public function update_extension($code, $extension_number, $owner_assigned, $department, $id)
+    public function update_extension_from_upload($code, $extension_number, $owner_assigned, $department)
     {
 		try{
 			// Update query
 			$query = "UPDATE depts SET 
-			ccode = :code, 
-			deptcode = :extension_number,  
+			ccode = :code,   
 			ownerassigned = :owner_assigned, 
 			deptname = :department
-			WHERE id = :id";
+			WHERE deptcode = :extension_number";
+			
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);
+			
 			// bind the parameters
-			$stmt->bindParam(":code", $code, PDO::PARAM_STR);
-			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
+			$stmt->bindParam(":code", $code, PDO::PARAM_STR); 
 			$stmt->bindParam(":owner_assigned", $owner_assigned, PDO::PARAM_STR);
 			$stmt->bindParam(":department", $department, PDO::PARAM_STR);
-			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
+			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
+			
 			// Execute the query
 			$stmt->execute();
  
-			$response = "<div class='alert alert-success'>record with id [ " . $id . " ] was successfully updated.</div>";
+			$response = "<div class='alert alert-success'>Record with Extension Number [ " . $deptcode . " ] was successfully updated.</div>";
 			return $response;
 			
 		} catch (Exception $e){
@@ -142,33 +284,6 @@ class admin_dal
 			$stmt->execute();
 			// return retrieved row as a json object
 			return json_encode($stmt->fetch(PDO::FETCH_ASSOC));
-			
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-	
-    /*
-     * Get extension Details
-     *
-     * @param $extension_number
-     * */
-    public function get_extension_given_number($extension_number)
-    {
-		try{
-			// select query
-			$query = "SELECT * FROM depts WHERE deptcode = :extension_number";
-			// prepare query for execution			
-			$stmt = $this->db->prepare($query);
-			// bind the parameters
-			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
-			// Execute the query
-			$stmt->execute();
-			
-			$arr = $stmt->fetch(PDO::FETCH_ASSOC);
-			
-			return count($arr);			
 			
 		} catch (Exception $e){
 			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
@@ -434,11 +549,11 @@ class admin_dal
 			//creating our table heading
 			echo "<thead class='thead-dark'>";
 			echo "<tr>";
-				echo "<th scope='col'>id</th>";
-				echo "<th scope='col'>campus</th>";
-				echo "<th scope='col'>extension no</th>";
-				echo "<th scope='col'>owner assigned</th>";
-				echo "<th scope='col'>department</th>"; 
+				echo "<th scope='col'>#</th>";
+				echo "<th scope='col'>Campus</th>";
+				echo "<th scope='col'>Department</th>";
+				echo "<th scope='col'>Owner Assigned</th>"; 
+				echo "<th scope='col'>Extension No</th>";
 				echo "<th scope='col'></th>";
 			echo "</tr>";
 			echo "</thead>";
@@ -479,9 +594,9 @@ class admin_dal
 
 				echo "</td>";
 					
-				echo "<td class='table-info'>";
+				echo "<td class='table-warning'>";
 					
-				echo htmlspecialchars($extension_number, ENT_QUOTES);
+				echo htmlspecialchars($department, ENT_QUOTES);
 
 				echo "</td>";
 			 
@@ -491,9 +606,9 @@ class admin_dal
 
 				echo "</td>";
 					
-				echo "<td class='table-warning'>";
+				echo "<td class='table-info'>";
 					
-				echo htmlspecialchars($department, ENT_QUOTES);
+				echo htmlspecialchars($extension_number, ENT_QUOTES);
 
 				echo "</td>";
 			 
@@ -553,7 +668,7 @@ class admin_dal
 			$total_rows = $row['total_rows'];
 
 			// paginate records
-			$page_url="admin_index.php?";
+			$page_url="extensions.php?";
 			include_once "paging_extensions_table.php";
 		}
 		 
@@ -563,7 +678,7 @@ class admin_dal
 		}
 	}
  
-	public function search_extensions($page, $records_to_display, $campus_code, $department, $extension_number)
+	public function search_extensions($page, $records_to_display, $campus_code, $department, $extension_number, $txtdepartment, $txtowner_assigned)
 	{		
 		// PAGINATION VARIABLES
 		// page is the current page, if there's nothing set, default is page 1
@@ -578,13 +693,30 @@ class admin_dal
 		// calculate for the query LIMIT clause
 		$from_record_num = ($records_per_page * $page) - $records_per_page;
 		 
-		$total_rows = $this->count_search_extensions($campus_code, $department, $extension_number);
+		//$total_rows = $this->count_search_extensions($campus_code, $department, $extension_number);
 		 
 		// select data for current page
 		
-		if(!empty($campus_code) && !empty($department) && !empty($extension_number))
+		/*SEARCH SENARIOS
+			1. all items are specified.
+			2. extension only typed.
+			3. department only typed.			
+			4. department only selected.
+			5. owner assigned only typed.
+			6. campus and department selected.		
+			7. campus and department selected and extension typed.
+			8. campus and department selected and department typed.
+			9. campus and department selected and owner assigned typed.		
+			10. campus and extension typed.
+			11. campus and department typed.
+			12. campus and owner assigned typed.
+			13. no item is specified.		
+		*/
+		
+		//all items are specified.
+		if(!empty($campus_code) && !empty($department) && !empty($extension_number) && !empty($txtdepartment) && !empty($txtowner_assigned))
 		{
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND deptcode LIKE :extension_number ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND deptcode LIKE :extension_number  AND deptname LIKE :txtdepartment AND ownerassigned LIKE :txtowner_assigned ORDER BY ccode, deptname, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
 						
 			//echo $query;
 			
@@ -600,10 +732,19 @@ class admin_dal
 			
 			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
 				
+			$pattern  = '%' . $txtdepartment . '%';
+			
+			$stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $txtowner_assigned . '%';
+			
+			$stmt->bindParam(":txtowner_assigned", $pattern, PDO::PARAM_STR);
+				
 		}
-		else if(empty($campus_code) && empty($department) && !empty($extension_number))
+		//extension only typed.
+		else if(empty($campus_code) && empty($department) && !empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
 		{
-			$query = "SELECT * FROM depts WHERE deptcode LIKE :extension_number ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
+			$query = "SELECT * FROM depts WHERE deptcode LIKE :extension_number ORDER BY deptcode, ccode ASC LIMIT :from_record_num, :records_per_page";
 							
 			//echo $query;
 			
@@ -617,9 +758,59 @@ class admin_dal
 			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
 				
 		}
-		else if(!empty($campus_code) && !empty($department) && empty($extension_number))
+		//department only typed.
+		else if(empty($campus_code) && empty($department) && empty($extension_number) && !empty($txtdepartment) && empty($txtowner_assigned))
+		{
+			$query = "SELECT * FROM depts WHERE deptname LIKE :txtdepartment ORDER BY deptname, ccode ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+			
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+						
+			$pattern  = '%' . $txtdepartment . '%';
+			
+			$stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
+				
+		}
+		//department only selected.
+		else if(empty($campus_code) && !empty($department) && empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
+		{
+			$query = "SELECT * FROM depts WHERE deptname LIKE :department ORDER BY deptname, ccode ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+			
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+						
+			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
+				
+		}
+		//owner assigned only typed.
+		else if(empty($campus_code) && empty($department) && empty($extension_number) && empty($txtdepartment) && !empty($txtowner_assigned))
+		{
+			$query = "SELECT * FROM depts WHERE ownerassigned LIKE :txtowner_assigned ORDER BY ownerassigned, ccode ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+			
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+						
+			$pattern  = '%' . $txtowner_assigned . '%';
+			
+			$stmt->bindParam(":txtowner_assigned", $pattern, PDO::PARAM_STR);
+				
+		}
+		//campus and department selected.
+		else if(!empty($campus_code) && !empty($department) && empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
 		{				
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department ORDER BY ccode, deptname ASC LIMIT :from_record_num, :records_per_page";
 							
 			//echo $query;
 			
@@ -631,8 +822,126 @@ class admin_dal
 			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
 			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
 				
+		} 
+		//campus and department selected and extension typed.
+		else if(!empty($campus_code) && !empty($department) && !empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
+		{				
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND deptcode LIKE :extension_number ORDER BY ccode, deptname, deptcode ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			
+			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
+			
+			$pattern  = '%' . $extension_number . '%';
+			
+			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
+					
 		}
-		else if(empty($campus_code) && empty($department) && empty($extension_number))
+		//campus and department selected and department typed.
+		else if(!empty($campus_code) && !empty($department) && empty($extension_number) && !empty($txtdepartment) && empty($txtowner_assigned))
+		{				
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND deptname LIKE :txtdepartment ORDER BY ccode, deptname ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			
+			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
+			
+			$pattern  = '%' . $txtdepartment . '%';
+			
+			$stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
+					
+		}
+		//campus and department selected and owner assigned typed.
+		else if(!empty($campus_code) && !empty($department) && empty($extension_number) && empty($txtdepartment) && !empty($txtowner_assigned))
+		{				
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND ownerassigned LIKE :txtowner_assigned ORDER BY ccode, deptname, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			
+			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
+			
+			$pattern  = '%' . $txtowner_assigned . '%';
+			
+			$stmt->bindParam(":txtowner_assigned", $pattern, PDO::PARAM_STR);
+					
+		} 
+		//campus and extension typed.
+		else if(!empty($campus_code) && empty($department) && !empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
+		{				
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptcode LIKE :extension_number ORDER BY ccode, deptcode ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			
+			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			
+			$pattern  = '%' . $extension_number . '%';
+			
+			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
+				
+		}
+		//campus and department typed.
+		else if(!empty($campus_code) && empty($department) && empty($extension_number) && !empty($txtdepartment) && empty($txtowner_assigned))
+		{				
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname LIKE :txtdepartment ORDER BY ccode, deptname ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			
+			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			
+			$pattern  = '%' . $txtdepartment . '%';
+			
+			$stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
+				
+		}
+		//campus and owner assigned typed.
+		else if(!empty($campus_code) && empty($department) && empty($extension_number) && empty($txtdepartment) && !empty($txtowner_assigned))
+		{				
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND ownerassigned LIKE :txtowner_assigned ORDER BY ccode, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			
+			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			
+			$pattern  = '%' . $txtowner_assigned . '%';
+			
+			$stmt->bindParam(":txtowner_assigned", $pattern, PDO::PARAM_STR);
+				
+		}
+		//no item is specified.
+		else if(empty($campus_code) && empty($department) && empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
 		{				
 			$query = "SELECT * FROM depts ORDER BY id DESC LIMIT :from_record_num, :records_per_page";
 							
@@ -642,10 +951,13 @@ class admin_dal
 
 			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
 			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-			 
+			
+			//$_SESSION['extensions_count'] = 0;			
+			//return;
 		}
 		else
-		{
+		{ 
+			$_SESSION['extensions_count'] = 0;
 			return;
 		}
 
@@ -653,7 +965,12 @@ class admin_dal
 				 
 		// this is how to get number of rows returned
 		$num = $stmt->rowCount();
-		echo $num;
+		
+		$_SESSION['extensions_count'] = $num;
+
+		$total_rows = $num;
+		
+		//echo $num;
 		// link to create record form
 		//echo "<a href='create.php' class='btn btn-primary m-b-1em'>Create New Product</a>";
 		 
@@ -666,11 +983,11 @@ class admin_dal
 			//creating our table heading
 			echo "<thead class='thead-dark'>";
 			echo "<tr>";
-				echo "<th scope='col'>id</th>";
-				echo "<th scope='col'>campus</th>";
-				echo "<th scope='col'>extension no</th>";
-				echo "<th scope='col'>owner assigned</th>";
-				echo "<th scope='col'>department</th>"; 
+				echo "<th scope='col'>#</th>";
+				echo "<th scope='col'>Campus</th>";
+				echo "<th scope='col'>Department</th>"; 
+				echo "<th scope='col'>Owner Assigned</th>";
+				echo "<th scope='col'>Extension No</th>";
 				echo "<th scope='col'></th>";
 			echo "</tr>";
 			echo "</thead>";
@@ -680,7 +997,9 @@ class admin_dal
 			// retrieve our table contents
 			// fetch() is faster than fetchAll()
 			// http://stackoverflow.com/questions/2770630/pdofetchall-vs-pdofetch-in-a-loop
-			 
+			
+			$counta = 0;
+			
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 				 
 				// extract row
@@ -695,7 +1014,11 @@ class admin_dal
 				$department = $row['deptname'];
 
 				$campus_name = $this->get_campus_name_given_code($code);
-				 
+				
+				$counta++;
+				
+				//$id = $counta;
+								 
 				// creating new table row per record
 				echo "<tr class='table-primary'>";
 					
@@ -711,9 +1034,9 @@ class admin_dal
 
 				echo "</td>";
 					
-				echo "<td class='table-info'>";
+				echo "<td class='table-warning'>";
 					
-				echo htmlspecialchars($extension_number, ENT_QUOTES);
+				echo htmlspecialchars($department, ENT_QUOTES);
 
 				echo "</td>";
 			 
@@ -723,9 +1046,9 @@ class admin_dal
 
 				echo "</td>";
 					
-				echo "<td class='table-warning'>";
+				echo "<td class='table-info'>";
 					
-				echo htmlspecialchars($department, ENT_QUOTES);
+				echo htmlspecialchars($extension_number, ENT_QUOTES);
 
 				echo "</td>";
 			 
@@ -784,7 +1107,7 @@ class admin_dal
 			// $row = $stmt->fetch(PDO::FETCH_ASSOC);
 			// $total_rows = $row['total_rows'];
 			
-			$total_rows = $this->count_search_extensions($campus_code, $department, $extension_number);
+			//$total_rows = $this->count_search_extensions($campus_code, $department, $extension_number);
 			
 			// paginate records
 			$page_url="extensions.php?";
@@ -859,7 +1182,7 @@ class admin_dal
 				 
 		// this is how to get number of rows returned
 		$num = $stmt->rowCount();
-		 echo $num;	
+		//echo $num;	
 		return $num;
 	}
  

@@ -34,38 +34,48 @@ class login_dal
     /*
      * Login
      *
-     * @param $user_name
-	 * @param $user_password
+     * @param $email
+	 * @param $pass_word
      * */
-    public function Login($user_name, $user_password)
+    public function Login($email, $pass_word)
     {
 		try{
 			// select query
-			$query = "SELECT * FROM telephoneadmin WHERE username = :user_name AND password = :user_password";
+			$query = "SELECT * FROM telephoneadmin WHERE email = :email AND password = :pass_word";
+			
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
+			
 			// bind the parameters
-			$stmt->bindParam(":user_name", $user_name, PDO::PARAM_STR);
-			$stmt->bindParam(":user_password", $user_password, PDO::PARAM_STR);
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
+			$stmt->bindParam(":pass_word", $pass_word, PDO::PARAM_STR);
+			
 			// Execute the query
 			$stmt->execute();
 			
 			$row = $stmt->fetch(PDO::FETCH_ASSOC);
-			//print_r($row);
-
+			 
 			if(!$row)
 			{
 				return 'failure';
 			}
 			else
 			{
-				$_SESSION['loggedinuser'] = $user_name;
+				$_SESSION['loggedinuser'] = $email;
 				$_SESSION['loggedintime'] = date("d-m-Y h:i:s a");
 				$_SESSION['logged_in_user_email'] = $row['email'];
 				
-				$this->get_user_role($user_name);
-
-				return 'successfull';
+				setcookie('loggedinuser', $email, time() + (60*60*24*365), '/');
+				setcookie('loggedintime', date("d-m-Y h:i:s a"), time() + (60*60*24*365), '/');
+				setcookie('logged_in_user_email', $row['email'], time() + (60*60*24*365), '/');
+				 
+				$role = $this->get_user_role($email);
+				if(!$role)
+				{
+					//return '<br />failure';
+				}else{
+					return 'successfull';
+				}
 			}
 			 
 		} catch (Exception $e){
@@ -80,30 +90,37 @@ class login_dal
      *
      * @param $user_name 
      * */
-	private function get_user_role($user_name)
+	private function get_user_role($email)
     {
 		try{
-			$logged_in_user_email = $_SESSION['logged_in_user_email'];
-			
+			 
 			// select query
-			$query = "SELECT * FROM adminregistration WHERE email = :logged_in_user_email";
+			$query = "SELECT * FROM adminregistration WHERE email = :email";
+			
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
+			
 			// bind the parameters
-			$stmt->bindParam(":logged_in_user_email", $logged_in_user_email, PDO::PARAM_STR); 
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR); 
+			
 			// Execute the query
 			$stmt->execute();
 			
 			$row = $stmt->fetch(PDO::FETCH_ASSOC);
-			//print_r($row);
-
+			 
 			if(!$row)
 			{
-				echo "error retrieving user email.";
+				echo "Error retrieving user Role.";
+				return false;
 			}
 			else
 			{
-				$_SESSION['logged_in_user_role'] = $row['adminType']; 
+				$role = $row['adminType'];
+				
+				$_SESSION['logged_in_user_role'] = $role; 
+				setcookie('logged_in_user_role', $role, time() + (60*60*24*365), '/');
+				
+				return true;
 			}
 			 
 		} catch (Exception $e){

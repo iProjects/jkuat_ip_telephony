@@ -7,7 +7,7 @@ if($page>1){
  
     $prev_page = $page - 1;
     echo "<li>";
-        echo "<a onClick='fetch_extensions({$prev_page})' style='cursor: pointer !important;'>";
+        echo "<a onClick='search_extensions({$prev_page})' style='cursor: pointer !important;'>";
             echo "&laquo;";
         echo "</a>";
 		/* echo "<a href='{$page_url}page={$prev_page}'>";
@@ -18,6 +18,8 @@ if($page>1){
  
 // clickable page numbers will be here
 // clickable page numbers
+ 
+ $total_rows = $_SESSION['extensions_count'];
  
 // find out total pages
 $total_pages = ceil($total_rows / $records_per_page);
@@ -45,8 +47,8 @@ for ($x=$initial_num; $x<$condition_limit_num; $x++) {
         // not current page
         else {
             echo "<li>";
-			echo " <a onClick='fetch_extensions({$x})' style='cursor:pointer !important;'>{$x}</a> ";
-                // echo " <a href='{$page_url}page={$x}' onClick='fetch_extensions({$x})' style='cursor:hand;'>{$x}</a> ";
+			echo " <a onClick='search_extensions({$x})' style='cursor:pointer !important;'>{$x}</a> ";
+                // echo " <a href='{$page_url}page={$x}' onClick='search_extensions({$x})' style='cursor:hand;'>{$x}</a> ";
             echo "</li>";
         }
     }
@@ -58,7 +60,7 @@ if($page<$total_pages){
     $next_page = $page + 1;
  
     echo "<li>";
-		echo "<a onClick='fetch_extensions({$next_page})' style='cursor: pointer !important;'>";
+		echo "<a onClick='search_extensions({$next_page})' style='cursor: pointer !important;'>";
             echo "&raquo;";
         echo "</a>";
         /* echo "<a href='{$page_url}page={$next_page}'>";
