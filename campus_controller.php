@@ -127,8 +127,7 @@ function search_campuses() {
 	if(isset($_POST)){
 		
 		$page = trim(htmlspecialchars(strip_tags($_POST['page'])));
-		$records_to_display = trim(htmlspecialchars(strip_tags($_POST['records_to_display'])));
-		$campus_code = trim(htmlspecialchars(strip_tags($_POST['campus_code'])));
+		$records_to_display = trim(htmlspecialchars(strip_tags($_POST['records_to_display']))); 
 		$campus_name = trim(htmlspecialchars(strip_tags($_POST['campus_name']))); 
  
 		if(!isset($page)){
@@ -144,7 +143,7 @@ function search_campuses() {
 
 		$campus_dal = new campus_dal();
 
-		echo $campus_dal->search_campuses($page, $records_to_display, $campus_code, $campus_name);
+		echo $campus_dal->search_campuses_v2($page, $records_to_display, $campus_name);
 	 
 	}
 

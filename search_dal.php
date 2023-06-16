@@ -375,7 +375,7 @@ class search_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT DISTINCT deptname FROM depts WHERE ccode = :campus_code ORDER BY id ASC";
+			$query = "SELECT DISTINCT deptname FROM depts WHERE ccode = :campus_code ORDER BY deptname ASC";
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
 			// bind the parameters
@@ -971,7 +971,7 @@ class search_dal
 		}
 	}
  
-	public function search_extensions_v2($page, $records_to_display, $campus_code, $department, $extension_number, $txtdepartment, $txtowner_assigned)
+	public function search_extensions_v2($page, $records_to_display, $campus_code, $department, $other_params)
 	{		
 		// PAGINATION VARIABLES
 		// page is the current page, if there's nothing set, default is page 1
@@ -993,24 +993,19 @@ class search_dal
 		
 		/*SEARCH SENARIOS
 			1. all items are specified.
-			2. extension only typed.
-			3. department only typed.			
-			4. department only selected.
-			5. owner assigned only typed.
-			6. campus and department selected.		
-			7. campus and department selected and extension typed.
-			8. campus and department selected and department typed.
-			9. campus and department selected and owner assigned typed.		
-			10. campus and extension typed.
-			11. campus and department typed.
-			12. campus and owner assigned typed.
-			13. no item is specified.		
+			2. other params only typed.
+			3. campus only selected.			
+			4. department only selected. 
+			5. campus and department selected.		
+			6. campus and other params typed.
+			7. department and other params typed.
+			8. no item is specified.		
 		*/
 		
 		//all items are specified.
-		if(!empty($campus_code) && !empty($department) && !empty($extension_number) && !empty($txtdepartment) && !empty($txtowner_assigned))
+		if(!empty($campus_code) && !empty($department) && !empty($other_params))
 		{
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND deptcode LIKE :extension_number  AND deptname LIKE :txtdepartment AND ownerassigned LIKE :txtowner_assigned ORDER BY ccode, deptname, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND (deptcode LIKE :extension_number OR deptname LIKE :txtdepartment OR ownerassigned LIKE :owner_assigned) ORDER BY ccode, deptname, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
 						
 			//echo $query;
 			
@@ -1021,105 +1016,86 @@ class search_dal
 			
 			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
 			$stmt->bindParam(":department", $department, PDO::PARAM_STR);
-			
-			$pattern  = '%' . $extension_number . '%';
+			 
+			$pattern  = '%' . $other_params . '%';
 			
 			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
 				
-			$pattern  = '%' . $txtdepartment . '%';
+			$pattern  = '%' . $other_params . '%';
 			
 			$stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
 				
-			$pattern  = '%' . $txtowner_assigned . '%';
+			$pattern  = '%' . $other_params . '%';
 			
-			$stmt->bindParam(":txtowner_assigned", $pattern, PDO::PARAM_STR);
-				
-		}
-		//extension only typed.
-		else if(empty($campus_code) && empty($department) && !empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
-		{
-			$query = "SELECT * FROM depts WHERE deptcode LIKE :extension_number ORDER BY deptcode, ccode ASC LIMIT :from_record_num, :records_per_page";
-						
-			//echo $query;
-			
-			$stmt = $this->db->prepare($query);
-			 
-			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
-			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-						
-			$pattern  = '%' . $extension_number . '%';
-			
-			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
+			$stmt->bindParam(":owner_assigned", $pattern, PDO::PARAM_STR);
 				
 			
-			
-			$count_query = "SELECT * FROM depts WHERE deptcode LIKE :extension_number ORDER BY deptcode, ccode ASC";
+			$count_query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND (deptcode LIKE :extension_number OR deptname LIKE :txtdepartment OR ownerassigned LIKE :owner_assigned) ORDER BY ccode, deptname, ownerassigned ASC";
 			
 			$count_stmt = $this->db->prepare($count_query);
 			 
+			$count_stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			$count_stmt->bindParam(":department", $department, PDO::PARAM_STR);
+			 
+			$pattern  = '%' . $other_params . '%';
+			
 			$count_stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
-					
+				
+			$pattern  = '%' . $other_params . '%';
+			
+			$count_stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $other_params . '%';
+			
+			$count_stmt->bindParam(":owner_assigned", $pattern, PDO::PARAM_STR);
 				
 		}
-		//department only typed.
-		else if(empty($campus_code) && empty($department) && empty($extension_number) && !empty($txtdepartment) && empty($txtowner_assigned))
+		//other params only typed.
+		else if(empty($campus_code) && empty($department) && !empty($other_params))
 		{
-			$query = "SELECT * FROM depts WHERE deptname LIKE :txtdepartment ORDER BY deptname, ccode ASC LIMIT :from_record_num, :records_per_page";
-								
+			$query = "SELECT * FROM depts WHERE (deptcode LIKE :extension_number OR deptname LIKE :department OR ownerassigned LIKE :owner_assigned) ORDER BY ccode, deptname, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
+						
 			//echo $query;
 			
 			$stmt = $this->db->prepare($query);
-			
+			 
 			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
 			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-						
-			$pattern  = '%' . $txtdepartment . '%';
+					 
+			$pattern  = '%' . $other_params . '%';
 			
-			$stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
+			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $other_params . '%';
 			
-			$count_query = "SELECT * FROM depts WHERE deptname LIKE :txtdepartment ORDER BY deptname, ccode ASC";
+			$stmt->bindParam(":department", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $other_params . '%';
+			
+			$stmt->bindParam(":owner_assigned", $pattern, PDO::PARAM_STR);
+					
+			
+			$count_query = "SELECT * FROM depts WHERE (deptcode LIKE :extension_number OR deptname LIKE :department OR ownerassigned LIKE :owner_assigned) ORDER BY ccode, deptname, ownerassigned ASC";
 			
 			$count_stmt = $this->db->prepare($count_query);
-			 
-			$count_stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
-					
-		}
-		//department only selected.
-		else if(empty($campus_code) && !empty($department) && empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
-		{
-			$query = "SELECT * FROM depts WHERE deptname LIKE :department ORDER BY deptname, ccode ASC LIMIT :from_record_num, :records_per_page";
-			 				
-			//echo $query;
+			  
+			$pattern  = '%' . $other_params . '%';
 			
-			$stmt = $this->db->prepare($query);
-			
-			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
-			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-						
-			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
+			$count_stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
 				
-		}
-		//owner assigned only typed.
-		else if(empty($campus_code) && empty($department) && empty($extension_number) && empty($txtdepartment) && !empty($txtowner_assigned))
-		{
-			$query = "SELECT * FROM depts WHERE ownerassigned LIKE :txtowner_assigned ORDER BY ownerassigned, ccode ASC LIMIT :from_record_num, :records_per_page";
-			 						
-			//echo $query;
+			$pattern  = '%' . $other_params . '%';
 			
-			$stmt = $this->db->prepare($query);
-			
-			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
-			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-						
-			$pattern  = '%' . $txtowner_assigned . '%';
-			
-			$stmt->bindParam(":txtowner_assigned", $pattern, PDO::PARAM_STR);
+			$count_stmt->bindParam(":department", $pattern, PDO::PARAM_STR);
 				
-		}
-		//campus and department selected.
-		else if(!empty($campus_code) && !empty($department) && empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
+			$pattern  = '%' . $other_params . '%';
+			
+			$count_stmt->bindParam(":owner_assigned", $pattern, PDO::PARAM_STR);
+				
+		} 
+		//campus only selected.
+		else if(!empty($campus_code) && empty($department) && empty($other_params))
 		{				
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department ORDER BY ccode, deptname ASC LIMIT :from_record_num, :records_per_page";
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code ORDER BY ccode ASC LIMIT :from_record_num, :records_per_page";
 			 				
 			//echo $query;
 			
@@ -1128,14 +1104,42 @@ class search_dal
 			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
 			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
 			
-			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
-			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
-				
+			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR); 
+			
+			
+			$count_query = "SELECT * FROM depts WHERE ccode = :campus_code ORDER BY ccode ASC";
+			
+			$count_stmt = $this->db->prepare($count_query);
+			 
+			$count_stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+					
 		} 
-		//campus and department selected and extension typed.
-		else if(!empty($campus_code) && !empty($department) && !empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
+		//department only selected.
+		else if(empty($campus_code) && !empty($department) && empty($other_params))
+		{
+			$query = "SELECT * FROM depts WHERE deptname = :department ORDER BY deptname ASC LIMIT :from_record_num, :records_per_page";
+			 				
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+			
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+						
+			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
+			
+			
+			$count_query = "SELECT * FROM depts WHERE deptname = :department ORDER BY deptname ASC";
+			
+			$count_stmt = $this->db->prepare($count_query);
+			 
+			$count_stmt->bindParam(":department", $department, PDO::PARAM_STR); 
+						
+		} 
+		//campus and department selected.
+		else if(!empty($campus_code) && !empty($department) && empty($other_params))
 		{				
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND deptcode LIKE :extension_number ORDER BY ccode, deptname, deptcode ASC LIMIT :from_record_num, :records_per_page";
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department ORDER BY ccode, deptname ASC LIMIT :from_record_num, :records_per_page";
  
 			//echo $query;
 			
@@ -1146,16 +1150,20 @@ class search_dal
 			
 			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
 			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
+						
 			
-			$pattern  = '%' . $extension_number . '%';
+			$count_query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department ORDER BY ccode, deptname ASC";
 			
-			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
-					
+			$count_stmt = $this->db->prepare($count_query);
+			 
+			$count_stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			$count_stmt->bindParam(":department", $department, PDO::PARAM_STR);  
+						
 		}
-		//campus and department selected and department typed.
-		else if(!empty($campus_code) && !empty($department) && empty($extension_number) && !empty($txtdepartment) && empty($txtowner_assigned))
+		//campus and other_params typed.
+		else if(!empty($campus_code) && empty($department) && !empty($other_params))
 		{				
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND deptname LIKE :txtdepartment ORDER BY ccode, deptname ASC LIMIT :from_record_num, :records_per_page";
+			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND (deptcode LIKE :extension_number OR deptname LIKE :txtdepartment OR ownerassigned LIKE :owner_assigned) ORDER BY ccode, deptname, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
 			 					
 			//echo $query;
 			
@@ -1164,76 +1172,44 @@ class search_dal
 			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
 			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
 			
-			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
-			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
-			
-			$pattern  = '%' . $txtdepartment . '%';
-			
-			$stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
-					
-		}
-		//campus and department selected and owner assigned typed.
-		else if(!empty($campus_code) && !empty($department) && empty($extension_number) && empty($txtdepartment) && !empty($txtowner_assigned))
-		{				
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname = :department AND ownerassigned LIKE :txtowner_assigned ORDER BY ccode, deptname, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
-							
-			//echo $query;
-			
-			$stmt = $this->db->prepare($query);
-
-			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
-			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-			
-			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
-			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
-			
-			$pattern  = '%' . $txtowner_assigned . '%';
-			
-			$stmt->bindParam(":txtowner_assigned", $pattern, PDO::PARAM_STR);
-					
-		} 
-		//campus and extension typed.
-		else if(!empty($campus_code) && empty($department) && !empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
-		{				
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptcode LIKE :extension_number ORDER BY ccode, deptcode ASC LIMIT :from_record_num, :records_per_page";
-							
-			//echo $query;
-			
-			$stmt = $this->db->prepare($query);
-
-			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
-			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-			
-			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
-			
-			$pattern  = '%' . $extension_number . '%';
+			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR); 
+			 
+			$pattern  = '%' . $other_params . '%';
 			
 			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
 				
-		}
-		//campus and department typed.
-		else if(!empty($campus_code) && empty($department) && empty($extension_number) && !empty($txtdepartment) && empty($txtowner_assigned))
-		{				
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND deptname LIKE :txtdepartment ORDER BY ccode, deptname ASC LIMIT :from_record_num, :records_per_page";
-							
-			//echo $query;
-			
-			$stmt = $this->db->prepare($query);
-
-			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
-			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
-			
-			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
-			
-			$pattern  = '%' . $txtdepartment . '%';
+			$pattern  = '%' . $other_params . '%';
 			
 			$stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
 				
+			$pattern  = '%' . $other_params . '%';
+			
+			$stmt->bindParam(":owner_assigned", $pattern, PDO::PARAM_STR);
+					
+			
+			$count_query = "SELECT * FROM depts WHERE ccode = :campus_code AND (deptcode LIKE :extension_number OR deptname LIKE :txtdepartment OR ownerassigned LIKE :owner_assigned) ORDER BY ccode, deptname, ownerassigned ASC";
+			
+			$count_stmt = $this->db->prepare($count_query);
+			 
+			$count_stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			
+			$pattern  = '%' . $other_params . '%';
+			
+			$count_stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $other_params . '%';
+			
+			$count_stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $other_params . '%';
+			
+			$count_stmt->bindParam(":owner_assigned", $pattern, PDO::PARAM_STR);
+						
 		}
-		//campus and owner assigned typed.
-		else if(!empty($campus_code) && empty($department) && empty($extension_number) && empty($txtdepartment) && !empty($txtowner_assigned))
+		//department and other_params typed.
+		else if(empty($campus_code) && !empty($department) && !empty($other_params))
 		{				
-			$query = "SELECT * FROM depts WHERE ccode = :campus_code AND ownerassigned LIKE :txtowner_assigned ORDER BY ccode, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
+			$query = "SELECT * FROM depts WHERE deptname = :department AND (deptcode LIKE :extension_number OR deptname LIKE :txtdepartment OR ownerassigned LIKE :owner_assigned) ORDER BY ccode, deptname, ownerassigned ASC LIMIT :from_record_num, :records_per_page";
 							
 			//echo $query;
 			
@@ -1241,14 +1217,41 @@ class search_dal
 
 			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
 			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			 
+			$stmt->bindParam(":department", $department, PDO::PARAM_STR); 
 			
-			$stmt->bindParam(":campus_code", $campus_code, PDO::PARAM_STR);
+			$pattern  = '%' . $other_params . '%';
 			
-			$pattern  = '%' . $txtowner_assigned . '%';
-			
-			$stmt->bindParam(":txtowner_assigned", $pattern, PDO::PARAM_STR);
+			$stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
 				
-		}
+			$pattern  = '%' . $other_params . '%';
+			
+			$stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $other_params . '%';
+			
+			$stmt->bindParam(":owner_assigned", $pattern, PDO::PARAM_STR);
+					
+			
+			$count_query = "SELECT * FROM depts WHERE deptname = :department AND (deptcode LIKE :extension_number OR deptname LIKE :txtdepartment OR ownerassigned LIKE :owner_assigned) ORDER BY ccode, deptname, ownerassigned ASC";
+			
+			$count_stmt = $this->db->prepare($count_query);
+			 
+			$count_stmt->bindParam(":department", $department, PDO::PARAM_STR);
+			
+			$pattern  = '%' . $other_params . '%';
+			
+			$count_stmt->bindParam(":extension_number", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $other_params . '%';
+			
+			$count_stmt->bindParam(":txtdepartment", $pattern, PDO::PARAM_STR);
+				
+			$pattern  = '%' . $other_params . '%';
+			
+			$count_stmt->bindParam(":owner_assigned", $pattern, PDO::PARAM_STR);
+					
+		}  
 		//no item is specified.
 		else if(empty($campus_code) && empty($department) && empty($extension_number) && empty($txtdepartment) && empty($txtowner_assigned))
 		{				
@@ -1280,9 +1283,7 @@ class search_dal
 		$count_num = $count_stmt->rowCount();
 		
 		$_SESSION['search_count'] = $count_num;
-
-		//$total_rows = $num;
-
+ 
 		//echo $num;
 		// link to create record form
 		//echo "<a href='create.php' class='btn btn-primary m-b-1em'>Create New Product</a>";
@@ -1329,7 +1330,7 @@ class search_dal
 								 
 				echo "<td class='table-success'>";
 					
-				echo "<span class='tbl_label'>Campus: </span>";
+				//echo "<span class='tbl_label'>Campus: </span>";
 				
 				echo "<span class='tbl_data'>" . htmlspecialchars($campus_name, ENT_QUOTES) . "</span>";
 
@@ -1337,7 +1338,7 @@ class search_dal
 				
 				echo "<td class='table-info'>";
 					
-				echo "<span class='tbl_label'>Extension: </span>";
+				//echo "<span class='tbl_label'>Extension: </span>";
 				
 				echo "<span class='tbl_data'>" . htmlspecialchars($extension_number, ENT_QUOTES) . "</span>";
 
@@ -1345,7 +1346,7 @@ class search_dal
 			 
 				echo "<td class='table-success'>";
 					
-				echo "<span class='tbl_label'>Owner: </span>";
+				//echo "<span class='tbl_label'>Owner: </span>";
 				
 				echo "<span class='tbl_data'>" . htmlspecialchars($owner_assigned, ENT_QUOTES) . "</span>";
 
@@ -1353,7 +1354,7 @@ class search_dal
 					
 				echo "<td class='table-warning'>";
 					
-				echo "<span class='tbl_label'>Department: </span>";
+				//echo "<span class='tbl_label'>Department: </span>";
 				
 				echo "<span class='tbl_data'>" . htmlspecialchars($department, ENT_QUOTES) . "</span>";
 

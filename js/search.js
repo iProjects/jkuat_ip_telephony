@@ -1,12 +1,6 @@
 
 $(document).ready(function () {
     
-    $('#btn_login').on('click', function(){        
-		window.location.href = 'http://localhost:90/jkuat_ip_telephony/login.php';		 
-    });
- 
-	populate_display_vectors();
-	 
 	//listen for enter key event in document.
 	document.addEventListener("keypress", documententerkeyglobalhandler, false);
  
@@ -24,6 +18,10 @@ $(document).ready(function () {
 	 
 	search_extensions(1);
 	
+    $('#txt_page').on('input', function(){
+        console.log($('#txt_page').val());
+    });
+	
     $('#cbocampus').on('change', function(){
         fetch_department_names("cbocampus");
 		search_extensions(1);
@@ -33,27 +31,14 @@ $(document).ready(function () {
 		search_extensions(1);
     });
 	
-    $('#txtextension_number').on('input', function(){
+    $('#txt_other_params').on('input', function(){
         search_extensions(1);
     });
 	
-    $('#txtdepartment').on('input', function(){
-        search_extensions(1);
-    });
-	
-    $('#txtowner_assigned').on('input', function(){
-        search_extensions(1);
-    });
-	
-    $('#cbo_search_records_to_display').on('change', function(){
-        search_extensions(1);
-    });
-	 
     $('#btnclearsearch').on('click', function(){        
 		$('#cbocampus').val("");
 		$('#cbodepartment').val("");
-		$('#txtdepartment').val("");		
-		$('#txtextension_number').val("");
+		$('#txt_other_params').val("");		 
 		$('#div_search_content').html("");
 		$('#lbl_search_count').text("");
     });
@@ -69,8 +54,14 @@ $(document).ready(function () {
 	
 	$('#lbl_search_count').text("");
 	
+	$('#txt_other_params').focus();
+	
+	$('.hamburger_lines').css('left', function() {
+		return ($('.sidebar').width() - 40) + "px";
+	});
+	
 	$("#progress_bar").hide();
-	 
+		  
 });
 
 var global_page_number_holder = 1;
@@ -109,7 +100,7 @@ function documententerkeyglobalhandler(e){
 
 		switch(callingpagename){ 
 			case "index.php":
-				
+				search_extensions(1);
 			break; 
 			default: 
 			break;
@@ -220,25 +211,22 @@ function search_extensions(page){
 	 
 	show_progress();
 	
+	close_toast();
+	
 	global_page_number_holder = page;
 	
-	var records_to_display = 10;
-	//records_to_display = $("#cbo_search_records_to_display").val();
+	var records_to_display = 10; 
 	
 	console.log("records_to_display: " + records_to_display);	
 	console.log("page: " + page);
 	
 	var campus_code = $("#cbocampus").val();
 	var department = $("#cbodepartment").val();
-	var extension_number = $("#txtextension_number").val();
-	var txtdepartment = $("#txtdepartment").val();
-	var txtowner_assigned = $("#txtowner_assigned").val();
+	var other_params = $("#txt_other_params").val(); 
 	
 	console.log("campus_code: " + campus_code);	
 	console.log("department: " + department);	
-	console.log("extension_number: " + extension_number);
-	console.log("txtdepartment: " + txtdepartment);
-	console.log("txtowner_assigned: " + txtowner_assigned);
+	console.log("other_params: " + other_params); 
 	
 	show_progress();
 	
@@ -251,9 +239,7 @@ function search_extensions(page){
 			"records_to_display": records_to_display,
 			"campus_code": campus_code,
 			"department": department,
-			"extension_number": extension_number,
-			"txtdepartment": txtdepartment,
-			"txtowner_assigned": txtowner_assigned,
+			"other_params": other_params, 
 			"action": "search_extensions"
 		},//data to be posted
 	}).done(function(response){
@@ -263,70 +249,90 @@ function search_extensions(page){
 				
 		$('#div_search_content').html(response);
  
-		get_search_results_count();
+		//get_search_results_count();
 		
 		$("#div_search_content").scrollTop();
+		
+		$("#div_help_content").hide();
+		 
+		hide_progress();
+		
+	}).fail(function(jqXHR, textStatus){
+		log_error_messages(textStatus);
+		hide_progress();
+	});
+	
+}
  
-		hide_progress();
-		
-	}).fail(function(jqXHR, textStatus){
-		log_error_messages(textStatus);
-		hide_progress();
-	});
-	
-}
-
-function populate_display_vectors()
+function go2Page(total_pages)
 {
-	var select_options_arr = "";
-	select_options_arr += '<option value="5">5</option>';
-	select_options_arr += '<option value="10">10</option>';
-	select_options_arr += '<option value="20">20</option>';
-	select_options_arr += '<option value="30">30</option>';
-	select_options_arr += '<option value="40">40</option>';
-	select_options_arr += '<option value="50">50</option>';
-	select_options_arr += '<option value="100">100</option>';
-	select_options_arr += '<option value="200">200</option>';
-	select_options_arr += '<option value="500">500</option>';
-	select_options_arr += '<option value="1000">1000</option>';
-	select_options_arr += '<option value="-1">All</option>';
+	close_toast();
 	
-	$('#cbo_records_to_display').html(select_options_arr);	
-	$('#cbo_search_records_to_display').html(select_options_arr);	 
-
-}
-
-function get_search_results_count(){
-	 
-	show_progress();
-	  
-	// send data to server asynchronously.
-	$.ajax({
-		url: "search_results_count.php",
-		type: "POST",
-	}).done(function(response){
-		response = response.trim();
-		
-		console.log("response: " + response); 
-		
-		$('#lbl_search_count').text(response);
-		
-		hide_progress();
-		
-	}).fail(function(jqXHR, textStatus){
-		log_error_messages(textStatus);
-		hide_progress();
-	});
+	var current_page = document.getElementById("txt_page").value; 
 	
+	if(current_page.length == 0)
+	{
+		show_error_toast("Specify a Page number");
+		return;
+	}
+	
+	if(current_page > total_pages)
+	{
+		show_error_toast("Page number [ " + current_page + " ] does not exists.");
+	}else{	
+		search_extensions(current_page);
+	}
 }
 
-function go2Page()
-{
-	var page = document.getElementById("txt_page").value; 
-	search_extensions(page);
+function toggle_navigation()
+{ 
+	var display = $('.sidebar').css('display');
+	
+	if(display == "block")
+	{	
+		//hide the sidebar
+		var style = [
+			'display: none',
+		].join(';');
+			
+		$('.sidebar').attr('style', style);
+		
+		$('.hamburger_lines').css('left', function() {
+			return "15px";
+		});
+		
+		//expand the contnent
+		var content_style = [ 
+			'width: 90%',
+			'left: 3%', 
+		].join(';');
+			
+		$('#maincontainer').attr('style', content_style);
+				
+	}else{
+		//show the sidebar
+		var style = [
+			'display: block',
+		].join(';');
+			
+		$('.sidebar').attr('style', style);
+		
+		
+		$('.hamburger_lines').css('left', function() {
+			return ($('.sidebar').width() - 40) + "px";
+		});
+		
+		//shrink the contnent
+		var content_style = [ 
+			'width: 60%',
+			'left: 30%', 
+		].join(';');
+			
+		$('#maincontainer').attr('style', content_style);
+		
+	}
 }
-
-
+ 
 
 
 

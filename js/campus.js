@@ -11,6 +11,7 @@ $(document).ready(function () {
 	populate_display_vectors();
 	 
     $('#btncreate_campus_view').on('click', function(){
+		clear_logs();
         $('#create_campus_modal').modal('show');
 		$('#txt_create_code').val("");
 		$("#txt_create_name").val(""); 
@@ -51,11 +52,13 @@ $(document).ready(function () {
     });
 	
     $('.btn_edit').on('click', function(){
+		clear_logs();
 		var id = $(this).attr('data-id');  
         edit_campus(id);
     });
 	  
     $('.btn_delete').on('click', function(){
+		clear_logs();
 		var id = $(this).attr('data-id');
         delete_campus(id);
     });
@@ -95,6 +98,10 @@ $(document).ready(function () {
 		search_campuses(1);		
     });
  
+	$('.hamburger_lines').css('left', function() {
+		return ($('.sidebar').width() - 40) + "px";
+	});
+		
 	$("#progress_bar").hide();
 	 
 });
@@ -243,7 +250,7 @@ function create_campus(){
 		
 		clear_logs();
 		
-		show_info_toast("Campus created successfully.");
+		show_info_toast(response);
 		
 		hide_progress();
 		
@@ -366,7 +373,7 @@ function update_campus(){
 		
 		clear_logs();
 		
-		show_info_toast("Campus updated successfully.");
+		show_info_toast(response);
 		
 		hide_progress();
 		
@@ -381,74 +388,126 @@ function delete_campus(id){
 	 
 	show_progress();
 			
-	var heading = "Delete";
-	var question = "are you sure you want to delete the record with id [ " + id + " ].";
-	var cancelButtonTxt = "cancel";
-	var okButtonTxt = "ok";
-	
-	var confirmModal = 
-		$('<div id= "delete_modal" class="modal fade">' +        
-		  '<div class="modal-dialog">' +
-		  '<div class="modal-content">' +
-		  '<div class="modal-header">' +
-			'<a class="close" data-dismiss="modal" >&times;</a>' +
-			'<h3>' + heading +'</h3>' +
-		  '</div>' +
-
-		  '<div class="modal-body">' +
-			'<p class="form-control">' + question + '</p>' +
-		  '</div>' +
-
-		  '<div class="modal-footer">' +		  
-			'<a href="#!" id="okButton" class="btn btn-primary">' + 
-			  okButtonTxt + 
-			'</a>' +
-			'<a href="#!" class="btn btn-danger" data-dismiss="modal">' + 
-			  cancelButtonTxt + 
-			'</a>' +
-		  '</div>' +
-		  '</div>' +
-		  '</div>' +
-		'</div>');
-
-	confirmModal.find('#okButton').click(function(event) { 
-		 
-		confirmModal.modal('hide');
-		
-		// send data to server asynchronously.
-		$.ajax({
-		url: "campus_controller.php",
-		type: "POST",
-		data: {
-			"id": id,
-			"action": "delete_campus"
-		},//data to be posted
-		}).done(function(response){
-			response = response.trim();
-
-			console.log("response: " + response); 
- 
-			log_info_messages(response); 
-			
-			search_campuses(1);
-			
-			show_info_toast("Campus deleted successfully.");
-		
-			hide_progress();
-
-		}).fail(function(jqXHR, textStatus){
-			log_error_messages(textStatus);
-			hide_progress();
-		});
-	}); 
-
-	confirmModal.modal('show');  
+	var delete_prompt = get_delete_extension_prompt(id);
 	
 	hide_progress();
 	
 }
  
-  
+function get_delete_extension_prompt(id){
+	  
+	show_progress();
+	clear_logs();
+	
+	console.log("id: " + id); 
+	
+	var isvalid = true;
+	if(id.length == 0)
+	{
+		show_error_toast("Error retrieving the Primary Key. <br />Reload the page."); 
+		isvalid = false;
+	}
+ 
+	if(isvalid == false)
+	{	
+		hide_progress();
+		return;
+	}
+	 
+	// send data to server asynchronously.
+	$.ajax({
+		url: "campus_controller.php",
+		type: "POST",
+		data: {
+			"id": id,
+			"action": "get_campus"
+		},//data to be posted
+	}).done(function(response){
+		response = response.trim();
+		
+		console.log("response: " + response); 
+		 
+		var data = JSON.parse(response);
+				 
+		var id = data.cid;
+		var campus_code = data.ccode.trim();
+		var campus_name = data.cname.trim();
+		var addedby = data.addedby.trim();
+		
+		var delete_prompt = "Are you sure you wish to delete Campus [ " + campus_name + " ].";
+		
+		console.log("delete_prompt: " + delete_prompt); 
+				 
+		var heading = "Delete";
+		var question = "are you sure you want to delete the record with id [ " + id + " ].";
+		var cancelButtonTxt = "cancel";
+		var okButtonTxt = "ok";
+		
+		var confirmModal = 
+			$('<div id= "delete_modal" class="modal fade">' +        
+			  '<div class="modal-dialog">' +
+			  '<div class="modal-content">' +
+			  '<div class="modal-header">' +
+				'<a class="close" data-dismiss="modal" >&times;</a>' +
+				'<h3>' + heading +'</h3>' +
+			  '</div>' +
+
+			  '<div class="modal-body">' + delete_prompt + '</div>' +
+
+			  '<div class="modal-footer">' +		  
+				'<a href="#!" id="okButton" class="btn btn-primary">' + 
+				  okButtonTxt + 
+				'</a>' +
+				'<a href="#!" class="btn btn-danger" data-dismiss="modal">' + 
+				  cancelButtonTxt + 
+				'</a>' +
+			  '</div>' +
+			  '</div>' +
+			  '</div>' +
+			'</div>');
+
+		confirmModal.find('#okButton').click(function(event) { 
+			 
+			confirmModal.modal('hide');
+			
+			// send data to server asynchronously.
+			$.ajax({
+			url: "campus_controller.php",
+			type: "POST",
+			data: {
+				"id": id,
+				"action": "delete_campus"
+			},//data to be posted
+			}).done(function(response){
+				response = response.trim();
+
+				console.log("response: " + response); 
+	 
+				log_info_messages(response); 
+				
+				search_campuses(1);
+				
+				show_info_toast(response);
+			
+				hide_progress();
+
+			}).fail(function(jqXHR, textStatus){
+				log_error_messages(textStatus);
+				hide_progress();
+			});
+		}); 
+
+		confirmModal.modal('show');  
+			
+		hide_progress();
+		
+	}).fail(function(jqXHR, textStatus){
+		log_error_messages(textStatus);
+		hide_progress();
+	});
+	
+}
+
 function fetch_campuses(page){
 	 
 	show_progress();
@@ -491,18 +550,17 @@ function search_campuses(page){
 	 
 	show_progress();
 	
+	close_toast();
+	
 	global_page_number_holder = page;
 	
-	var records_to_display = 5;
-	records_to_display = $("#cbo_search_records_to_display").val();
+	var records_to_display = 10; 
 	
 	console.log("records_to_display: " + records_to_display);	
 	console.log("page: " + page);
 	
-	var campus_code = $("#txt_search_code").val();
 	var campus_name = $("#txt_search_name").val(); 
-	
-	console.log("campus_code: " + campus_code);	
+	 	
 	console.log("campus_name: " + campus_name);	 
 	
 	show_progress();
@@ -513,8 +571,7 @@ function search_campuses(page){
 		type: "POST",
 		data: {
 			"page": page,
-			"records_to_display": records_to_display,
-			"campus_code": campus_code,
+			"records_to_display": records_to_display, 
 			"campus_name": campus_name, 
 			"action": "search_campuses"
 		},//data to be posted
@@ -578,7 +635,90 @@ function get_campuses_search_count(){
 	});
 	
 }
+
+function go2Page(total_pages)
+{
+	close_toast();
+	
+	var current_page = document.getElementById("txt_page").value; 
+	
+	if(current_page.length == 0)
+	{
+		show_error_toast("Specify a Page number");
+		return;
+	}
+	
+	if(current_page > total_pages)
+	{
+		show_error_toast("Page number [ " + current_page + " ] does not exists.");
+	}else{	
+		search_campuses(current_page);
+	}
+}
+
+function toggle_navigation()
+{ 
+	var display = $('.sidebar').css('display');
+	
+	if(display == "block")
+	{	
+		//hide the sidebar
+		var style = [
+			'display: none',
+		].join(';');
+			
+		$('.sidebar').attr('style', style);
+		
+		$('.hamburger_lines').css('left', function() {
+			return "15px";
+		});
+		
+		//expand the contnent
+		var content_style = [ 
+			'width: 90%',
+			'left: 3%', 
+		].join(';');
+			
+		$('#dashboard_container').attr('style', content_style);
+				
+	}else{
+		//show the sidebar
+		var style = [
+			'display: block',
+		].join(';');
+			
+		$('.sidebar').attr('style', style);
+		
+		
+		$('.hamburger_lines').css('left', function() {
+			return ($('.sidebar').width() - 40) + "px";
+		});
+		
+		//shrink the contnent
+		var content_style = [ 
+			'width: 60%',
+			'left: 30%', 
+		].join(';');
+			
+		$('#dashboard_container').attr('style', content_style);
+		
+	}
+}
  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

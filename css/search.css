@@ -1,13 +1,3 @@
- 
-#div_search_content {
-	position: relative;
-    float: left;
-    clear: none;
-	display: block;
-	height: fit-content;
-	width: auto;
-	margin-top: 20px;
-}
 
 #div_container { 
 	margin: 1px;
@@ -31,7 +21,7 @@
     clear: both;
 }
 
-div#div_messages {
+#div_messages {
     position: relative;
     background-color: #d3d3d3;
     background-image: linear-gradient(15deg, transparent 28%, rgba(243, 244, 245, 0.5) 28%);
@@ -43,7 +33,7 @@ div#div_messages {
     padding: 1px;
 }
 
-div#div_messages_modal {
+#div_messages_modal {
     position: relative;
     background-color: #d3d3d3;
     background-image: linear-gradient(15deg, transparent 28%, rgba(243, 244, 245, 0.5) 28%);
@@ -58,7 +48,7 @@ div#div_messages_modal {
     margin-bottom: 3%;
 }
 
-div.div_info_message_item {
+.div_info_message_item {
     color: rgb(23, 4, 110);
     font-size: 15px;
     text-align: left;
@@ -75,11 +65,11 @@ div.div_info_message_item {
     width: fit-content;
 }
 
-div.div_info_message_item:hover {
+.div_info_message_item:hover {
     border: 1px solid rgb(23, 4, 110);
 }
 
-div.div_error_message_item {
+.div_error_message_item {
     color: rgb(241, 10, 10);
     font-size: 15px;
     text-align: left;
@@ -96,7 +86,7 @@ div.div_error_message_item {
     width: fit-content;
 }
 
-div.div_error_message_item {
+.div_error_message_item {
     border: 1px solid rgb(241, 10, 10);
 }
 
@@ -132,7 +122,7 @@ div.div_error_message_item {
     clear: both; 
 }
 
-div#div_footer {
+#div_footer {
     border-radius: 5px;
     border-color: #23D263;
     border-width: 5px;
@@ -542,24 +532,38 @@ div#div_footer {
     font-family: 'Open Sans', sans-serif;
 }
 
-body{
-    background: #f5f6fa;
+body { 
+	background-image: url('../images/jkuat.jpg');
+	background-repeat: no-repeat; 
+	background-size: cover;
 }
 
 
 
 
-#maincontainer {
-	background-color: #fff;
+#maincontainer {  
 	position: relative;
-	margin: 1px;
-    padding: 1px;
-	top: 10px;
+	margin: 2%;
+	margin-top: 1%;
+    padding: 0px;
+	top: 5%;
 	width: 60%;
 	height: 95%;
 	float: left;
     clear: both; 
 	left: 30%; 
+	height: auto;
+}
+ 
+#div_search_content {
+	background-color: #fff;
+	position: relative;
+    float: left;
+    clear: none;
+	display: block;
+	height: fit-content;
+	width: auto;
+	margin-top: 20px;
 }
 
 #div_navigation {
@@ -587,6 +591,7 @@ body{
 	background-color: inherit;
 	color: black;
 	border: 0px solid rgb(157, 216, 49);
+	display: none;
 }
 
 #progress_bar
@@ -629,6 +634,8 @@ body{
     padding: 20px 0;
     transition: all 0.5s ease; 	
 	box-shadow: -10px 5px 20px rgba(0, 0, 0, 0.3); 
+	z-index: 10;
+	display: block;
 }
  
 .wrapper .sidebar .profile{ 
@@ -1028,7 +1035,7 @@ tr {
 	clear: both; 
 	margin: 1px;
 	padding: 1px;
-	display: block;
+	display: none;
 	height: fit-content;
 	width: 97%;
 	left: 20%;
@@ -1052,7 +1059,6 @@ tr {
 	clear: both; 
 	margin: 1px;
 	padding: 1px;
-	left: 5%;
 	display: inline-block;
 	height: auto;
 	width: auto;
@@ -1080,15 +1086,59 @@ tr {
 	width: auto;
 }
 
+#table_extensions {
+	height: 100%;
+    max-height: 100%;
+	min-height: 100%;
+	table-layout:fixed;	
+
+}
+
+.btn_go_to_page {
+	margin: 5px;
+	padding: 2px; 
+}
 
 
 
 
 
 
+.wrapper .hamburger_lines {
+  display: block;
+  height: 26px;
+  width: 32px;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
+.wrapper .hamburger_lines .line {
+  display: block;
+  height: 4px;
+  width: 100%;
+  border-radius: 10px;
+  background: #fff;
+}
 
+.wrapper .hamburger_lines .line1 {
+  transform-origin: 0% 0%;
+  transition: transform 0.4s ease-in-out;
+}
 
+.wrapper .hamburger_lines .line2 {
+  transition: transform 0.2s ease-in-out;
+}
+
+.wrapper .hamburger_lines .line3 {
+  transform-origin: 0% 100%;
+  transition: transform 0.4s ease-in-out;
+}
+ 
 
 
 

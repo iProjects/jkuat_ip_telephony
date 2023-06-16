@@ -66,7 +66,7 @@ class admin_dal
     {
 		try{
 			// select query
-			$query = "SELECT * FROM depts";
+			$query = "SELECT * FROM departments";
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query); 
 			// Execute the query

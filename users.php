@@ -89,6 +89,15 @@ if (isset($_COOKIE['loggedinuser']))
 			 
 		
 	<div class="wrapper">
+		
+		<!--Humburger button -->
+		<div class="hamburger_lines" onclick="toggle_navigation();">
+		
+		  <span class="line line1"></span>
+		  <span class="line line2"></span>
+		  <span class="line line3"></span>
+			  
+		</div>
 
 		<!--Top menu -->
 		<div class="sidebar">
@@ -165,12 +174,7 @@ if (isset($_COOKIE['loggedinuser']))
 					<label for="txt_search_username">User Name</label> 
 					<input type="text" id="txt_search_username" name="txt_search_username" placeholder="User Name" class="form-control" required placeholder="User Name" />
 				</div>
-					 
-				<div class="div_search">
-					<label for="cbo_search_records_to_display">No of Records to Display</label> 
-					<select id="cbo_search_records_to_display" class="form-control"></select>
-				</div>
-				 
+					  
 			</div>
 			 
 			<div id="div_content_container">

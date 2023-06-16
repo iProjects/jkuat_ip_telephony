@@ -11,6 +11,7 @@ $(document).ready(function () {
 	populate_display_vectors();
 	 
     $('#btncreate_user_view').on('click', function(){
+		clear_logs();
         $('#create_user_modal').modal('show'); 
 		$("#txt_create_email").val(""); 
 		$("#txt_create_username").val(""); 
@@ -53,11 +54,13 @@ $(document).ready(function () {
     });
 	
     $('.btn_edit').on('click', function(){
+		clear_logs();
 		var id = $(this).attr('data-id');  
         edit_user(id);
     });
 	  
     $('.btn_delete').on('click', function(){
+		clear_logs();
 		var id = $(this).attr('data-id');
         delete_user(id);
     });
@@ -97,6 +100,10 @@ $(document).ready(function () {
 		search_users(1);		
     });
  
+	$('.hamburger_lines').css('left', function() {
+		return ($('.sidebar').width() - 40) + "px";
+	});
+		
 	$("#progress_bar").hide();
 	 
 });
@@ -256,7 +263,7 @@ function create_user(){
 		
 		clear_logs();
 		
-		show_info_toast("User created successfully.");
+		show_info_toast(response);
 		
 		hide_progress();
 		
@@ -418,7 +425,7 @@ function update_user(){
 		
 		clear_logs();
 		
-		show_info_toast("User updated successfully.");
+		show_info_toast(response);
 		
 		hide_progress();
 		
@@ -432,75 +439,128 @@ function update_user(){
 function delete_user(id){
 	 
 	show_progress();
-			
-	var heading = "Delete";
-	var question = "are you sure you want to delete the record with id [ " + id + " ].";
-	var cancelButtonTxt = "cancel";
-	var okButtonTxt = "ok";
 	
-	var confirmModal = 
-		$('<div id= "delete_modal" class="modal fade">' +        
-		  '<div class="modal-dialog">' +
-		  '<div class="modal-content">' +
-		  '<div class="modal-header">' +
-			'<a class="close" data-dismiss="modal" >&times;</a>' +
-			'<h3>' + heading +'</h3>' +
-		  '</div>' +
-
-		  '<div class="modal-body">' +
-			'<p class="form-control">' + question + '</p>' +
-		  '</div>' +
-
-		  '<div class="modal-footer">' +		  
-			'<a href="#!" id="okButton" class="btn btn-primary">' + 
-			  okButtonTxt + 
-			'</a>' +
-			'<a href="#!" class="btn btn-danger" data-dismiss="modal">' + 
-			  cancelButtonTxt + 
-			'</a>' +
-		  '</div>' +
-		  '</div>' +
-		  '</div>' +
-		'</div>');
-
-	confirmModal.find('#okButton').click(function(event) { 
-		 
-		confirmModal.modal('hide');
-		
-		// send data to server asynchronously.
-		$.ajax({
-		url: "user_controller.php",
-		type: "POST",
-		data: {
-			"id": id,
-			"action": "delete_user"
-		},//data to be posted
-		}).done(function(response){
-			response = response.trim();
-
-			console.log("response: " + response); 
- 
-			log_info_messages(response); 
-			
-			search_users(1);
-			
-			show_info_toast("User deleted successfully.");
-		
-			hide_progress();
-
-		}).fail(function(jqXHR, textStatus){
-			log_error_messages(textStatus);
-			hide_progress();
-		});
-	}); 
-
-	confirmModal.modal('show');  
+	var delete_prompt = get_delete_extension_prompt(id);
 	
 	hide_progress();
 	
 }
  
-  
+function get_delete_user_prompt(id){
+	  
+	show_progress();
+	clear_logs();
+	
+	console.log("id: " + id); 
+	
+	var isvalid = true;
+	if(id.length == 0)
+	{
+		show_error_toast("Error retrieving the Primary Key. <br />Reload the page."); 
+		isvalid = false;
+	}
+ 
+	if(isvalid == false)
+	{	
+		hide_progress();
+		return;
+	}
+	 
+	// send data to server asynchronously.
+	$.ajax({
+		url: "user_controller.php",
+		type: "POST",
+		data: {
+			"id": id,
+			"action": "get_user"
+		},//data to be posted
+	}).done(function(response){
+		response = response.trim();
+		
+		console.log("response: " + response); 
+		 
+		var data = JSON.parse(response);
+				 
+		var id = data.id;
+		var email = data.email.trim();
+		var username = data.username.trim();
+		var pass_word = data.password.trim(); 
+		var secretword = data.secretWord.trim(); 
+		
+		var delete_prompt = "Are you sure you wish to delete User with Email [ " + email + " ] for [ " + username + " ].";
+		
+		console.log("delete_prompt: " + delete_prompt); 
+				
+		var heading = "Delete";
+		var question = "are you sure you want to delete the record with id [ " + id + " ].";
+		var cancelButtonTxt = "cancel";
+		var okButtonTxt = "ok";
+		
+		var confirmModal = 
+			$('<div id= "delete_modal" class="modal fade">' +        
+			  '<div class="modal-dialog">' +
+			  '<div class="modal-content">' +
+			  '<div class="modal-header">' +
+				'<a class="close" data-dismiss="modal" >&times;</a>' +
+				'<h3>' + heading +'</h3>' +
+			  '</div>' +
+
+			  '<div class="modal-body">' + delete_prompt + '</div>' +
+
+			  '<div class="modal-footer">' +		  
+				'<a href="#!" id="okButton" class="btn btn-primary">' + 
+				  okButtonTxt + 
+				'</a>' +
+				'<a href="#!" class="btn btn-danger" data-dismiss="modal">' + 
+				  cancelButtonTxt + 
+				'</a>' +
+			  '</div>' +
+			  '</div>' +
+			  '</div>' +
+			'</div>');
+
+		confirmModal.find('#okButton').click(function(event) { 
+			 
+			confirmModal.modal('hide');
+			
+			// send data to server asynchronously.
+			$.ajax({
+			url: "user_controller.php",
+			type: "POST",
+			data: {
+				"id": id,
+				"action": "delete_user"
+			},//data to be posted
+			}).done(function(response){
+				response = response.trim();
+
+				console.log("response: " + response); 
+	 
+				log_info_messages(response); 
+				
+				search_users(1);
+				
+				show_info_toast(response);
+			
+				hide_progress();
+
+			}).fail(function(jqXHR, textStatus){
+				log_error_messages(textStatus);
+				hide_progress();
+			});
+		}); 
+
+		confirmModal.modal('show');  
+			
+		hide_progress();
+		
+	}).fail(function(jqXHR, textStatus){
+		log_error_messages(textStatus);
+		hide_progress();
+	});
+	
+}
+
 function fetch_users(page){
 	 
 	show_progress();
@@ -543,10 +603,11 @@ function search_users(page){
 	 
 	show_progress();
 	
+	close_toast();
+	
 	global_page_number_holder = page;
 	
-	var records_to_display = 5;
-	records_to_display = $("#cbo_search_records_to_display").val();
+	var records_to_display = 10; 
 	
 	console.log("records_to_display: " + records_to_display);	
 	console.log("page: " + page);
@@ -631,6 +692,89 @@ function get_users_search_count(){
 	
 }
  
+function go2Page(total_pages)
+{
+	close_toast();
+	
+	var current_page = document.getElementById("txt_page").value; 
+	
+	if(current_page.length == 0)
+	{
+		show_error_toast("Specify a Page number");
+		return;
+	}
+	
+	if(current_page > total_pages)
+	{
+		show_error_toast("Page number [ " + current_page + " ] does not exists.");
+	}else{	
+		search_departments(current_page);
+	}
+}
+
+function toggle_navigation()
+{ 
+	var display = $('.sidebar').css('display');
+	
+	if(display == "block")
+	{	
+		//hide the sidebar
+		var style = [
+			'display: none',
+		].join(';');
+			
+		$('.sidebar').attr('style', style);
+		
+		$('.hamburger_lines').css('left', function() {
+			return "15px";
+		});
+		
+		//expand the contnent
+		var content_style = [ 
+			'width: 90%',
+			'left: 3%', 
+		].join(';');
+			
+		$('#dashboard_container').attr('style', content_style);
+				
+	}else{
+		//show the sidebar
+		var style = [
+			'display: block',
+		].join(';');
+			
+		$('.sidebar').attr('style', style);
+		
+		
+		$('.hamburger_lines').css('left', function() {
+			return ($('.sidebar').width() - 40) + "px";
+		});
+		
+		//shrink the contnent
+		var content_style = [ 
+			'width: 60%',
+			'left: 30%', 
+		].join(';');
+			
+		$('#dashboard_container').attr('style', content_style);
+		
+	}
+}
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

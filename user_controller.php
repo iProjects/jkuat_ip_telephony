@@ -164,7 +164,7 @@ function search_users() {
 
 		$user_dal = new user_dal();
 
-		echo $user_dal->search_users($page, $records_to_display, $email, $username);
+		echo $user_dal->search_users_v2($page, $records_to_display, $email, $username);
 	 
 	}
 

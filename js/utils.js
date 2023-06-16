@@ -15,7 +15,7 @@ $(document).ready(function () {
 	
 	add_toast_to_dom();
 	
-	send_message_to_email("finished loading...");
+	//send_message_to_email("finished loading...");
 	
 });
  
@@ -268,7 +268,8 @@ function hide_toast(){
 		$('#toast').addClass("invisible");	
 		$('#toast').attr('style', style);	
 	}, 5000);
-
+	
+	close_toast();
 }
 
 function add_toast_to_dom(){
@@ -281,7 +282,8 @@ function add_toast_to_dom(){
 }
 
 function close_toast(){
-	 $("#toast").css('display', 'none');
+	$('#toast').addClass("invisible");	
+	$("#toast").css('display', 'none');
 }
 
 function send_message_to_email(message)

@@ -5,12 +5,22 @@ echo "<div id='div_pagination'>";
 	 
 	// first page button will be here
 	// first page button
+	echo "<li>";
+		echo "<a onClick='search_extensions(1)' style='cursor: pointer !important;'>";
+			echo "First";
+		echo "</a>";
+		/* echo "<a href='{$page_url}page={$prev_page}'>";
+			echo "<span style='margin:0 .5em;'>&laquo;</span>";
+		echo "</a>"; */
+	echo "</li>";
+	
+		
 	if($page>1){
 	 
 		$prev_page = $page - 1;
 		echo "<li>";
 			echo "<a onClick='search_extensions({$prev_page})' style='cursor: pointer !important;'>";
-				echo "&laquo;";
+				echo "Previous &laquo;";
 			echo "</a>";
 			/* echo "<a href='{$page_url}page={$prev_page}'>";
 				echo "<span style='margin:0 .5em;'>&laquo;</span>";
@@ -22,13 +32,13 @@ echo "<div id='div_pagination'>";
 	// clickable page numbers
 	 
 	 $total_rows = $_SESSION['search_count'];
-	 echo $total_rows;
+	 //echo $total_rows;
 	 
 	// find out total pages
 	$total_pages = ceil($total_rows / $records_per_page);
 
-	echo "<br />" . $records_per_page;
-	echo "<br />" . $total_pages;
+	//echo "<br />" . $records_per_page;
+	//echo "<br />" . $total_pages;
 	  
 	// range of num links to show
 	// $range = 1;
@@ -46,7 +56,7 @@ echo "<div id='div_pagination'>";
 			// current page
 			if ($x == $page) {
 				echo "<li class='active'>";
-					echo "<a href='javascript::void();'>{$x}</a>";
+					echo "<a href='javascript:void(0);'>{$x}</a>";
 				echo "</li>";
 			}
 	 
@@ -67,7 +77,7 @@ echo "<div id='div_pagination'>";
 	 
 		echo "<li>";
 			echo "<a onClick='search_extensions({$next_page})' style='cursor: pointer !important;'>";
-				echo "&raquo;";
+				echo "Next &raquo;";
 			echo "</a>";
 			/* echo "<a href='{$page_url}page={$next_page}'>";
 				echo "<span style='margin:0.5em;'>&raquo;</span>";
@@ -78,8 +88,8 @@ echo "<div id='div_pagination'>";
 
 
 		echo "<li>";
-			echo "<a onClick='search_extensions({$next_page})' style='cursor: pointer !important;'>";
-				echo "&raquo;";
+			echo "<a onClick='search_extensions({$total_pages})' style='cursor: pointer !important;'>";
+				echo "Last";
 			echo "</a>";
 			/* echo "<a href='{$page_url}page={$next_page}'>";
 				echo "<span style='margin:0.5em;'>&raquo;</span>";
@@ -91,11 +101,13 @@ echo "<div id='div_pagination'>";
 
 
 
-		echo '<div id="div_page_navigation">';   
+	echo '<div id="div_page_navigation">';   
 
-			echo '<input id="txt_page" type="number" min="1" max="' . $total_pages . '" placeholder="' .  $page . '"/"' . $total_pages . '" required>';   
+		echo '<input id="txt_page" type="number" min="1" max="' . $total_pages . '" placeholder="' .  $page . '/' . $total_pages . '" required />';   
+		
+		echo'<button class="btn btn-success btn_go_to_page" onClick="go2Page(' . $total_pages . ');">Go</button>';
 
-		echo'<button onClick="go2Page();">Go</button>';
+		//echo '<label id="lbl_page">' .  $page . '/' . $total_pages . '</label>';   
 
 	echo '</div>';
 

@@ -76,7 +76,7 @@ class campus_dal
 			// save lastInsertId in a variable
 			$lastInsertId = $this->db->lastInsertId();
 			
-			$response = "<div class='alert alert-success'>record was successfully created. Last Insert Id = [ " . $lastInsertId . " ]</div>";
+			$response = "<div class='alert alert-success'>Campus [ " . $campus_name . " ] was successfully created. <br /> Last Insert Id = [ " . $lastInsertId . " ]</div>";
 			return $response;
 			
 		} catch (Exception $e){
@@ -149,7 +149,7 @@ class campus_dal
 			// Execute the query
 			$stmt->execute();
  
-			$response = "<div class='alert alert-success'>record with id [ " . $id . " ] was successfully updated.</div>";
+			$response = "<div class='alert alert-success'>Campus [ " . $campus_name . " ] was successfully updated.</div>";
 			
 			return $response;
 			
@@ -189,6 +189,35 @@ class campus_dal
     }
 	 
     /*
+     * Get campus Details
+     *
+     * @param $id
+     * */
+    public function fetch_campus($id)
+    {
+		try{
+			// select query
+			$query = "SELECT * FROM campuses WHERE cid = :id";
+			
+			// prepare query for execution			
+			$stmt = $this->db->prepare($query);
+			
+			// bind the parameters
+			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
+			
+			// Execute the query
+			$stmt->execute();
+			
+			// return retrieved row as a json object
+			return $stmt->fetch(PDO::FETCH_ASSOC);
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+	 
+    /*
      * Delete Record
      *
      * @param $id
@@ -196,6 +225,15 @@ class campus_dal
     public function delete_campus($id)
     {
 		try{
+			
+			$campus_record = $this->fetch_campus($id);
+			 
+			foreach ($campus_record as $key => $value) {
+				if($key == "cname") {
+					$campus_name = $value; 
+				} 
+			}
+			
 			// delete query
 			$query = "DELETE FROM campuses WHERE cid = :id";
 			// prepare query for execution
@@ -205,7 +243,7 @@ class campus_dal
 			// Execute the query
 			$stmt->execute();
 			
-			$response = "<div class='alert alert-success'>record with id [ " . $id . " ] was successfully deleted.</div>";
+			$response = "<div class='alert alert-success'>Campus [ " . $campus_name . " ] was successfully deleted.</div>";
 			return $response;
 			
 		} catch (Exception $e){
@@ -624,6 +662,218 @@ class campus_dal
 			echo "<div class='alert alert-danger'>No records found.</div>";
 		}
 	}
+ 	
+	public function search_campuses_v2($page, $records_to_display, $campus_name)
+	{		
+		// PAGINATION VARIABLES
+		// page is the current page, if there's nothing set, default is page 1
+		//$page = isset($_POST['page']) ? $_POST['page'] : 1;
+		
+		// set records or rows of data per page
+		//$cards_to_display = isset($_POST['cards_to_display']) ? $_POST['cards_to_display'] : 6;
+		
+		// set records or rows of data per page
+		$records_per_page = (int)$records_to_display;
+		
+		// calculate for the query LIMIT clause
+		$from_record_num = ($records_per_page * $page) - $records_per_page;
+		 
+		//$total_rows = $this->count_search_campuses($campus_code, $department, $extension_number);
+		 
+		// select data for current page
+		
+		/*SEARCH SENARIOS  
+			1. name only typed.			 
+			2. no item is specified.		
+		*/
+		 
+		//name only typed.
+		if(!empty($campus_name))
+		{
+			$query = "SELECT * FROM campuses WHERE cname LIKE :campus_name ORDER BY cname ASC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+			
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+						
+			$pattern  = '%' . $campus_name . '%';
+			
+			$stmt->bindParam(":campus_name", $pattern, PDO::PARAM_STR);
+			
+			
+			$count_query = "SELECT * FROM campuses WHERE cname LIKE :campus_name ORDER BY cname ASC";
+			
+			$count_stmt = $this->db->prepare($count_query);
+			  
+			$pattern  = '%' . $campus_name . '%';
+			
+			$count_stmt->bindParam(":campus_name", $pattern, PDO::PARAM_STR);
+				 	
+		} 
+		//no item is specified.
+		else if(empty($campus_name))
+		{				
+			$query = "SELECT * FROM campuses ORDER BY cid DESC LIMIT :from_record_num, :records_per_page";
+							
+			//echo $query;
+			
+			$stmt = $this->db->prepare($query);
+
+			$stmt->bindParam(":from_record_num", $from_record_num, PDO::PARAM_INT);
+			$stmt->bindParam(":records_per_page", $records_per_page, PDO::PARAM_INT);
+			
+			
+			$count_query = "SELECT * FROM campuses ORDER BY cid DESC";
+			
+			$count_stmt = $this->db->prepare($count_query);
+			   
+		}
+		else
+		{ 
+			$_SESSION['campuses_count'] = 0;
+			return;
+		}
+
+		$stmt->execute();
+			
+		$count_stmt->execute();
+				 
+		// this is how to get number of rows returned
+		$num = $stmt->rowCount();
+		
+		$count_num = $count_stmt->rowCount();
+		
+		$_SESSION['campuses_count'] = $count_num;
+
+		//echo $num;
+		// link to create record form
+		//echo "<a href='create.php' class='btn btn-primary m-b-1em'>Create New Product</a>";
+		 
+		//check if more than 0 record found
+		if($num>0){
+		 
+			// data from database will be here
+			echo "<table class='table table-dark table-striped table-hover table-bordered table-sm' id='table_campuses'>";//start table
+
+			//creating our table heading
+			echo "<thead class='thead-dark'>";
+			echo "<tr>";
+				echo "<th scope='col'>#</th>"; 
+				echo "<th scope='col'>Name</th>"; 
+				echo "<th scope='col'></th>";
+			echo "</tr>";
+			echo "</thead>";
+			echo "<tbody>";
+			
+			// table body will be here
+			// retrieve our table contents
+			// fetch() is faster than fetchAll()
+			// http://stackoverflow.com/questions/2770630/pdofetchall-vs-pdofetch-in-a-loop
+			
+			$counta = 0;
+			
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+				 
+				// extract row
+				// this will make $row['firstname'] to
+				// just $firstname only
+				extract($row);
+				 					
+				$id = $row['cid'];
+				$campus_code = $row['ccode'];
+				$campus_name = $row['cname'];
+				$addedby = $row['addedby']; 
+ 
+				$counta++;
+				
+				//$id = $counta;
+					
+				// creating new table row per record
+				echo "<tr class='table-primary'>";
+					
+				echo "<td class='table-success'>";
+								
+				echo htmlspecialchars($id, ENT_QUOTES);
+			
+				echo "</td>";
+			  
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($campus_name, ENT_QUOTES);
+
+				echo "</td>";
+			    
+				echo "<td class='table-success'>";
+					
+				echo "<a onClick='edit_campus({$id})' style='cursor:hand !important;' 
+				class='btn btn-info m-r-1em crud_buttons btn_edit' 
+				title='edit'  
+				data-id='{$id}' 
+				data-toggle='popover' 
+				data-placement='auto' 
+				data-trigger='hover' 
+				data-content='edit extension' >
+				edit
+					<span class='glyphicon'>
+					</span>
+				</a>";
+								
+				echo "<a onClick='delete_campus({$id})' style='cursor:hand !important;' 
+				class='btn btn-danger m-r-1em crud_buttons btn_delete' 
+				title='delete'  
+				data-id='{$id}' 
+				data-toggle='popover' 
+				data-placement='auto' 
+				data-trigger='hover' 
+				data-content='delete extension' >
+				delete
+					<span class='glyphicon'>
+					</span>
+				</a>";
+				
+				echo "</td>";
+			  			
+				echo "</tr>";
+				
+			} 
+
+			echo "</tbody>";
+			
+			echo "<tfoot>";
+			
+			echo "</tfoot>";
+			
+			// end table
+			echo "</table>";
+			
+			// PAGINATION
+			// count total number of rows
+			// $query = "SELECT COUNT(*) as total_rows FROM campuses";
+			// $stmt = $this->db->prepare($query);
+			 
+			// // execute query
+			// $stmt->execute();
+			 
+			// // get total rows
+			// $row = $stmt->fetch(PDO::FETCH_ASSOC);
+			// $total_rows = $row['total_rows'];
+			
+			//$total_rows = $this->count_search_campuses($campus_code, $department, $extension_number);
+			
+			// paginate records
+			$page_url="campuses.php?";
+			include_once "paging_search_campuses_table.php";
+		}
+		 
+		// if no records found
+		else{
+			echo "<div class='alert alert-danger'>No records found.</div>";
+		}
+	}
+ 
  
  
  

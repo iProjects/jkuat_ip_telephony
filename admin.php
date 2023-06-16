@@ -116,6 +116,15 @@ if (isset($_COOKIE['loggedinuser']))
 
 	<div class="wrapper">
 
+		<!--Humburger button -->
+		<div class="hamburger_lines" onclick="toggle_navigation();">
+		
+		  <span class="line line1"></span>
+		  <span class="line line2"></span>
+		  <span class="line line3"></span>
+			  
+		</div>
+
 		<!--Top menu -->
 		<div class="sidebar">
 	 

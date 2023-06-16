@@ -90,6 +90,15 @@ if (isset($_COOKIE['loggedinuser']))
 	 
 		
 	<div class="wrapper">
+		
+		<!--Humburger button -->
+		<div class="hamburger_lines" onclick="toggle_navigation();">
+		
+		  <span class="line line1"></span>
+		  <span class="line line2"></span>
+		  <span class="line line3"></span>
+			  
+		</div>
 
 		<!--Top menu -->
 		<div class="sidebar">
@@ -170,27 +179,12 @@ if (isset($_COOKIE['loggedinuser']))
 					<label for="cbo_search_department">Department</label> 
 					<select id="cbo_search_department" class="form-control"></select>
 				</div>
-					
+					 
 				<div class="div_search">
-					<label for="txt_search_extension_number">Extension No</label> 
-					<input type="text" id="txt_search_extension_number" name="txt_search_extension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
-				</div>
-				 
-				<div class="div_search">
-					<label for="txt_search_department">Department</label> 
-					<input type="text" id="txt_search_department" name="txt_search_department" placeholder="Department" class="form-control" required placeholder="Department" />
+					<label for="txt_other_params">Department/Owner Assigned/Extension No</label> 
+					<input type="text" id="txt_other_params" name="txt_other_params" placeholder="Department/Owner Assigned/Extension No" class="form-control" required />
 				</div>
 					
-				<div class="div_search">
-					<label for="txt_search_owner_assigned">Owner Assigned</label> 
-					<input type="text" id="txt_search_owner_assigned" name="txt_search_owner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
-				</div>
-					
-				<div class="div_search">
-					<label for="cbo_search_records_to_display">No of Records to Display</label> 
-					<select id="cbo_search_records_to_display" class="form-control"></select>
-				</div>
-				 
 			</div>
 			 
 			<div id="div_content_container">

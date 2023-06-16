@@ -255,9 +255,7 @@ function search_extensions() {
 		$records_to_display = trim(htmlspecialchars(strip_tags($_POST['records_to_display'])));
 		$campus_code = trim(htmlspecialchars(strip_tags($_POST['campus_code'])));
 		$department = trim(htmlspecialchars(strip_tags($_POST['department'])));
-		$extension_number = trim(htmlspecialchars(strip_tags($_POST['extension_number'])));
-		$txtdepartment = trim(htmlspecialchars(strip_tags($_POST['txtdepartment'])));
-		$txtowner_assigned = trim(htmlspecialchars(strip_tags($_POST['txtowner_assigned'])));
+		$other_params = trim(htmlspecialchars(strip_tags($_POST['other_params'])));
  
 		if(!isset($page)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> page is mandatory field.</div>';
@@ -272,7 +270,7 @@ function search_extensions() {
 
 		$extension_dal = new extension_dal();
 
-		echo $extension_dal->search_extensions($page, $records_to_display, $campus_code, $department, $extension_number, $txtdepartment, $txtowner_assigned);
+		echo $extension_dal->search_extensions_v2($page, $records_to_display, $campus_code, $department, $other_params);
 	 
 	}
 

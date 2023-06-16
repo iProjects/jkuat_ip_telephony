@@ -135,7 +135,7 @@ function search_departments() {
 
 		$department_dal = new department_dal();
 
-		echo $department_dal->search_departments($page, $records_to_display, $department_name);
+		echo $department_dal->search_departments_v2($page, $records_to_display, $department_name);
 	 
 	}
 

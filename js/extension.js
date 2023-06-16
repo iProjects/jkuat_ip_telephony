@@ -12,7 +12,8 @@ $(document).ready(function () {
 	
 	fetch_all_campuses();
 	  
-    $('#btncreate_extension_view').on('click', function(){
+    $('#btncreate_extension_view').on('click', function(){		
+		clear_logs();
         $('#create_extension_modal').modal('show');
 		fetch_campus_codes(); 
 		$("#cbo_create_campus").val("");
@@ -60,29 +61,19 @@ $(document).ready(function () {
 		search_extensions(1);
     });
 	
-    $('#txt_search_extension_number').on('input', function(){
+    $('#txt_other_params').on('input', function(){
         search_extensions(1);
     });
-	
-    $('#txt_search_department').on('input', function(){
-        search_extensions(1);
-    });
-	
-    $('#txt_search_owner_assigned').on('input', function(){
-        search_extensions(1);
-    });
-	
-    $('#cbo_search_records_to_display').on('change', function(){
-        search_extensions(1);
-    });
-	
+	 
     $('.btn_edit').on('click', function(){
 		var id = $(this).attr('data-id');  
+		clear_logs();
         edit_extension(id);
     });
 	  
     $('.btn_delete').on('click', function(){
 		var id = $(this).attr('data-id');
+		clear_logs();
         delete_extension(id);
     });
 		
@@ -121,9 +112,16 @@ $(document).ready(function () {
 		search_extensions(1);		
     });
  
-	$("#progress_bar").hide();
+    $('#txt_page').on('input', function(){
+        console.log($('#txt_page').val());
+    });
 	
-    //log_info_messages("finished load...");
+	$('.hamburger_lines').css('left', function() {
+		return ($('.sidebar').width() - 40) + "px";
+	});
+		
+	$("#progress_bar").hide();
+	 
 });
 
 var global_page_number_holder = 1;
@@ -198,7 +196,7 @@ function documententerkeyglobalhandler(e){
 
 		switch(callingpagename){ 
 			case "extensions.php":
-				//create_extension();
+				search_extensions(1);
 			break; 
 			default: 
 			break;
@@ -276,7 +274,7 @@ function create_extension(){
 		
 		clear_logs();
 		
-		show_info_toast("Extension created successfully.");
+		show_info_toast(response);
 		
 		hide_progress();
 		
@@ -526,7 +524,7 @@ function update_extension(){
 		
 		clear_logs();
 		
-		show_info_toast("Extension updated successfully.");
+		show_info_toast(response);
 		
 		hide_progress();
 		
@@ -540,71 +538,125 @@ function update_extension(){
 function delete_extension(id){
 	 
 	show_progress();
-			
-	var heading = "Delete";
-	var question = "are you sure you want to delete the record with id [ " + id + " ].";
-	var cancelButtonTxt = "cancel";
-	var okButtonTxt = "ok";
 	
-	var confirmModal = 
-		$('<div id= "delete_modal" class="modal fade">' +        
-		  '<div class="modal-dialog">' +
-		  '<div class="modal-content">' +
-		  '<div class="modal-header">' +
-			'<a class="close" data-dismiss="modal" >&times;</a>' +
-			'<h3>' + heading +'</h3>' +
-		  '</div>' +
+	var delete_prompt = get_delete_extension_prompt(id);
+	
+	hide_progress();
+	
+}
 
-		  '<div class="modal-body">' +
-			'<p class="form-control">' + question + '</p>' +
-		  '</div>' +
-
-		  '<div class="modal-footer">' +		  
-			'<a href="#!" id="okButton" class="btn btn-primary">' + 
-			  okButtonTxt + 
-			'</a>' +
-			'<a href="#!" class="btn btn-danger" data-dismiss="modal">' + 
-			  cancelButtonTxt + 
-			'</a>' +
-		  '</div>' +
-		  '</div>' +
-		  '</div>' +
-		'</div>');
-
-	confirmModal.find('#okButton').click(function(event) { 
-		 
-		confirmModal.modal('hide');
-		
-		// send data to server asynchronously.
-		$.ajax({
+function get_delete_extension_prompt(id){
+	  
+	show_progress();
+	clear_logs();
+	
+	console.log("id: " + id); 
+	
+	var isvalid = true;
+	if(id.length == 0)
+	{
+		show_error_toast("Error retrieving the Primary Key. <br />Reload the page."); 
+		isvalid = false;
+	}
+ 
+	if(isvalid == false)
+	{	
+		hide_progress();
+		return;
+	}
+	 
+	// send data to server asynchronously.
+	$.ajax({
 		url: "extension_controller.php",
 		type: "POST",
 		data: {
 			"id": id,
-			"action": "delete_extension"
+			"action": "get_extension"
 		},//data to be posted
-		}).done(function(response){
-			response = response.trim();
-
-			console.log("response: " + response); 
- 
-			log_info_messages(response); 
-			
-			search_extensions(1);
-			
-			show_info_toast("Extension deleted successfully.");
+	}).done(function(response){
+		response = response.trim();
 		
-			hide_progress();
+		console.log("response: " + response); 
+		 
+		var data = JSON.parse(response);
+				 
+		var id = data.id;
+		var code = data.ccode.trim();
+		var extension_number = data.deptcode.trim();
+		var owner_assigned = data.ownerassigned.trim();
+		var department = data.deptname.trim();
+		
+		var delete_prompt = "Are you sure you wish to delete Extension No [ " + extension_number + " ] for [ " + owner_assigned + " ] in Campus [ " + code + " ].";
+		
+		console.log("delete_prompt: " + delete_prompt); 
+			 
+		var heading = "Delete";
+		var question = "are you sure you want to delete the record with id [ " + id + " ].";
+		var cancelButtonTxt = "cancel";
+		var okButtonTxt = "ok";
+		
+		var confirmModal = 
+			$('<div id= "delete_modal" class="modal fade">' +        
+			  '<div class="modal-dialog">' +
+			  '<div class="modal-content">' +
+			  '<div class="modal-header">' +
+				'<a class="close" data-dismiss="modal" >&times;</a>' +
+				'<h3>' + heading +'</h3>' +
+			  '</div>' +
 
-		}).fail(function(jqXHR, textStatus){
-			log_error_messages(textStatus);
-			hide_progress();
-		});
-	}); 
+			  '<div class="modal-body">' + delete_prompt + '</div>' +
 
-	confirmModal.modal('show');  
-	
-	hide_progress();
+			  '<div class="modal-footer">' +		  
+				'<a href="#!" id="okButton" class="btn btn-primary">' + 
+				  okButtonTxt + 
+				'</a>' +
+				'<a href="#!" class="btn btn-danger" data-dismiss="modal">' + 
+				  cancelButtonTxt + 
+				'</a>' +
+			  '</div>' +
+			  '</div>' +
+			  '</div>' +
+			'</div>');
+
+		confirmModal.find('#okButton').click(function(event) { 
+			 
+			confirmModal.modal('hide');
+			
+			// send data to server asynchronously.
+			$.ajax({
+			url: "extension_controller.php",
+			type: "POST",
+			data: {
+				"id": id,
+				"action": "delete_extension"
+			},//data to be posted
+			}).done(function(response){
+				response = response.trim();
+
+				console.log("response: " + response); 
+	 
+				log_info_messages(response); 
+				
+				search_extensions(1);
+				
+				show_info_toast(response);
+			
+				hide_progress();
+
+			}).fail(function(jqXHR, textStatus){
+				log_error_messages(textStatus);
+				hide_progress();
+			});
+		}); 
+
+		confirmModal.modal('show');  
+				
+		hide_progress();
+		
+	}).fail(function(jqXHR, textStatus){
+		log_error_messages(textStatus);
+		hide_progress();
+	});
 	
 }
 
@@ -761,7 +813,7 @@ function fetch_department_names(campus_name) {
 		
 		select_options_arr.push('<option value=""></option>');
 		
-		for (var i = 0; i < names_arr.length; i++) {
+		for(var i = 0; i < names_arr.length; i++) {
 			var name = names_arr[i].deptname.trim();
 			console.log(name);
 			select_options_arr.push('<option value="' + name + '">' + name + '</option>');
@@ -821,28 +873,25 @@ function fetch_extensions(page){
 }
 
 function search_extensions(page){
-	 
+	
 	show_progress();
+	
+	close_toast();
 	
 	global_page_number_holder = page;
 	
-	var records_to_display = 5;
-	records_to_display = $("#cbo_search_records_to_display").val();
+	var records_to_display = 10; 
 	
 	console.log("records_to_display: " + records_to_display);	
 	console.log("page: " + page);
 	
 	var campus_code = $("#cbo_search_campus").val();
 	var department = $("#cbo_search_department").val();
-	var extension_number = $("#txt_search_extension_number").val();
-	var txtdepartment = $("#txt_search_department").val();
-	var txtowner_assigned = $("#txt_search_owner_assigned").val();
+	var other_params = $("#txt_other_params").val(); 
 	
 	console.log("campus_code: " + campus_code);	
 	console.log("department: " + department);	
-	console.log("extension_number: " + extension_number);
-	console.log("txtdepartment: " + txtdepartment);
-	console.log("txtowner_assigned: " + txtowner_assigned);
+	console.log("other_params: " + other_params); 
 	
 	show_progress();
 	
@@ -855,9 +904,7 @@ function search_extensions(page){
 			"records_to_display": records_to_display,
 			"campus_code": campus_code,
 			"department": department,
-			"extension_number": extension_number,
-			"txtdepartment": txtdepartment,
-			"txtowner_assigned": txtowner_assigned,
+			"other_params": other_params, 
 			"action": "search_extensions"
 		},//data to be posted
 	}).done(function(response){
@@ -919,6 +966,75 @@ function get_extensions_search_count(){
 		hide_progress();
 	});
 	
+}
+ 
+function go2Page(total_pages)
+{
+	close_toast();
+	
+	var current_page = document.getElementById("txt_page").value; 
+	
+	if(current_page.length == 0)
+	{
+		show_error_toast("Specify a Page number");
+		return;
+	}
+	
+	if(current_page > total_pages)
+	{
+		show_error_toast("Page number [ " + current_page + " ] does not exists.");
+	}else{	
+		search_extensions(current_page);
+	}
+}
+
+function toggle_navigation()
+{ 
+	var display = $('.sidebar').css('display');
+	
+	if(display == "block")
+	{	
+		//hide the sidebar
+		var style = [
+			'display: none',
+		].join(';');
+			
+		$('.sidebar').attr('style', style);
+		
+		$('.hamburger_lines').css('left', function() {
+			return "15px";
+		});
+		
+		//expand the contnent
+		var content_style = [ 
+			'width: 90%',
+			'left: 3%', 
+		].join(';');
+			
+		$('#dashboard_container').attr('style', content_style);
+				
+	}else{
+		//show the sidebar
+		var style = [
+			'display: block',
+		].join(';');
+			
+		$('.sidebar').attr('style', style);
+		
+		
+		$('.hamburger_lines').css('left', function() {
+			return ($('.sidebar').width() - 40) + "px";
+		});
+		
+		//shrink the contnent
+		var content_style = [ 
+			'width: 60%',
+			'left: 30%', 
+		].join(';');
+			
+		$('#dashboard_container').attr('style', content_style);
+		
+	}
 }
  
 

@@ -64,32 +64,34 @@ if (isset($_COOKIE["origin"])) {
 			<p id="title">Search senarios include:-</p>			
 			<ol id="lst_help_content">
 				<li><p>1. All items are specified.</p></li>
-				<li><p>2. Campus and Department(selected).</p></li>
-				<li><p>3. Campus and Department(typed).</p></li>
-				<li><p>4. Campus and Owner Assigned(typed).</p></li>
-				<li><p>5. Campus and Extension(typed).</p></li>
-				<li><p>6. Campus and Department selected and Extension typed.</p></li>
-				<li><p>7. Campus and Department selected and Department typed.</p></li>
-				<li><p>8. Campus and Department selected and Owner Assigned typed.</p></li>
-				<li><p>9. Department only(typed).</p></li>
-				<li><p>10. Department only(selected).</p></li>
-				<li><p>11. Owner Assigned only(typed).</p></li>
-				<li><p>12. Extension only(typed).</p></li>
-				<li><p>13. No item is specified.</p></li>
+				<li><p>2. Campus only (selected).</p></li>
+				<li><p>3. Department only(selected).</p></li>
+				<li><p>4. Campus and Department(selected).</p></li>
+				<li><p>5. Campus and Other Parameters(typed).</p></li>
+				<li><p>6. Department and Other Parameters(typed).</p></li>
+				<li><p>7. Other Parameters only(typed).</p></li>
+				<li><p>8. No item is specified.</p></li>
 			</ol>		 
 		</div>
 
 	</div>
  	 	
-		 
-		 
-		 
+		  
 
 <div class="wrapper">
+	
+	<!--Humburger button -->
+	<div class="hamburger_lines" onclick="toggle_navigation();">
+	
+	  <span class="line line1"></span>
+	  <span class="line line2"></span>
+	  <span class="line line3"></span>
+	  	  
+	</div>
 
 	<!--Top menu -->
 	<div class="sidebar">
- 
+		
 		<!--profile image & text-->
 		<div class="profile">
 			<img id="img_logo" src="images/jkuat_logo.png" > 
@@ -117,21 +119,10 @@ if (isset($_COOKIE["origin"])) {
 			</div>
 				
 			<div class="div_search">
-				<label for="txtdepartment">Department</label> 
-				<input type="text" id="txtdepartment" name="txtdepartment" placeholder="Department" class="form-control" required placeholder="Department" />
+				<label for="txt_other_params">Department/Owner Assigned/Extension No</label> 
+				<input type="text" id="txt_other_params" name="txt_other_params" placeholder="Department/Owner Assigned/Extension No" class="form-control" required />
 			</div>
-				
-			<div class="div_search">
-				<label for="txtowner_assigned">Owner Assigned</label> 
-				<input type="text" id="txtowner_assigned" name="txtowner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
-			</div>
-				
-			<div class="div_search">
-				<label for="txtextension_number">Extension No</label> 
-				<input type="text" id="txtextension_number" name="txtextension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
-			</div>
-			 
-			
+				 
 		</div>
 		
 		 
