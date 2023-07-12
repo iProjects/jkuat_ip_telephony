@@ -240,11 +240,13 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="cbo_edit_campus">Campus <span class="text-danger">*</span></label>
 						<select id="cbo_edit_campus" class="form-control"></select>
+						<p id="cbo_edit_campus_error" class="error"></p>
 					</div>
 	 
 					<div class="form-group">
 						<label for="txt_edit_department_name">Name<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_edit_department_name" name="txt_edit_department_name" placeholder="Name" class="form-control" required placeholder="Name" />
+						<p id="txt_edit_department_name_error" class="error"></p>
 					</div>
 						
 				</div> 
@@ -291,11 +293,13 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="cbo_create_campus">Campus <span class="text-danger">*</span></label>
 						<select id="cbo_create_campus" class="form-control"></select>
+						<p id="cbo_create_campus_error" class="error"></p>
 					</div>
 	  
 					<div class="form-group">
 						<label for="txt_create_department_name">Name<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_create_department_name" name="txt_create_department_name" placeholder="Name" class="form-control" required placeholder="Name" />
+						<p id="txt_create_department_name_error" class="error"></p>
 					</div>
 						
 

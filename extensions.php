@@ -249,21 +249,25 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="cbo_edit_campus">Campus <span class="text-danger">*</span></label> 
 						<select id="cbo_edit_campus" class="form-control"></select>
+						<p id="cbo_edit_campus_error" class="error"></p>
 					</div>
 
 					<div class="form-group">
 						<label for="cbo_edit_department">Department <span class="text-danger">*</span></label>
 						<select id="cbo_edit_department" class="form-control"></select>
+						<p id="cbo_edit_department_error" class="error"></p>
 					</div>
 	 
 					<div class="form-group">
 						<label for="txt_edit_owner_assigned">Owner Assigned <span class="text-danger">*</span></label>
 						<input type="text" id="txt_edit_owner_assigned" name="txt_edit_owner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
+						<p id="txt_edit_owner_assigned_error" class="error"></p>
 					</div>
 	 
 					<div class="form-group">
 						<label for="txt_edit_extension_number">Extension No <span class="text-danger">*</span></label>
 						<input type="text" id="txt_edit_extension_number" name="txt_edit_extension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
+						<p id="txt_edit_extension_number_error" class="error"></p>
 					</div>
 
 				</div> 
@@ -310,21 +314,25 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="cbo_create_campus">Campus <span class="text-danger">*</span></label> 
 						<select id="cbo_create_campus" class="form-control"></select>
+						<p id="cbo_create_campus_error" class="error"></p>
 					</div>
 
 					<div class="form-group">
 						<label for="cbo_create_department">Department <span class="text-danger">*</span></label>
 						<select id="cbo_create_department" class="form-control"></select>
+						<p id="cbo_create_department_error" class="error"></p>
 					</div>
 	 
 					<div class="form-group">
-						<label for="txtowner_assigned">Owner Assigned <span class="text-danger">*</span></label>
-						<input type="text" id="txt_create_owner_assigned" name="txtowner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
+						<label for="txt_create_owner_assigned">Owner Assigned <span class="text-danger">*</span></label>
+						<input type="text" id="txt_create_owner_assigned" name="txt_create_owner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
+						<p id="txt_create_owner_assigned_error" class="error"></p>
 					</div>
 	 
 					<div class="form-group">
-						<label for="txtextension_number">Extension No <span class="text-danger">*</span></label>
-						<input type="text" id="txt_create_extension_number" name="txtextension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
+						<label for="txt_create_extension_number">Extension No <span class="text-danger">*</span></label>
+						<input type="text" id="txt_create_extension_number" name="txt_create_extension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
+						<p id="txt_create_extension_number_error" class="error"></p>
 					</div>
 
 				</div> 

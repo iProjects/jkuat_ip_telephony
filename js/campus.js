@@ -201,6 +201,7 @@ function create_campus(){
 	
 	show_progress();
 	clear_logs();
+	document.querySelector("#txt_create_campus_name_error").innerHTML = "";
 	 
 	var campus_name = $("#txt_create_campus_name").val().trim();
 	var addedby = readCookie("loggedinuser"); 
@@ -209,7 +210,9 @@ function create_campus(){
 	 
 	if(campus_name.length == 0)
 	{ 
-		log_error_messages("Name cannot be null."); 		
+		//log_error_messages("Name cannot be null."); 	
+		document.querySelector("#txt_create_campus_name_error").innerHTML = "Name cannot be null.";
+      	document.querySelector("#txt_create_campus_name_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(addedby == null)
@@ -321,6 +324,7 @@ function update_campus(){
 	
 	show_progress();
 	clear_logs();  
+	document.querySelector("#txt_create_campus_name_error").innerHTML = "";
 	
 	var id = $('#txt_edit_id').val(); 
 	var campus_name = $("#txt_edit_campus_name").val().trim();  
@@ -334,7 +338,9 @@ function update_campus(){
 	}  
 	if(campus_name.length == 0)
 	{ 
-		log_error_messages("Name cannot be null."); 		
+		//log_error_messages("Name cannot be null."); 	
+		document.querySelector("#txt_edit_campus_name_error").innerHTML = "Name cannot be null.";
+      	document.querySelector("#txt_edit_campus_name_error").style.display = "block";		
 		isvalid = false;
 	} 
 	 	

@@ -239,21 +239,25 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="txt_edit_email">Email<span class="text-danger">*</span></label> 
 						<input type="email" id="txt_edit_email" name="txt_edit_email" placeholder="Email" class="form-control" required placeholder="Email" />
+						<p id="txt_edit_email_error" class="error"></p>
 					</div>
 					 
 					<div class="form-group">
 						<label for="txt_edit_full_names">Full Name<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_edit_full_names" name="txt_edit_full_names" placeholder="Full Name" class="form-control" required placeholder="Full Name" />
+						<p id="txt_edit_full_names_error" class="error"></p>
 					</div>
 						 
 					<div class="form-group">
 						<label for="txt_edit_password">Password<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_edit_password" name="txt_edit_password" placeholder="Password" class="form-control" required placeholder="Password" />
+						<p id="txt_edit_password_error" class="error"></p>
 					</div>
 						 
 					<div class="form-group">
 						<label for="txt_edit_secretword">Secret Word<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_edit_secretword" name="txt_edit_secretword" placeholder="Secret Word" class="form-control" required placeholder="Secret Word" />
+						<p id="txt_edit_secretword_error" class="error"></p>
 					</div>
 						 
 				</div> 
@@ -300,21 +304,25 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="txt_create_email">Email<span class="text-danger">*</span></label> 
 						<input type="email" id="txt_create_email" name="txt_create_email" placeholder="Email" class="form-control" required placeholder="Email" />
+						<p id="txt_create_email_error" class="error"></p>
 					</div>
 					 
 					<div class="form-group">
 						<label for="txt_create_full_names">Full Name<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_create_full_names" name="txt_create_full_names" placeholder="Full Name" class="form-control" required placeholder="Full Name" />
+						<p id="txt_create_full_names_error" class="error"></p>
 					</div>
 						 
 					<div class="form-group">
 						<label for="txt_create_password">Password<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_create_password" name="txt_create_password" placeholder="Password" class="form-control" required placeholder="Password" />
+						<p id="txt_create_password_error" class="error"></p>
 					</div>
 						 
 					<div class="form-group">
 						<label for="txt_create_secretword">Secret Word<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_create_secretword" name="txt_create_secretword" placeholder="Secret Word" class="form-control" required placeholder="Secret Word" />
+						<p id="txt_create_secretword_error" class="error"></p>
 					</div>
 						
 

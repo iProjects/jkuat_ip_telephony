@@ -208,6 +208,8 @@ function create_user_role(){
 	
 	show_progress();
 	clear_logs(); 
+	document.querySelector("#cbo_create_user_error").innerHTML = "";
+	document.querySelector("#cbo_create_role_error").innerHTML = "";
 	 
 	var user_id = $("#cbo_create_user").val();
 	var role_id = $("#cbo_create_role").val();
@@ -217,23 +219,31 @@ function create_user_role(){
 	
 	if(user_id == null)
 	{ 
-		log_error_messages("Select User."); 		
+		//log_error_messages("Select User."); 		
+		document.querySelector("#cbo_create_user_error").innerHTML = "Select User.";
+  		document.querySelector("#cbo_create_user_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(user_id.length == 0)
 		{ 
-			log_error_messages("Select User."); 		
+			//log_error_messages("Select User."); 		
+			document.querySelector("#cbo_create_user_error").innerHTML = "Select User.";
+  			document.querySelector("#cbo_create_user_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
 	if(role_id == null)
 	{ 
-		log_error_messages("Select Role."); 		
+		//log_error_messages("Select Role."); 		
+		document.querySelector("#cbo_create_role_error").innerHTML = "Select Role.";
+  		document.querySelector("#cbo_create_role_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(role_id.length == 0)
 		{ 
-			log_error_messages("Select Role."); 		
+			//log_error_messages("Select Role."); 		
+			document.querySelector("#cbo_create_role_error").innerHTML = "Select Role.";
+  			document.querySelector("#cbo_create_role_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
@@ -352,6 +362,8 @@ function update_user_role(){
 	
 	show_progress();
 	clear_logs();  
+	document.querySelector("#cbo_edit_user_error").innerHTML = "";
+	document.querySelector("#cbo_edit_role_error").innerHTML = "";
 	
 	var id = $('#txt_edit_id').val(); 
 	var user_id = $("#cbo_edit_user").val();
@@ -366,23 +378,31 @@ function update_user_role(){
 	}  
 	if(user_id == null)
 	{ 
-		log_error_messages("Select User."); 		
+		//log_error_messages("Select User."); 		
+		document.querySelector("#cbo_edit_user_error").innerHTML = "Select User.";
+  		document.querySelector("#cbo_edit_user_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(user_id.length == 0)
 		{ 
-			log_error_messages("Select User."); 		
+			//log_error_messages("Select User."); 		
+			document.querySelector("#cbo_edit_user_error").innerHTML = "Select User.";
+  			document.querySelector("#cbo_edit_user_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
 	if(role_id == null)
 	{ 
-		log_error_messages("Select Role."); 		
+		//log_error_messages("Select Role."); 		
+		document.querySelector("#cbo_edit_role_error").innerHTML = "Select Role.";
+  		document.querySelector("#cbo_edit_role_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(role_id.length == 0)
 		{ 
-			log_error_messages("Select Role."); 		
+			//log_error_messages("Select Role."); 		
+			document.querySelector("#cbo_edit_role_error").innerHTML = "Select Role.";
+  			document.querySelector("#cbo_edit_role_error").style.display = "block";	
 			isvalid = false;
 		}
 	}

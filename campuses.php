@@ -236,6 +236,7 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="txt_edit_campus_name">Name<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_edit_campus_name" name="txt_edit_campus_name" placeholder="Name" class="form-control" required placeholder="Name" />
+						<p id="txt_edit_campus_name_error" class="error"></p>
 					</div>
 						 
 				</div> 
@@ -282,6 +283,7 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="txt_create_campus_name">Name<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_create_campus_name" name="txt_create_campus_name" placeholder="Name" class="form-control" required placeholder="Name" />
+						<p id="txt_create_campus_name_error" class="error"></p>
 					</div>
 						 
 

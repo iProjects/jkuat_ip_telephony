@@ -203,6 +203,7 @@ function create_role(){
 	
 	show_progress();
 	clear_logs();
+	document.querySelector("#txt_create_role_name_error").innerHTML = "";
 	 
 	var role_name = $("#txt_create_role_name").val().trim();
 	var addedby = readCookie("loggedinuser"); 
@@ -211,7 +212,9 @@ function create_role(){
 	 
 	if(role_name.length == 0)
 	{ 
-		log_error_messages("Name cannot be null."); 		
+		//log_error_messages("Name cannot be null."); 		
+		document.querySelector("#txt_create_role_name_error").innerHTML = "Name cannot be null.";
+  		document.querySelector("#txt_create_role_name_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(addedby == null)
@@ -323,6 +326,7 @@ function update_role(){
 	
 	show_progress();
 	clear_logs();  
+	document.querySelector("#txt_edit_role_name_error").innerHTML = "";
 	
 	var id = $('#txt_edit_id').val(); 
 	var role_name = $("#txt_edit_role_name").val().trim();  
@@ -336,7 +340,9 @@ function update_role(){
 	}  
 	if(role_name.length == 0)
 	{ 
-		log_error_messages("Name cannot be null."); 		
+		//log_error_messages("Name cannot be null."); 		
+		document.querySelector("#txt_edit_role_name_error").innerHTML = "Name cannot be null.";
+  		document.querySelector("#txt_edit_role_name_error").style.display = "block";	
 		isvalid = false;
 	} 
 	 	

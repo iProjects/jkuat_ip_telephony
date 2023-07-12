@@ -73,7 +73,7 @@ if (isset($_COOKIE['loggedinuser']))
 		<div id="progress_bar" class="progress-bar progress-bar-striped indeterminate"></div>
 		 
 		<div id="div_logggin_info"> 						 
-			<span  id= "lbllogginright">
+			<span  id= "lbllogginuser">
 				<?php
 					echo "Logged in User [ " . $_COOKIE["loggedinuser"] . " ]";
 				?>
@@ -234,6 +234,7 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="txt_edit_right_name">Name<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_edit_right_name" name="txt_edit_right_name" placeholder="Name" class="form-control" required placeholder="Name" />
+						<p id="txt_edit_right_name_error" class="error"></p>
 					</div>
 						   
 				</div> 
@@ -278,8 +279,9 @@ if (isset($_COOKIE['loggedinuser']))
 					</div>
  
 					<div class="form-group">
-						<label for="txt_create_name">Name<span class="text-danger">*</span></label> 
-						<input type="text" id="txt_create_name" name="txt_create_name" placeholder="Name" class="form-control" placeholder="Name"  required />
+						<label for="txt_create_right_name">Name<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_create_right_name" name="txt_create_right_name" placeholder="Name" class="form-control" placeholder="Name"  required />
+						<p id="txt_create_right_name_error" class="error"></p>
 					</div>
 						  
 

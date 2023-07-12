@@ -2,7 +2,8 @@
 
 require 'extension_dal.php';
 
-if(isset($_POST['action'])){
+if(isset($_POST['action']))
+{
 	if ($_POST['action'] == "create_extension") 
 	{ 
 		create_extension(); 

@@ -228,7 +228,12 @@ function create_extension(){
 	
 	show_progress();
 	clear_logs();
-	
+	document.querySelector("#cbo_create_campus_error").innerHTML = "";
+	document.querySelector("#cbo_create_department_error").innerHTML = "";
+	document.querySelector("#txt_create_owner_assigned_error").innerHTML = "";
+	document.querySelector("#txt_create_extension_number_error").innerHTML = "";
+
+
 	var campus_id = $('#cbo_create_campus').val();
 	var department_id = $("#cbo_create_department").val();
 	var owner_assigned = $("#txt_create_owner_assigned").val().trim();
@@ -241,43 +246,57 @@ function create_extension(){
 	{ 
 		if(campus_id.length == 0)
 		{ 
-			log_error_messages("Select Campus."); 		
+			//log_error_messages("Select Campus."); 	
+			document.querySelector("#cbo_create_campus_error").innerHTML = "Select Campus.";
+      		document.querySelector("#cbo_create_campus_error").style.display = "block";			
 			isvalid = false;
 		} 
 	}
 	if(campus_id == null)
 	{ 
-		log_error_messages("Select Campus."); 		
+		//log_error_messages("Select Campus."); 		
+		document.querySelector("#cbo_create_campus_error").innerHTML = "Select Campus.";
+      	document.querySelector("#cbo_create_campus_error").style.display = "block";		
 		isvalid = false;
 	}
 	if(department_id != null)
 	{ 
 		if(department_id.length == 0)
 		{ 
-			log_error_messages("Select Department."); 		
+			//log_error_messages("Select Department."); 		
+			document.querySelector("#cbo_create_department_error").innerHTML = "Select Department.";
+      		document.querySelector("#cbo_create_department_error").style.display = "block";	
 			isvalid = false;
 		} 
 	}
 	if(department_id == null)
 	{ 
-		log_error_messages("Select Department."); 		
+		//log_error_messages("Select Department."); 		
+		document.querySelector("#cbo_create_department_error").innerHTML = "Select Department.";
+      	document.querySelector("#cbo_create_department_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(owner_assigned.length == 0)
 	{ 
-		log_error_messages("Owner Assigned cannot be null."); 		
+		//log_error_messages("Owner Assigned cannot be null."); 		
+		document.querySelector("#txt_create_owner_assigned_error").innerHTML = "Owner Assigned cannot be null.";
+      	document.querySelector("#txt_create_owner_assigned_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(extension_number.length == 0)
 	{ 
-		log_error_messages("Extension Number cannot be null."); 		
+		//log_error_messages("Extension Number cannot be null."); 		
+		document.querySelector("#txt_create_extension_number_error").innerHTML = "Extension Number cannot be null.";
+      	document.querySelector("#txt_create_extension_number_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(extension_number.length != 0)
 	{
 		if(!$.isNumeric(extension_number))
 		{ 
-			log_error_messages("Extension Number must be digits."); 		
+			//log_error_messages("Extension Number must be digits."); 		
+			document.querySelector("#txt_create_extension_number_error").innerHTML = "Extension Number must be digits.";
+      		document.querySelector("#txt_create_extension_number_error").style.display = "block";	
 			isvalid = false;
 		}
  	}
@@ -457,7 +476,11 @@ function update_extension(){
 	
 	show_progress();
 	clear_logs();  
-	
+	document.querySelector("#cbo_edit_campus_error").innerHTML = "";
+	document.querySelector("#cbo_edit_department_error").innerHTML = "";
+	document.querySelector("#txt_edit_owner_assigned_error").innerHTML = "";
+	document.querySelector("#txt_edit_extension_number_error").innerHTML = "";
+
 	var id = $('#txt_edit_id').val();
 	var campus_id = $('#cbo_edit_campus').val();
 	var department_id = $("#cbo_edit_department").val();
@@ -475,43 +498,57 @@ function update_extension(){
 	{ 
 		if(campus_id.length == 0)
 		{ 
-			log_error_messages("Select Campus."); 		
+			//log_error_messages("Select Campus."); 	
+			document.querySelector("#cbo_edit_campus_error").innerHTML = "Select Campus.";
+      		document.querySelector("#cbo_edit_campus_error").style.display = "block";			
 			isvalid = false;
 		} 
 	}
 	if(campus_id == null)
 	{ 
-		log_error_messages("Select Campus."); 		
+		//log_error_messages("Select Campus."); 		
+		document.querySelector("#cbo_edit_campus_error").innerHTML = "Select Campus.";
+      	document.querySelector("#cbo_edit_campus_error").style.display = "block";		
 		isvalid = false;
 	}
 	if(department_id != null)
 	{ 
 		if(department_id.length == 0)
 		{ 
-			log_error_messages("Select Department."); 		
+			//log_error_messages("Select Department."); 		
+			document.querySelector("#cbo_edit_department_error").innerHTML = "Select Department.";
+      		document.querySelector("#cbo_edit_department_error").style.display = "block";	
 			isvalid = false;
 		} 
 	}
 	if(department_id == null)
 	{ 
-		log_error_messages("Select Department."); 		
+		//log_error_messages("Select Department."); 		
+		document.querySelector("#cbo_edit_department_error").innerHTML = "Select Department.";
+      	document.querySelector("#cbo_edit_department_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(owner_assigned.length == 0)
 	{ 
-		log_error_messages("Owner Assigned cannot be null."); 		
+		//log_error_messages("Owner Assigned cannot be null."); 		
+		document.querySelector("#txt_edit_owner_assigned_error").innerHTML = "Owner Assigned cannot be null.";
+      	document.querySelector("#txt_edit_owner_assigned_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(extension_number.length == 0)
 	{ 
-		log_error_messages("Extension Number cannot be null."); 		
+		//log_error_messages("Extension Number cannot be null."); 		
+		document.querySelector("#txt_edit_extension_number_error").innerHTML = "Extension Number cannot be null.";
+      	document.querySelector("#txt_edit_extension_number_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(extension_number.length != 0)
 	{
 		if(!$.isNumeric(extension_number))
 		{ 
-			log_error_messages("Extension Number must be digits."); 		
+			//log_error_messages("Extension Number must be digits."); 		
+			document.querySelector("#txt_edit_extension_number_error").innerHTML = "Extension Number must be digits.";
+      		document.querySelector("#txt_edit_extension_number_error").style.display = "block";	
 			isvalid = false;
 		}
  	}
@@ -604,10 +641,10 @@ function get_delete_prompt(id){
 		var id = data.id;
 		var campus_id = data.campus_id;
 		var department_id = data.department_id;
-		var extension_number = data.extension_number.trim();
-		var owner_assigned = data.ownerassigned.trim();
+		var extension_number = data.extension_number;
+		var owner_assigned = data.owner_assigned;
 		
-		var delete_prompt = "Are you sure you wish to delete Extension No [ " + extension_number + " ] for [ " + owner_assigned + " ] in Campus [ " + code + " ].";
+		var delete_prompt = "Are you sure you wish to delete Extension No [ " + extension_number + " ] for [ " + owner_assigned + " ].";
 		
 		console.log("delete_prompt: " + delete_prompt); 
 			 

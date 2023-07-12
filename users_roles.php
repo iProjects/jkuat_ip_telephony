@@ -73,9 +73,9 @@ if (isset($_COOKIE['loggedinuser']))
 		<div id="progress_bar" class="progress-bar progress-bar-striped indeterminate"></div>
 		 
 		<div id="div_logggin_info"> 						 
-			<span  id= "lbllogginrole">
+			<span  id= "lbllogginuser">
 				<?php
-					echo "Logged in USer [ " . $_COOKIE["loggedinuser"] . " ]";
+					echo "Logged in User [ " . $_COOKIE["loggedinuser"] . " ]";
 				?>
 			</span>
 			<span  id= "lblloggedintime">
@@ -239,11 +239,13 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="cbo_edit_user">User<span class="text-danger">*</span></label> 
 						<select id="cbo_edit_user" class="form-control"></select>
+						<p id="cbo_edit_user_error" class="error"></p>
 					</div>
 					
 					<div class="form-group">
 						<label for="cbo_edit_role">Role<span class="text-danger">*</span></label> 
 						<select id="cbo_edit_role" class="form-control"></select>
+						<p id="cbo_edit_role_error" class="error"></p>
 					</div>
 						   
 				</div> 
@@ -290,11 +292,13 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="cbo_create_user">User<span class="text-danger">*</span></label> 
 						<select id="cbo_create_user" class="form-control"></select>
+						<p id="cbo_create_user_error" class="error"></p>
 					</div>
 					
 					<div class="form-group">
 						<label for="cbo_create_role">Role<span class="text-danger">*</span></label> 
 						<select id="cbo_create_role" class="form-control"></select>
+						<p id="cbo_create_role_error" class="error"></p>
 					</div>
 						
 

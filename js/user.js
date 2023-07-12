@@ -214,6 +214,10 @@ function create_user(){
 	
 	show_progress();
 	clear_logs();
+	document.querySelector("#txt_create_email_error").innerHTML = "";
+	document.querySelector("#txt_create_full_names_error").innerHTML = "";
+	document.querySelector("#txt_create_password_error").innerHTML = "";
+	document.querySelector("#txt_create_secretword_error").innerHTML = "";
 	
 	var email = $('#txt_create_email').val().trim();
 	var full_names = $("#txt_create_full_names").val().trim();
@@ -224,7 +228,9 @@ function create_user(){
 	
 	if(email.length == 0)
 	{
-		log_error_messages("Email cannot be null."); 
+		//log_error_messages("Email cannot be null."); 
+		document.querySelector("#txt_create_email_error").innerHTML = "Email cannot be null.";
+  		document.querySelector("#txt_create_email_error").style.display = "block";	
 		isvalid = false;
 	} 
 	if(email.length != 0)
@@ -232,23 +238,31 @@ function create_user(){
 		var is_email_valid = validate_email(email);
 		if(!is_email_valid)
 		{
-			log_error_messages("Please provide a valid email address."); 
+			//log_error_messages("Please provide a valid email address."); 
+			document.querySelector("#txt_create_email_error").innerHTML = "Please provide a valid email address.";
+  			document.querySelector("#txt_create_email_error").style.display = "block";	
 			isvalid = false;
 		} 
 	} 
 	if(full_names.length == 0)
 	{ 
-		log_error_messages("User Name cannot be null."); 		
+		//log_error_messages("User Name cannot be null."); 		
+		document.querySelector("#txt_create_full_names_error").innerHTML = "User Name cannot be null.";
+  		document.querySelector("#txt_create_full_names_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(pass_word.length == 0)
 	{
-		log_error_messages("Password cannot be null."); 
+		//log_error_messages("Password cannot be null."); 
+		document.querySelector("#txt_create_password_error").innerHTML = "Password cannot be null.";
+  		document.querySelector("#txt_create_password_error").style.display = "block";	
 		isvalid = false;
 	} 
 	if(secretword.length == 0)
 	{ 
-		log_error_messages("Secret Word cannot be null."); 		
+		//log_error_messages("Secret Word cannot be null."); 		
+		document.querySelector("#txt_create_secretword_error").innerHTML = "Secret Word cannot be null.";
+  		document.querySelector("#txt_create_secretword_error").style.display = "block";	
 		isvalid = false;
 	}
 	 	
@@ -372,6 +386,10 @@ function update_user(){
 	
 	show_progress();
 	clear_logs();  
+	document.querySelector("#txt_edit_email_error").innerHTML = "";
+	document.querySelector("#txt_edit_full_names_error").innerHTML = "";
+	document.querySelector("#txt_edit_password_error").innerHTML = "";
+	document.querySelector("#txt_edit_secretword_error").innerHTML = "";
 	
 	var id = $('#txt_edit_id').val();
 	var email = $('#txt_edit_email').val().trim();
@@ -388,7 +406,9 @@ function update_user(){
 	} 
 	if(email.length == 0)
 	{
-		log_error_messages("Email cannot be null."); 
+		//log_error_messages("Email cannot be null."); 
+		document.querySelector("#txt_edit_email_error").innerHTML = "Email cannot be null.";
+  		document.querySelector("#txt_edit_email_error").style.display = "block";	
 		isvalid = false;
 	} 
 	if(email.length != 0)
@@ -396,25 +416,33 @@ function update_user(){
 		var is_email_valid = validate_email(email);
 		if(!is_email_valid)
 		{
-			log_error_messages("Please provide a valid email address."); 
+			//log_error_messages("Please provide a valid email address."); 
+			document.querySelector("#txt_edit_email_error").innerHTML = "Please provide a valid email address.";
+  			document.querySelector("#txt_edit_email_error").style.display = "block";	
 			isvalid = false;
 		} 
 	} 
 	if(full_names.length == 0)
 	{ 
-		log_error_messages("User Name cannot be null."); 		
+		//log_error_messages("User Name cannot be null."); 		
+		document.querySelector("#txt_edit_full_names_error").innerHTML = "User Name cannot be null.";
+  		document.querySelector("#txt_edit_full_names_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(pass_word.length == 0)
 	{
-		log_error_messages("Password cannot be null."); 
+		//log_error_messages("Password cannot be null."); 
+		document.querySelector("#txt_edit_password_error").innerHTML = "Password cannot be null.";
+  		document.querySelector("#txt_edit_password_error").style.display = "block";	
 		isvalid = false;
 	} 
 	if(secretword.length == 0)
 	{ 
-		log_error_messages("Secret Word cannot be null."); 		
+		//log_error_messages("Secret Word cannot be null."); 		
+		document.querySelector("#txt_edit_secretword_error").innerHTML = "Secret Word cannot be null.";
+  		document.querySelector("#txt_edit_secretword_error").style.display = "block";	
 		isvalid = false;
-	}	
+	}
 	 	
 	if(isvalid == false)
 	{	

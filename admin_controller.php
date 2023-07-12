@@ -2,7 +2,8 @@
 
 require 'admin_dal.php';
 
-if(isset($_POST['action'])){ 
+if(isset($_POST['action']))
+{ 
 	if ($_POST['action'] == "get_campus_count") 
 	{ 
 		get_campus_count(); 

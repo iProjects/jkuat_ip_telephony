@@ -73,9 +73,9 @@ if (isset($_COOKIE['loggedinuser']))
 		<div id="progress_bar" class="progress-bar progress-bar-striped indeterminate"></div>
 		 
 		<div id="div_logggin_info"> 						 
-			<span  id= "lbllogginrole">
+			<span  id= "lbllogginuser">
 				<?php
-					echo "Logged in USer [ " . $_COOKIE["loggedinuser"] . " ]";
+					echo "Logged in User [ " . $_COOKIE["loggedinuser"] . " ]";
 				?>
 			</span>
 			<span  id= "lblloggedintime">
@@ -234,6 +234,7 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="txt_edit_role_name">Name<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_edit_role_name" name="txt_edit_role_name" placeholder="Name" class="form-control" required placeholder="Name" />
+						<p id="txt_edit_role_name_error" class="error"></p>
 					</div>
 						   
 				</div> 
@@ -280,6 +281,7 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="txt_create_role_name">Name<span class="text-danger">*</span></label> 
 						<input type="text" id="txt_create_role_name" name="txt_create_role_name" placeholder="Name" class="form-control" required placeholder="Name" />
+						<p id="txt_create_role_name_error" class="error"></p>
 					</div>
 						  
 

@@ -186,6 +186,13 @@ if (isset($_COOKIE['loggedinuser']))
 				<div id="div_content"> 
 					<label id="lbl_title">You can download a preformated template to see how the extensions data is supposed to be formatted.</label>
 					
+					<form id="Upload" action="upload_extensions_from_excel_controller.php" method="post" enctype="multipart/form-data">
+					    <label for="fileSelect">Navigate and choose:</label>
+					    <input type="file" name="file" id="fileSelect"><br><br>
+					    <input class="button" type="submit" name="action" value="Upload to Shared Folder">
+					</form>
+
+
 					<div id="div_select">
 						<label id="lbl_choose">Choose your file</label>
 						<input type="file" name="txt_file" id="txt_file" class="form-control" accept=".xls,.xlsx">

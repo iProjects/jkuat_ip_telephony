@@ -206,7 +206,9 @@ function create_department(){
 	
 	show_progress();
 	clear_logs();
-	 
+	document.querySelector("#cbo_create_campus_error").innerHTML = "";
+	document.querySelector("#txt_create_department_name_error").innerHTML = "";
+	
 	var campus_id = $("#cbo_create_campus").val();
 	var department_name = $("#txt_create_department_name").val().trim();
 	var addedby = readCookie("loggedinuser"); 
@@ -217,18 +219,24 @@ function create_department(){
 	{ 
 		if(campus_id.length == 0)
 		{ 
-			log_error_messages("Select Campus."); 		
+			//log_error_messages("Select Campus."); 	
+			document.querySelector("#cbo_create_campus_error").innerHTML = "Select Campus.";
+      		document.querySelector("#cbo_create_campus_error").style.display = "block";			
 			isvalid = false;
 		} 
 	}
 	if(campus_id == null)
 	{ 
-		log_error_messages("Select Campus."); 		
+		//log_error_messages("Select Campus."); 		
+		document.querySelector("#cbo_create_campus_error").innerHTML = "Select Campus.";
+      	document.querySelector("#cbo_create_campus_error").style.display = "block";		
 		isvalid = false;
 	}
 	if(department_name.length == 0)
 	{ 
-		log_error_messages("Name cannot be null."); 		
+		//log_error_messages("Name cannot be null."); 	
+		document.querySelector("#txt_create_department_name_error").innerHTML = "Name cannot be null.";
+      	document.querySelector("#txt_create_department_name_error").style.display = "block";			
 		isvalid = false;
 	}
 	if(addedby == null)
@@ -345,6 +353,8 @@ function update_department(){
 	
 	show_progress();
 	clear_logs();  
+	document.querySelector("#cbo_edit_campus_error").innerHTML = "";
+	document.querySelector("#txt_edit_department_name_error").innerHTML = "";
 	
 	var id = $('#txt_edit_id').val();
 	var campus_id = $("#cbo_edit_campus").val(); 
@@ -361,18 +371,24 @@ function update_department(){
 	{ 
 		if(campus_id.length == 0)
 		{ 
-			log_error_messages("Select Campus."); 		
+			//log_error_messages("Select Campus."); 	
+			document.querySelector("#cbo_edit_campus_error").innerHTML = "Select Campus.";
+      		document.querySelector("#cbo_edit_campus_error").style.display = "block";			
 			isvalid = false;
 		} 
 	}
 	if(campus_id == null)
 	{ 
-		log_error_messages("Select Campus."); 		
+		//log_error_messages("Select Campus."); 		
+		document.querySelector("#cbo_edit_campus_error").innerHTML = "Select Campus.";
+      	document.querySelector("#cbo_edit_campus_error").style.display = "block";		
 		isvalid = false;
 	}
 	if(department_name.length == 0)
 	{ 
-		log_error_messages("Name cannot be null."); 		
+		//log_error_messages("Name cannot be null."); 	
+		document.querySelector("#txt_edit_department_name_error").innerHTML = "Name cannot be null.";
+      	document.querySelector("#txt_edit_department_name_error").style.display = "block";			
 		isvalid = false;
 	} 
 

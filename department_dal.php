@@ -280,6 +280,9 @@ class department_dal
 				if($key == "department_name") {
 					$department_name = $value; 
 				} 
+				if($key == "campus_id") {
+					$campus_id = $value; 
+				} 
 			}
 			
 			// delete query
