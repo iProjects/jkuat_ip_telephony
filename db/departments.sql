@@ -2,7 +2,7 @@
 
 LOCK TABLES tbl_departments WRITE;
 /*!40000 ALTER TABLE tbl_departments DISABLE KEYS */; 
-INSERT INTO tbl_departments VALUES   
+INSERT INTO tbl_departments (id, campus_id, department_name, status, created_date, addedby) VALUES   
  
    (1,1,'Swicthboard','active','21-06-2023 08:46:43 AM','admin'),
    (2,1,'Chancellor','active','21-06-2023 08:46:43 AM','admin'),

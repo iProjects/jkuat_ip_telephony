@@ -1,7 +1,7 @@
 
 LOCK TABLES tbl_extensions WRITE;
 /*!40000 ALTER TABLE tbl_extensions DISABLE KEYS */; 
-INSERT INTO tbl_extensions VALUES
+INSERT INTO tbl_extensions (id, campus_id, extension_number, owner_assigned, department_id, status, created_date, addedby) VALUES
    
    
    (1,1,'1002','Switchboard',1,'active','21-06-2023 08:46:43 AM','admin'), 

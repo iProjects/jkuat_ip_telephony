@@ -36,6 +36,7 @@ function create_role() {
 	if(isset($_POST)){
 	 
 		$role_name = trim(htmlspecialchars(strip_tags($_POST['role_name']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		
 		if(!isset($role_name)){
@@ -49,7 +50,7 @@ function create_role() {
 
 		$role_dal = new role_dal();
 
-		echo $role_dal->create_role($role_name, $addedby);
+		echo $role_dal->create_role($role_name, $status, $addedby);
 	 
 	}
 

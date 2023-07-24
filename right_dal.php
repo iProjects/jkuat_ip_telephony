@@ -38,7 +38,7 @@ class right_dal
 	 
      * @return $string
      * */
-	public function create_right($right_name, $addedby)
+	public function create_right($right_name, $status, $addedby)
     {
 		try{
 			
@@ -68,8 +68,7 @@ class right_dal
 			// bind the parameters
 			$right_name = ucwords($right_name); 
 			$stmt->bindParam(":right_name", $right_name, PDO::PARAM_STR); 
-			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR); 
-			$status = "active";
+			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR);  
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  

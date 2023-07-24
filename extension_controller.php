@@ -60,6 +60,7 @@ function create_extension() {
 		$department_id = trim(htmlspecialchars(strip_tags($_POST['department_id'])));
 		$owner_assigned = trim(htmlspecialchars(strip_tags($_POST['owner_assigned'])));
 		$extension_number = trim(htmlspecialchars(strip_tags($_POST['extension_number'])));  
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		
 		if(!isset($campus_id)){
@@ -85,7 +86,7 @@ function create_extension() {
 
 		$extension_dal = new extension_dal();
 
-		echo $extension_dal->create_extension($campus_id, $department_id, $owner_assigned, $extension_number, $addedby);
+		echo $extension_dal->create_extension($campus_id, $department_id, $owner_assigned, $extension_number, $status, $addedby);
 	 
 	}
 

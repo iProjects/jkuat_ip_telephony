@@ -37,6 +37,7 @@ function create_campus() {
 	if(isset($_POST)){
 	  
 		$campus_name = trim(htmlspecialchars(strip_tags($_POST['campus_name'])));
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		 
 		if(!isset($campus_name)){
@@ -53,7 +54,7 @@ function create_campus() {
 
 		$campus_dal = new campus_dal();
 
-		echo $campus_dal->create_campus($campus_name, $addedby);
+		echo $campus_dal->create_campus($campus_name, $status, $addedby);
 	 
 	}
 

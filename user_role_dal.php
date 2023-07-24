@@ -39,7 +39,7 @@ class user_role_dal
 	 *
      * @return $string
      * */
-	public function create_user_role($user_id, $role_id, $addedby)
+	public function create_user_role($user_id, $role_id, $status, $addedby)
     {
 		try{
 			
@@ -73,8 +73,7 @@ class user_role_dal
 			// bind the parameters
 			$stmt->bindParam(":user_id", $user_id, PDO::PARAM_STR); 
 			$stmt->bindParam(":role_id", $role_id, PDO::PARAM_STR); 
-			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR); 
-			$status = "active";
+			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR);  
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  

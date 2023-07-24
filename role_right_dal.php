@@ -39,7 +39,7 @@ class role_right_dal
 	 *
      * @return $string
      * */
-	public function create_role_right($role_id, $right_id, $addedby)
+	public function create_role_right($role_id, $right_id, $allowed, $status, $addedby)
     {
 		try{
 			
@@ -57,13 +57,15 @@ class role_right_dal
 			// insert query
 			$query = "INSERT INTO tbl_roles_rights(
 			role_id, 
-			right_id, 			
+			right_id, 
+			allowed, 			
 			addedby,  
 			status, 			
 			created_date) 
 			VALUES(
 			:role_id,  
-			:right_id,  
+			:right_id, 
+			:allowed,  
 			:addedby,  
 			:status,			
 			:created_date)";
@@ -74,8 +76,8 @@ class role_right_dal
 			// bind the parameters
 			$stmt->bindParam(":role_id", $role_id, PDO::PARAM_STR); 
 			$stmt->bindParam(":right_id", $right_id, PDO::PARAM_STR); 
-			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR); 
-			$status = "active";
+			$stmt->bindParam(":allowed", $allowed, PDO::PARAM_INT); 
+			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR);  
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  
@@ -607,6 +609,7 @@ class role_right_dal
 				echo "<th scope='col'>#</th>";
 				echo "<th scope='col'>Role</th>"; 
 				echo "<th scope='col'>Right</th>"; 
+				echo "<th scope='col'>Allowed</th>"; 
 				echo "<th scope='col'>Status</th>"; 
 				echo "<th scope='col'>Created Date</th>"; 
 				echo "<th scope='col'></th>";
@@ -630,11 +633,19 @@ class role_right_dal
 				$role_id = $row['role_id']; 
 				$right_id = $row['right_id']; 
 				$status = $row['status'];
+				$allowed = $row['allowed'];
 				$created_date = $row['created_date']; 
   
 				$role_name = $this->get_role_name_given_role_id($role_id);
 				$right_name = $this->get_right_name_given_right_id($right_id);
 				
+				if($allowed)
+				{
+					$allowed_str = "Allowed";
+				}else{
+					$allowed_str = "Not Allowed";
+				}
+
 				// creating new table row per record
 				echo "<tr class='table-primary'>";
 					
@@ -656,6 +667,12 @@ class role_right_dal
 
 				echo "</td>";
 					 
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($allowed_str, ENT_QUOTES);
+
+				echo "</td>"; 
+			 
 				echo "<td class='table-success'>";
 					
 				echo htmlspecialchars($status, ENT_QUOTES);
@@ -748,16 +765,21 @@ class role_right_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM tbl_rights ORDER BY right_name ASC";
+			$query = "SELECT * FROM tbl_rights 
+			ORDER BY right_name ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $row;
 			}
+			
 			//return $data;
 			return json_encode($data);
 		} catch (Exception $e){
@@ -775,16 +797,21 @@ class role_right_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM tbl_roles ORDER BY role_name ASC";
+			$query = "SELECT * FROM tbl_roles 
+			ORDER BY role_name ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $row;
 			}
+
 			//return $data;
 			return json_encode($data);
 		} catch (Exception $e){

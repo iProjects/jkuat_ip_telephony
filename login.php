@@ -6,18 +6,14 @@ include_once "get_url.php";
 // 👇 check if cookie exists
 if (isset($_COOKIE["origin"])) {
 	$global_path = $_COOKIE["origin"];
-	//echo $global_path;
-	//header('Location: ' . $global_path . 'login.php'); 
-	//exit();
+	 
 }else{
 	$cookie_name = "origin";
 	$cookie_value = $server_path;
 	setcookie($cookie_name, $cookie_value, time() + (60*60*24*365), "/");
 
 	$global_path = $_COOKIE["origin"];
-	//echo $global_path; 
-	//header('Location: ' . $global_path . 'login.php'); 
-	//exit();
+ 
 }
 
 ?>

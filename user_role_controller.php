@@ -45,6 +45,7 @@ function create_user_role() {
 	 
 		$user_id = trim(htmlspecialchars(strip_tags($_POST['user_id']))); 
 		$role_id = trim(htmlspecialchars(strip_tags($_POST['role_id']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		
 		if(!isset($user_id)){
@@ -61,7 +62,7 @@ function create_user_role() {
 
 		$user_role_dal = new user_role_dal();
 
-		echo $user_role_dal->create_user_role($user_id, $role_id, $addedby);
+		echo $user_role_dal->create_user_role($user_id, $role_id, $status, $addedby);
 	 
 	}
 

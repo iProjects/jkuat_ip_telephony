@@ -8,17 +8,7 @@ if (isset($_COOKIE['loggedinuser']))
 {
 	// 👇 check if cookie exists
 	if (isset($_COOKIE["origin"])) {
-		
-		//get the logged in user role from the session		
-		$logged_in_user_role = $_COOKIE['logged_in_user_role'];
-		
-		if($logged_in_user_role == "LimitedAdmin" || $logged_in_user_role == "Superadmin")
-		{ 
-			$global_path = $_COOKIE["origin"];
-			//echo $global_path; 
-			//header('Location: ' . $global_path . 'campuses.php');
-			//exit(); 
-		}
+		 
 	}else{
 		$cookie_name = "origin";
 		$cookie_value = $server_path;
@@ -238,7 +228,13 @@ if (isset($_COOKIE['loggedinuser']))
 						<input type="text" id="txt_edit_campus_name" name="txt_edit_campus_name" placeholder="Name" class="form-control" required placeholder="Name" />
 						<p id="txt_edit_campus_name_error" class="error"></p>
 					</div>
-						 
+						
+					<div class="form-group">
+						<label for="cbo_edit_status">Status <span class="text-danger">*</span></label> 
+						<select id="cbo_edit_status" class="form-control"></select>
+						<p id="cbo_edit_status_error" class="error"></p>
+					</div>
+      
 				</div> 
 				<div class="modal-footer"> 
 					<button id="btnupdate_campus" type="button" class="btn btn-success" ><img src="images/add.png" alt="Update" title="Update" style="vertical-align:bottom;" />Update</button>
@@ -285,7 +281,13 @@ if (isset($_COOKIE['loggedinuser']))
 						<input type="text" id="txt_create_campus_name" name="txt_create_campus_name" placeholder="Name" class="form-control" required placeholder="Name" />
 						<p id="txt_create_campus_name_error" class="error"></p>
 					</div>
-						 
+						
+					<div class="form-group">
+						<label for="cbo_create_status">Status <span class="text-danger">*</span></label> 
+						<select id="cbo_create_status" class="form-control"></select>
+						<p id="cbo_create_status_error" class="error"></p>
+					</div>
+  
 
 				</div> 
 				<div class="modal-footer"> 

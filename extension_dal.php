@@ -41,7 +41,7 @@ class extension_dal
 	 *
      * @return $string
      * */
-	public function create_extension($campus_id, $department_id, $owner_assigned, $extension_number, $addedby)
+	public function create_extension($campus_id, $department_id, $owner_assigned, $extension_number, $status, $addedby)
     {
 		try{
 			
@@ -79,8 +79,7 @@ class extension_dal
 			$stmt->bindParam(":department_id", $department_id, PDO::PARAM_STR);
 			$owner_assigned = ucwords($owner_assigned);
 			$stmt->bindParam(":owner_assigned", $owner_assigned, PDO::PARAM_STR);
-			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
-			$status = "active";
+			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR); 
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR); 
@@ -114,7 +113,7 @@ class extension_dal
 	 
      * @return $string
      * */
-	public function create_extension_from_upload($campus_id, $department_id, $owner_assigned, $extension_number, $addedby)
+	public function create_extension_from_upload($campus_id, $department_id, $owner_assigned, $extension_number, $status, $addedby)
     {
 		try{
 			
@@ -502,10 +501,15 @@ class extension_dal
 		try{
 			// select query - select all data
 			$query = "SELECT * FROM tbl_campuses 
+			WHERE status = :status
 			ORDER BY campus_name ASC";
 
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
+			// bind the parameters
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 
 			// Execute the query
 			$stmt->execute();
@@ -534,11 +538,15 @@ class extension_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT ccode FROM tbl_campuses ORDER BY id ASC";
+			$query = "SELECT ccode FROM tbl_campuses 
+			ORDER BY id ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -561,7 +569,8 @@ class extension_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT DISTINCT campus_name FROM tbl_campuses ORDER BY id ASC";
+			$query = "SELECT DISTINCT campus_name FROM tbl_campuses 
+			ORDER BY id ASC";
 
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
@@ -594,7 +603,7 @@ class extension_dal
 		try{
 			// select query - select all data
 			$query = "SELECT * FROM tbl_departments as departments  
-			WHERE departments.campus_id = :campus_id 
+			WHERE departments.campus_id = :campus_id AND departments.status = :status   
 			ORDER BY departments.department_name ASC";
 
 			// prepare query for execution	
@@ -602,6 +611,8 @@ class extension_dal
 
 			// bind the parameters
 			$stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR);
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 
 			// Execute the query
 			$stmt->execute();

@@ -39,6 +39,8 @@ function create_user() {
 		$full_names = trim(htmlspecialchars(strip_tags($_POST['full_names'])));
 		$password = trim(htmlspecialchars(strip_tags($_POST['password'])));
 		$secretword = trim(htmlspecialchars(strip_tags($_POST['secretword']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
+		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		
 		if(!isset($email)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Email is mandatory field.</div>';
@@ -64,7 +66,7 @@ function create_user() {
 
 		$user_dal = new user_dal();
 
-		echo $user_dal->create_user($email, $full_names, $password, $secretword);
+		echo $user_dal->create_user($email, $full_names, $password, $secretword, $status, $addedby);
 	 
 	}
 

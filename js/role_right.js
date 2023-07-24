@@ -1,8 +1,6 @@
  
 $(document).ready(function () {
     
-	disable_all_actions();
-	
 	//listen for enter key event in document.
 	document.addEventListener("keypress", documententerkeyglobalhandler, false);
   
@@ -15,6 +13,8 @@ $(document).ready(function () {
         $('#create_role_right_modal').modal('show'); 
 		$("#cbo_create_role").val(""); 
 		$("#cbo_create_right").val(""); 
+		// $("#chk_create_allowed").prop('checked', true);
+
     });
 	
 	$('#create_role_right_modal').on('shown.bs.modal', function () {
@@ -116,7 +116,18 @@ $(document).ready(function () {
 		return ($('.sidebar').width() - 55) + "px";
 	});
 		
-	authorization();
+	var select_options_arr = "";
+	select_options_arr += '<option value="active">active</option>';
+	select_options_arr += '<option value="inactive">inactive</option>'; 
+	
+	$('#cbo_create_status').html(select_options_arr);	
+	$('#cbo_edit_status').html(select_options_arr);	
+
+	disable_all_actions();
+		
+	setTimeout(function() {
+		authorization();
+	}, 1000);
 	
 	$("#progress_bar").hide();
 	 
@@ -213,6 +224,8 @@ function create_role_right(){
 	 
 	var role_id = $("#cbo_create_role").val();
 	var right_id = $("#cbo_create_right").val();
+	var allowed = document.querySelector("#chk_create_allowed").checked;
+	var status = $("#cbo_create_status").val();	
 	var addedby = readCookie("loggedinuser"); 
 
 	var isvalid = true;
@@ -272,6 +285,8 @@ function create_role_right(){
 		data: { 
 			"role_id": role_id,
 			"right_id": right_id,
+			"allowed": allowed,
+			"status": status, 
 			"addedby": addedby, 
 			"action": "create_role_right"
 		},//data to be posted
@@ -612,6 +627,12 @@ function search_roles_rights(page){
 		
 		get_roles_rights_search_count();
 		
+		disable_all_actions();
+
+		setTimeout(function() {
+			authorization();
+		}, 1000);
+		
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -825,17 +846,20 @@ function disable_all_actions()
 			 
 			console.log("rights_obj: " + rights_obj); 
 				 
-			var rights_arr = jQuery.parseJSON(rights_obj);
+			//var rights_arr = jQuery.parseJSON(rights_obj);
  
-			console.log("rights_arr: " + rights_arr); 
+			//console.log("rights_arr: " + rights_arr); 
 				 
-			for (var i = 0; i < rights_arr.length; i++) {
-				var right_code = rights_arr[i].right_code; 
+			for (var i = 0; i < rights_obj.length; i++) {
+				var right_code = rights_obj[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $('"#"' + right_code + '""')[0]; 
-				var dom_element_from_class = $('"."' + right_code + '""')[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -850,7 +874,18 @@ function disable_all_actions()
 						'display: none',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "none";
+					}
+
 				}
 
 			}
@@ -905,9 +940,12 @@ function authorization()
 				var right_code = rights_arr[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $("#" + right_code + "")[0]; 
-				var dom_element_from_class = $("." + right_code + "")[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -923,7 +961,18 @@ function authorization()
 						'display: block',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+					
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "block";
+					}
+				
 				}
 
 			}
@@ -941,21 +990,6 @@ function authorization()
         console.log(err);
     }	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

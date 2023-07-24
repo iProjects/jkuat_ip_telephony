@@ -41,7 +41,7 @@ class user_dal
 	 
      * @return $string
      * */
-	public function create_user($email, $full_names, $password, $secretWord)
+	public function create_user($email, $full_names, $password, $secretWord, $status, $addedby)
     {
 		try{
 			
@@ -58,14 +58,16 @@ class user_dal
 			email, 
 			full_names, 
 			password,
-			secretWord,  
+			secretWord,  			 
+			addedby,  
 			status, 			
 			created_date) 
 			VALUES(
 			:email, 
 			:full_names, 
 			:password,
-			:secretWord, 
+			:secretWord, 			 
+			:addedby,  
 			:status,			
 			:created_date)";
 			

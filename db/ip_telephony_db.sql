@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS tbl_campuses (
 
 LOCK TABLES tbl_campuses WRITE;
 /*!40000 ALTER TABLE tbl_campuses DISABLE KEYS */;
-INSERT INTO tbl_campuses VALUES 
+INSERT INTO tbl_campuses (id, campus_name, status, created_date, addedby) VALUES 
 (1,'Main Campus','active','21-06-2023 08:46:43 AM','admin'),
 (2,'Nairobi CBD','active','21-06-2023 08:46:43 AM','admin'),
 (3,'Westlands','active','21-06-2023 08:46:43 AM','admin'),
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS tbl_departments (
 
 LOCK TABLES tbl_departments WRITE;
 /*!40000 ALTER TABLE tbl_departments DISABLE KEYS */; 
-INSERT INTO tbl_departments VALUES   
+INSERT INTO tbl_departments (id, campus_id, department_name, status, created_date, addedby) VALUES   
  
    (1,1,'Swicthboard','active','21-06-2023 08:46:43 AM','admin'),
    (2,1,'Chancellor','active','21-06-2023 08:46:43 AM','admin'),
@@ -382,9 +382,9 @@ UNLOCK TABLES;
 CREATE TABLE IF NOT EXISTS tbl_extensions (
   id int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
   campus_id int(11) NOT NULL COMMENT 'Campus Foreign Key',
-  extension_number varchar(200) NOT NULL COMMENT 'Extension Number',
-  owner_assigned varchar(200) NOT NULL COMMENT 'Owner Assigned',
   department_id int(11) NOT NULL COMMENT 'Department Foreign Key',
+  owner_assigned varchar(200) NOT NULL COMMENT 'Owner Assigned',
+  extension_number varchar(200) NOT NULL COMMENT 'Extension Number',
   status varchar(200) NULL COMMENT 'Status',
   created_date varchar(200) NULL COMMENT 'Created Date',
   addedby varchar(200) NULL COMMENT 'Added By',
@@ -398,7 +398,7 @@ CREATE TABLE IF NOT EXISTS tbl_extensions (
 
 LOCK TABLES tbl_extensions WRITE;
 /*!40000 ALTER TABLE tbl_extensions DISABLE KEYS */; 
-INSERT INTO tbl_extensions VALUES
+INSERT INTO tbl_extensions (id, campus_id, extension_number, owner_assigned, department_id, status, created_date, addedby) VALUES
    
    
    (1,1,'1002','Switchboard',1,'active','21-06-2023 08:46:43 AM','admin'), 
@@ -1976,7 +1976,7 @@ INSERT INTO tbl_roles_rights VALUES
 (11,1,11,1,'active','21-06-2023 08:46:43 AM','admin'),
 (12,1,12,1,'active','21-06-2023 08:46:43 AM','admin'),
 (13,1,13,1,'active','21-06-2023 08:46:43 AM','admin'),
-(14,1,14,0,'active','21-06-2023 08:46:43 AM','admin'),
+(14,1,14,0,'inactive','21-06-2023 08:46:43 AM','admin'),
 (15,1,15,1,'active','21-06-2023 08:46:43 AM','admin'),
 (16,1,16,1,'active','21-06-2023 08:46:43 AM','admin'),
 (17,1,17,1,'active','21-06-2023 08:46:43 AM','admin'),
@@ -1984,7 +1984,7 @@ INSERT INTO tbl_roles_rights VALUES
 (19,1,19,1,'active','21-06-2023 08:46:43 AM','admin'),
 (20,1,20,1,'active','21-06-2023 08:46:43 AM','admin'),
 (21,1,21,1,'active','21-06-2023 08:46:43 AM','admin'),
-(22,1,22,0,'active','21-06-2023 08:46:43 AM','admin'),
+(22,1,22,0,'inactive','21-06-2023 08:46:43 AM','admin'),
 (23,1,23,1,'active','21-06-2023 08:46:43 AM','admin'),
 (24,1,24,1,'active','21-06-2023 08:46:43 AM','admin'),
 (25,1,25,1,'active','21-06-2023 08:46:43 AM','admin'),
@@ -1992,7 +1992,7 @@ INSERT INTO tbl_roles_rights VALUES
 (27,1,27,1,'active','21-06-2023 08:46:43 AM','admin'),
 (28,1,28,1,'active','21-06-2023 08:46:43 AM','admin'),
 (29,1,29,1,'active','21-06-2023 08:46:43 AM','admin'),
-(30,1,30,0,'active','21-06-2023 08:46:43 AM','admin'),
+(30,1,30,0,'inactive','21-06-2023 08:46:43 AM','admin'),
 (31,1,31,1,'active','21-06-2023 08:46:43 AM','admin'),
 (32,1,32,1,'active','21-06-2023 08:46:43 AM','admin');
 
