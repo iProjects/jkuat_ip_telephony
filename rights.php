@@ -202,43 +202,7 @@ if (isset($_COOKIE['loggedinuser']))
 		<div id="div_edit_right_container">
  
  
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="loginmodallabel">Edit Right</h4>
-				</div>
-				   
-				<div class="modal-body">
-					<div class="form-group">
-						<h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
-						<div id="div_modal_msg"></div>
-					</div>
-
-					<div class="form-group">						
-						<div class="div_messages_modal"></div>			
-					</div>
-
-					<div class="form-group"> 
-						<input type="text" id="txt_edit_id" name="txt_edit_id" placeholder="id" class="form-control" required placeholder="id" />
-					</div>
-   
-					<div class="form-group">
-						<label for="txt_edit_right_name">Name<span class="text-danger">*</span></label> 
-						<input type="text" id="txt_edit_right_name" name="txt_edit_right_name" placeholder="Name" class="form-control" required placeholder="Name" />
-						<p id="txt_edit_right_name_error" class="error"></p>
-					</div>
-						
-					<div class="form-group">
-						<label for="cbo_edit_status">Status <span class="text-danger">*</span></label> 
-						<select id="cbo_edit_status" class="form-control"></select>
-						<p id="cbo_edit_status_error" class="error"></p>
-					</div>
-        
-				</div> 
-				<div class="modal-footer"> 
-					<button id="btnupdate_right" type="button" class="btn btn-success" ><img src="images/add.png" alt="Update" title="Update" style="vertical-align:bottom;" />Update</button>
-					<button id="btnclose_edit_right_modal" type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
-				</div>
-			</div>
+			
 
  
 		</div>
@@ -297,6 +261,52 @@ if (isset($_COOKIE['loggedinuser']))
 		</div>
 	</div>
 	<!-- // create Modal -->
+ 
+	<!-- edit Modal -->
+	<div class="modal fade crud_modal" id="edit_right_modal" tabindex="-1" role="dialog" aria-labelledby="edit_right_modal_label">
+		<div class="modal-dialog" role="document">
+		
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="edit_right_modal_label">Edit Right</h4>
+				</div>
+				   
+				<div class="modal-body">
+					<div class="form-group">
+						<h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
+						<div id="div_modal_msg"></div>
+					</div>
+
+					<div class="form-group">						
+						<div class="div_messages_modal"></div>			
+					</div>
+
+					<div class="form-group"> 
+						<input type="text" id="txt_edit_id" name="txt_edit_id" placeholder="id" class="form-control" required placeholder="id" />
+					</div>
+   
+					<div class="form-group">
+						<label for="txt_edit_right_name">Name<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_edit_right_name" name="txt_edit_right_name" placeholder="Name" class="form-control" required placeholder="Name" />
+						<p id="txt_edit_right_name_error" class="error"></p>
+					</div>
+						
+					<div class="form-group">
+						<label for="cbo_edit_status">Status <span class="text-danger">*</span></label> 
+						<select id="cbo_edit_status" class="form-control"></select>
+						<p id="cbo_edit_status_error" class="error"></p>
+					</div>
+        
+				</div> 
+				<div class="modal-footer"> 
+					<button id="btnupdate_right" type="button" class="btn btn-success" ><img src="images/add.png" alt="Update" title="Update" style="vertical-align:bottom;" />Update</button>
+					<button id="btnclose_edit_right_modal" type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	<!-- // edit Modal -->
  
 	<!-- // Bootstrap Modals -->
 

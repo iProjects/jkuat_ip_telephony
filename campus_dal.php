@@ -132,16 +132,18 @@ class campus_dal
      * Update Record
      * 
 	 * @param $campus_name 
+	 * @param $status
 	 * @param $id
 	 *
      * @return $mixed
      * */
-    public function update_campus($campus_name, $id)
+    public function update_campus(($campus_name, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_campuses SET  
-			campus_name = :campus_name 
+			campus_name = :campus_name,  
+			status = :status 
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -150,6 +152,7 @@ class campus_dal
 			// bind the parameters 
 			$campus_name = ucwords($campus_name);
 			$stmt->bindParam(":campus_name", $campus_name, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query

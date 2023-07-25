@@ -18,6 +18,12 @@ $(document).ready(function () {
 		$("#txt_create_department").val(""); 
 		$("#txt_create_owner_assigned").val("");
 		$("#txt_create_extension_number").val(""); 
+
+		document.querySelector("#cbo_create_campus_error").innerHTML = "";
+		document.querySelector("#cbo_create_department_error").innerHTML = "";
+		document.querySelector("#txt_create_owner_assigned_error").innerHTML = "";
+		document.querySelector("#txt_create_extension_number_error").innerHTML = "";
+
     });
 	
 	$('#create_extension_modal').on('shown.bs.modal', function () {
@@ -48,7 +54,8 @@ $(document).ready(function () {
     });
 	
     $('#cbo_create_campus').on('change', function(){
-        get_departments_given_campus_id("cbo_create_campus"); 
+    	get_departments_given_campus_id("cbo_create_campus");
+        //get_departments_given_campus_id_on_create("cbo_create_campus"); 
     });
 	
     $('#cbo_edit_campus').on('change', function(){
@@ -453,7 +460,6 @@ function edit_extension(id){
 		console.log("response: " + response); 
 		
 		fetch_all_campuses();
-		fetch_all_campuses();
 		 		
 		var data = JSON.parse(response);
 				 
@@ -462,18 +468,23 @@ function edit_extension(id){
 		var department_id = data.department_id;
 		var extension_number = data.extension_number;
 		var owner_assigned = data.owner_assigned;
-
+		var status = data.status;
 	  
-		$('#txt_edit_id').val(id); 
-		$('#cbo_edit_campus').val(campus_id); 
-		$("#cbo_edit_department").val(department_id);
-		$("#txt_edit_extension_number").val(extension_number);
-		$("#txt_edit_owner_assigned").val(owner_assigned);
-		
-		$('#div_edit_extension_container').css({'display' : 'block'});
-	 		
-		$('#extensions_container').css({'display' : 'none'});
- 
+		$('#edit_extension_modal').modal('show');
+
+		$('#edit_extension_modal').on('shown.bs.modal', function () {
+			$('#cbo_edit_campus').focus();
+			$('#txt_edit_id').val(id); 
+			$('#cbo_edit_campus').val(campus_id); 
+			$("#cbo_edit_department").val(department_id);
+			$("#txt_edit_extension_number").val(extension_number);
+			$("#txt_edit_owner_assigned").val(owner_assigned);
+			$('#cbo_edit_status').val(status); 
+
+			get_departments_and_select(department_id, campus_id) ;
+
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -497,6 +508,7 @@ function update_extension(){
 	var department_id = $("#cbo_edit_department").val();
 	var owner_assigned = $("#txt_edit_owner_assigned").val().trim();
 	var extension_number = $("#txt_edit_extension_number").val().trim();
+	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
 	
@@ -580,6 +592,7 @@ function update_extension(){
 			"department_id": department_id,
 			"extension_number": extension_number,
 			"owner_assigned": owner_assigned,
+			"status": status, 
 			"action": "update_extension"
 		},//data to be posted
 	}).done(function(response){
@@ -588,6 +601,8 @@ function update_extension(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_extension_modal').modal('hide'); 
 
 		search_extensions(1);
 		
@@ -728,52 +743,7 @@ function get_delete_prompt(id){
 	});
 	
 }
-
-function fetch_all_campuses() {
-	
-	show_progress();
-		
-	// send data to server asynchronously.
-	$.ajax({
-		url: "extension_controller.php",
-		type: "POST",
-		data: {
-			"action": "fetch_all_campuses"
-		},//data to be posted
-	}).done(function(response){
-		 
-		console.log("response: " + response); 
-		
-		var campus_arr = JSON.parse(response);
-		
-		console.log("campus_arr: " + campus_arr); 
-		
-		var select_options_arr = [];
-
-		select_options_arr.push('<option value=""></option>');
-		
-		for (var i = 0; i < campus_arr.length; i++) {
-			var id = campus_arr[i].id;
-			var campus_name = campus_arr[i].campus_name;
-			console.log(id);
-			console.log(campus_name);
-			select_options_arr.push('<option value="' + id + '">' + campus_name + '</option>');
-		}
  
-		console.log("select_options_arr: " + select_options_arr); 
-		
-		$('#cbo_search_campus').html(select_options_arr);		 
-		$('#cbo_edit_campus').html(select_options_arr);
-		 
-		hide_progress();
-		
-	}).fail(function(jqXHR, textStatus){
-		log_error_messages(textStatus);
-		hide_progress();
-	});
-		
-}
-
 function fetch_all_campuses() {
 	
 	show_progress();
@@ -802,7 +772,7 @@ function fetch_all_campuses() {
 			var campus_name = campus_arr[i].campus_name;
 			console.log(id);
 			console.log(campus_name);
-			select_options_arr.push('<option value="' + id + '">' + campus_name + '</option>');
+			select_options_arr.push('<option value=' + id + '>' + campus_name + '</option>');
 		}
  
 		$('#cbo_search_campus').html(select_options_arr);
@@ -810,7 +780,7 @@ function fetch_all_campuses() {
 		$('#cbo_edit_campus').html(select_options_arr);
  
 		get_departments_given_campus_id("cbo_search_campus");
-		get_departments_given_campus_id("cbo_create_campus");
+		get_departments_given_campus_id_on_create("cbo_create_campus");
 		get_departments_given_campus_id("cbo_edit_campus");
 		
 		hide_progress();
@@ -822,6 +792,95 @@ function fetch_all_campuses() {
 		
 }
 
+function get_departments_given_campus_id_on_create(campus_name) {
+	
+	show_progress();
+	
+	var campus_id = "";
+	
+	switch(campus_name)
+	{
+		case "cbo_create_campus":
+			 campus_id = $("#cbo_create_campus").val();
+			 $('#cbo_create_department').html("");	
+			 if(campus_id.length == 0)
+			 {
+				$('#cbo_create_department').html("");				 
+			 }
+		break; 
+	}
+	
+	console.log("campus_id: " + campus_id); 
+	
+	if(campus_id == undefined)
+	{			 
+		return;	
+	}
+	
+	if(campus_id == null)
+	{			 
+		return;	
+	}
+	
+	if(campus_id.length == 0)
+	{			 
+		return;	
+	}
+	
+	// send data to server asynchronously.
+	$.ajax({
+		url: "extension_controller.php",
+		type: "POST",
+		data: {
+			"campus_id": campus_id,
+			"action": "get_departments_given_campus_id_on_create"
+		},//data to be posted
+	}).done(function(response){
+		try{
+			response = response.trim();
+		 
+			console.log("response: " + response); 
+			
+			var names_arr = JSON.parse(response);
+			
+			console.log("names_arr: " + names_arr); 
+				
+			var select_options_arr = [];
+			
+			select_options_arr.push('<option value=""></option>');
+			
+			for(var i = 0; i < names_arr.length; i++) {
+				var id = names_arr[i].id;
+				var department_name = names_arr[i].department_name;
+				console.log(id);
+				console.log(department_name);
+				
+				select_options_arr.push('<option value="' + id + '">' + department_name + '</option>');
+			}
+	 		
+	 		switch(campus_name)
+			{ 
+				case "cbo_create_campus":
+					 $('#cbo_create_department').html(select_options_arr);
+				break; 
+			}
+ 
+			hide_progress();
+
+		}
+		catch(err)
+		{
+			log_error_messages(response);
+			show_error_toast(err);
+			hide_progress();
+		}
+	}).fail(function(jqXHR, textStatus){
+		log_error_messages(textStatus);
+		hide_progress();
+	});
+		
+}
+ 
 function get_departments_given_campus_id(campus_name) {
 	
 	show_progress();
@@ -917,45 +976,67 @@ function get_departments_given_campus_id(campus_name) {
 	});
 		
 }
-
-function fetch_extensions(page){
-	 
+ 
+function get_departments_and_select(department_id, campus_id) {
+	
 	show_progress();
+	 
+	console.log("campus_id: " + campus_id); 
+	console.log("department_id: " + department_id); 
 	
-	global_page_number_holder = page;
+	if(campus_id == undefined)
+	{			 
+		return;	
+	}
 	
-	var records_to_display = 5;
-	records_to_display = $("#cbo_search_records_to_display").val();
-	
-	console.log("records_to_display: " + records_to_display);
-	
-	console.log("page: " + page);
+	if(department_id == undefined)
+	{			 
+		return;	
+	}
 	
 	// send data to server asynchronously.
 	$.ajax({
 		url: "extension_controller.php",
 		type: "POST",
 		data: {
-			"page": page,
-			"records_to_display": records_to_display,
-			"action": "fetch_extensions"
+			"campus_id": campus_id,
+			"action": "get_departments_given_campus_id"
 		},//data to be posted
 	}).done(function(response){
 		response = response.trim();
-		
+		 
 		console.log("response: " + response); 
-				
-		$('#div_content').html(response);
- 
+		
+		var names_arr = JSON.parse(response);
+		
+		console.log("names_arr: " + names_arr); 
+			
+		var select_options_arr = [];
+		
+		select_options_arr.push('<option value=""></option>');
+		
+		for(var i = 0; i < names_arr.length; i++) {
+			var id = names_arr[i].id;
+			var department_name = names_arr[i].department_name;
+
+			console.log(id);
+			console.log(department_name);
+			
+			select_options_arr.push('<option value=' + id + '>' + department_name + '</option>');
+		}
+ 		
+		$('#cbo_edit_department').html(select_options_arr);
+		$("#cbo_edit_department").val(department_id);
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
 		log_error_messages(textStatus);
 		hide_progress();
 	});
-	
+		
 }
-
+ 
 function search_extensions(page){
 	
 	show_progress();

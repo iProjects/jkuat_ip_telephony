@@ -135,27 +135,31 @@ class department_dal
     /*
      * Update Record
      * 
+	 * @param $campus_id 
 	 * @param $department_name 
+	 * @param $status 
 	 * @param $id 
 
      * @return $mixed
      * */
-    public function update_department($campus_id, $department_name, $id)
+    public function update_department($campus_id, $department_name, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_departments SET 
 			campus_id = :campus_id, 
-			department_name = :department_name  
+			department_name = :department_name, 
+			status = :status    
 			WHERE id = :id";
 			
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);
 			
 			// bind the parameters 
-			$department_name = ucwords($department_name);
 			$stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR); 
+			$department_name = ucwords($department_name);
 			$stmt->bindParam(":department_name", $department_name, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query

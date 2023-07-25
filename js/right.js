@@ -316,14 +316,17 @@ function edit_right(id){
 				 
 		var id = data.id; 
 		var right_name = data.right_name; 
+		var status = data.status;
+   
+		$('#edit_right_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);   
-		$("#txt_edit_right_name").val(right_name); 
-		 
-		$('#div_edit_right_container').css({'display' : 'block'});
-	 		
-		$('#right_container').css({'display' : 'none'});
-	 		 
+		$('#edit_right_modal').on('shown.bs.modal', function () {
+			$('#txt_edit_right_name').focus();
+			$('#txt_edit_id').val(id);   
+			$("#txt_edit_right_name").val(right_name); 
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -340,7 +343,8 @@ function update_right(){
 	document.querySelector("#txt_edit_right_name_error").innerHTML = "";
 
 	var id = $('#txt_edit_id').val(); 
-	var right_name = $("#txt_edit_right_name").val().trim();  
+	var right_name = $("#txt_edit_right_name").val().trim();   
+	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
 	
@@ -370,6 +374,7 @@ function update_right(){
 		data: {
 			"id": id, 
 			"right_name": right_name, 
+			"status": status, 
 			"action": "update_right"
 		},//data to be posted
 	}).done(function(response){
@@ -378,6 +383,8 @@ function update_right(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_right_modal').modal('hide'); 
 
 		search_rights(1);
 		

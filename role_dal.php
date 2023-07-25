@@ -35,7 +35,9 @@ class role_dal
      * Add new Record
      *
 	 * @param $role_name 
-	 
+	 * @param $status  
+	 * @param $addedby  
+	 *
      * @return $string
      * */
 	public function create_role($role_name, $status, $addedby)
@@ -126,15 +128,18 @@ class role_dal
      * Update Record
      *
 	 * @param $role_name 
-
+	 * @param $status  
+	 * @param $id  
+	 *
      * @return $mixed
      * */
-    public function update_role($role_name, $id)
+    public function update_role($role_name, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_roles SET 
-			role_name = :role_name 
+			role_name = :role_name, 
+			status = :status     
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -143,6 +148,7 @@ class role_dal
 			// bind the parameters
 			$role_name = ucwords($role_name); 
 			$stmt->bindParam(":role_name", $role_name, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query

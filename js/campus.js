@@ -313,15 +313,18 @@ function edit_campus(id){
 		var data = JSON.parse(response);
 				 
 		var id = data.id; 
-		var campus_name = data.campus_name.trim();
+		var campus_name = data.campus_name;
+		var status = data.status;
+ 
+		$('#edit_campus_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);   
-		$("#txt_edit_campus_name").val(campus_name);
-		 
-		$('#div_edit_campus_container').css({'display' : 'block'});
-	 		
-		$('#campus_container').css({'display' : 'none'});
-	 		 
+		$('#edit_campus_modal').on('shown.bs.modal', function () {
+			$('#txt_edit_campus_name').focus();
+			$('#txt_edit_id').val(id);   
+			$("#txt_edit_campus_name").val(campus_name);
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -339,6 +342,7 @@ function update_campus(){
 	
 	var id = $('#txt_edit_id').val(); 
 	var campus_name = $("#txt_edit_campus_name").val().trim();  
+	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
 	
@@ -368,6 +372,7 @@ function update_campus(){
 		data: {
 			"id": id, 
 			"campus_name": campus_name, 
+			"status": status, 
 			"action": "update_campus"
 		},//data to be posted
 	}).done(function(response){
@@ -376,6 +381,8 @@ function update_campus(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_campus_modal').modal('hide'); 
 
 		search_campuses(1);
 		

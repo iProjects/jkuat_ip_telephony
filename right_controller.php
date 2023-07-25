@@ -64,6 +64,7 @@ function update_right() {
 	 
 		$id = trim(htmlspecialchars(strip_tags($_POST['id'])));
 		$right_name = trim(htmlspecialchars(strip_tags($_POST['right_name']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
@@ -79,7 +80,7 @@ function update_right() {
 
 		$right_dal = new right_dal();
 
-		echo $right_dal->update_right($right_name, $id);
+		echo $right_dal->update_right($right_name, $status, $id);
 	 
 	}
 

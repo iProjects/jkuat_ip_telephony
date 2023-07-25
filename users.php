@@ -207,61 +207,7 @@ if (isset($_COOKIE['loggedinuser']))
 		<div id="div_edit_user_container">
  
  
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="loginmodallabel">Edit User</h4>
-				</div>
-				   
-				<div class="modal-body">
-					<div class="form-group">
-						<h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
-						<div id="div_modal_msg"></div>
-					</div>
-
-					<div class="form-group">						
-						<div class="div_messages_modal"></div>			
-					</div>
-
-					<div class="form-group"> 
-						<input type="text" id="txt_edit_id" name="txt_edit_id" placeholder="id" class="form-control" required placeholder="id" />
-					</div>
-  
-					<div class="form-group">
-						<label for="txt_edit_email">Email<span class="text-danger">*</span></label> 
-						<input type="email" id="txt_edit_email" name="txt_edit_email" placeholder="Email" class="form-control" required placeholder="Email" />
-						<p id="txt_edit_email_error" class="error"></p>
-					</div>
-					 
-					<div class="form-group">
-						<label for="txt_edit_full_names">Full Name<span class="text-danger">*</span></label> 
-						<input type="text" id="txt_edit_full_names" name="txt_edit_full_names" placeholder="Full Name" class="form-control" required placeholder="Full Name" />
-						<p id="txt_edit_full_names_error" class="error"></p>
-					</div>
-						 
-					<div class="form-group">
-						<label for="txt_edit_password">Password<span class="text-danger">*</span></label> 
-						<input type="text" id="txt_edit_password" name="txt_edit_password" placeholder="Password" class="form-control" required placeholder="Password" />
-						<p id="txt_edit_password_error" class="error"></p>
-					</div>
-						 
-					<div class="form-group">
-						<label for="txt_edit_secretword">Secret Word<span class="text-danger">*</span></label> 
-						<input type="text" id="txt_edit_secretword" name="txt_edit_secretword" placeholder="Secret Word" class="form-control" required placeholder="Secret Word" />
-						<p id="txt_edit_secretword_error" class="error"></p>
-					</div>
-						
-					<div class="form-group">
-						<label for="cbo_edit_status">Status <span class="text-danger">*</span></label> 
-						<select id="cbo_edit_status" class="form-control"></select>
-						<p id="cbo_edit_status_error" class="error"></p>
-					</div>
-      
-				</div> 
-				<div class="modal-footer"> 
-					<button id="btnupdate_user" type="button" class="btn btn-success" ><img src="images/add.png" alt="Update" title="Update" style="vertical-align:bottom;" />Update</button>
-					<button id="btnclose_edit_user_modal" type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
-				</div>
-			</div>
+			
 
  
 		</div>
@@ -284,7 +230,7 @@ if (isset($_COOKIE['loggedinuser']))
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="loginmodallabel">Create User</h4>
+					<h4 class="modal-title" id="create_user_modal_label">Create User</h4>
 				</div>
 				  
 				<div class="modal-body">
@@ -338,6 +284,70 @@ if (isset($_COOKIE['loggedinuser']))
 		</div>
 	</div>
 	<!-- // create Modal -->
+ 
+	<!-- edit Modal -->
+	<div class="modal fade crud_modal" id="edit_user_modal" tabindex="-1" role="dialog" aria-labelledby="edit_user_modal_label">
+		<div class="modal-dialog" role="document">
+		
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="edit_user_modal_label">Edit User</h4>
+				</div>
+				   
+				<div class="modal-body">
+					<div class="form-group">
+						<h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
+						<div id="div_modal_msg"></div>
+					</div>
+
+					<div class="form-group">						
+						<div class="div_messages_modal"></div>			
+					</div>
+
+					<div class="form-group"> 
+						<input type="text" id="txt_edit_id" name="txt_edit_id" placeholder="id" class="form-control" required placeholder="id" />
+					</div>
+  
+					<div class="form-group">
+						<label for="txt_edit_email">Email<span class="text-danger">*</span></label> 
+						<input type="email" id="txt_edit_email" name="txt_edit_email" placeholder="Email" class="form-control" required placeholder="Email" />
+						<p id="txt_edit_email_error" class="error"></p>
+					</div>
+					 
+					<div class="form-group">
+						<label for="txt_edit_full_names">Full Name<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_edit_full_names" name="txt_edit_full_names" placeholder="Full Name" class="form-control" required placeholder="Full Name" />
+						<p id="txt_edit_full_names_error" class="error"></p>
+					</div>
+						 
+					<div class="form-group">
+						<label for="txt_edit_password">Password<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_edit_password" name="txt_edit_password" placeholder="Password" class="form-control" required placeholder="Password" />
+						<p id="txt_edit_password_error" class="error"></p>
+					</div>
+						 
+					<div class="form-group">
+						<label for="txt_edit_secretword">Secret Word<span class="text-danger">*</span></label> 
+						<input type="text" id="txt_edit_secretword" name="txt_edit_secretword" placeholder="Secret Word" class="form-control" required placeholder="Secret Word" />
+						<p id="txt_edit_secretword_error" class="error"></p>
+					</div>
+						
+					<div class="form-group">
+						<label for="cbo_edit_status">Status <span class="text-danger">*</span></label> 
+						<select id="cbo_edit_status" class="form-control"></select>
+						<p id="cbo_edit_status_error" class="error"></p>
+					</div>
+      
+				</div> 
+				<div class="modal-footer"> 
+					<button id="btnupdate_user" type="button" class="btn btn-success" ><img src="images/add.png" alt="Update" title="Update" style="vertical-align:bottom;" />Update</button>
+					<button id="btnclose_edit_user_modal" type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	<!-- // edit Modal -->
  
 	<!-- // Bootstrap Modals -->
 

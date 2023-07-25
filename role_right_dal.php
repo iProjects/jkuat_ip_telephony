@@ -36,6 +36,9 @@ class role_right_dal
      *
 	 * @param $role_id 
 	 * @param $right_id 
+	 * @param $allowed 
+	 * @param $status 
+	 * @param $addedby 
 	 *
      * @return $string
      * */
@@ -143,17 +146,19 @@ class role_right_dal
      *
 	 * @param $role_id 
 	 * @param $right_id 
+	 * @param $status 
 	 * @param $id 
 	 *
      * @return $mixed
      * */
-    public function update_role_right($role_id, $right_id, $id)
+    public function update_role_right($role_id, $right_id, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_roles_rights SET 
 			role_id = :role_id,
-			right_id = :right_id 			
+			right_id = :right_id, 
+			status = :status      			
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -162,6 +167,7 @@ class role_right_dal
 			// bind the parameters
 			$stmt->bindParam(":role_id", $role_id, PDO::PARAM_STR); 
 			$stmt->bindParam(":right_id", $right_id, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query

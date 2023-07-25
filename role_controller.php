@@ -64,6 +64,7 @@ function update_role() {
 	 
 		$id = trim(htmlspecialchars(strip_tags($_POST['id'])));
 		$role_name = trim(htmlspecialchars(strip_tags($_POST['role_name']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
@@ -79,7 +80,7 @@ function update_role() {
 
 		$role_dal = new role_dal();
 
-		echo $role_dal->update_role($role_name, $id);
+		echo $role_dal->update_role($role_name, $status, $id);
 	 
 	}
 

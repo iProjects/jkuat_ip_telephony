@@ -375,17 +375,20 @@ function edit_user(id){
 		var full_names = data.full_names;
 		var pass_word = data.password; 
 		var secretword = data.secretWord; 
+		var status = data.status;
+ 
+		$('#edit_user_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);  
-		$("#txt_edit_email").val(email);
-		$("#txt_edit_full_names").val(full_names);
-		$("#txt_edit_password").val(pass_word);
-		$("#txt_edit_secretword").val(secretword);
-		 
-		$('#div_edit_user_container').css({'display' : 'block'});
-	 		
-		$('#user_container').css({'display' : 'none'});
-	 		 
+		$('#edit_user_modal').on('shown.bs.modal', function () {
+			$('#txt_edit_email').focus();
+			$('#txt_edit_id').val(id);  
+			$("#txt_edit_email").val(email);
+			$("#txt_edit_full_names").val(full_names);
+			$("#txt_edit_password").val(pass_word);
+			$("#txt_edit_secretword").val(secretword);
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -408,7 +411,8 @@ function update_user(){
 	var email = $('#txt_edit_email').val().trim();
 	var full_names = $("#txt_edit_full_names").val().trim();  
 	var pass_word = $('#txt_edit_password').val().trim();
-	var secretword = $("#txt_edit_secretword").val().trim();  
+	var secretword = $("#txt_edit_secretword").val().trim();   
+	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
 	
@@ -473,6 +477,7 @@ function update_user(){
 			"full_names": full_names,
 			"password": pass_word, 
 			"secretword": secretword, 
+			"status": status, 
 			"action": "update_user"
 		},//data to be posted
 	}).done(function(response){
@@ -481,6 +486,8 @@ function update_user(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_user_modal').modal('hide'); 
 
 		search_users(1);
 		

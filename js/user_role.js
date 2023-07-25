@@ -351,15 +351,18 @@ function edit_user_role(id){
 		var id = data.id; 
 		var user_id = data.user_id; 
 		var role_id = data.role_id; 
+		var status = data.status;
+ 
+		$('#edit_user_role_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);   
-		$("#cbo_edit_user").val(user_id); 
-		$("#cbo_edit_role").val(role_id); 
-		 
-		$('#div_edit_user_role_container').css({'display' : 'block'});
-	 		
-		$('#user_role_container').css({'display' : 'none'});
-	 		 
+		$('#edit_user_role_modal').on('shown.bs.modal', function () {
+			$('#cbo_edit_user').focus();
+			$('#txt_edit_id').val(id);   
+			$("#cbo_edit_user").val(user_id); 
+			$("#cbo_edit_role").val(role_id); 
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -378,7 +381,8 @@ function update_user_role(){
 	
 	var id = $('#txt_edit_id').val(); 
 	var user_id = $("#cbo_edit_user").val();
-	var role_id = $("#cbo_edit_role").val();
+	var role_id = $("#cbo_edit_role").val(); 
+	var status = $("#cbo_edit_status").val();
 	
 	var isvalid = true;
 	
@@ -432,6 +436,7 @@ function update_user_role(){
 			"id": id, 
 			"user_id": user_id,
 			"role_id": role_id,
+			"status": status, 
 			"action": "update_user_role"
 		},//data to be posted
 	}).done(function(response){
@@ -440,6 +445,8 @@ function update_user_role(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_user_role_modal').modal('hide'); 
 
 		search_users_roles(1);
 		

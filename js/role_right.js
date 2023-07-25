@@ -355,15 +355,18 @@ function edit_role_right(id){
 		var id = data.id; 
 		var role_id = data.role_id; 
 		var right_id = data.right_id; 
+		var status = data.status;
+ 
+		$('#edit_role_right_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);   
-		$("#cbo_edit_role").val(role_id); 
-		$("#cbo_edit_right").val(right_id);
-		 
-		$('#div_edit_role_right_container').css({'display' : 'block'});
-	 		
-		$('#role_right_container').css({'display' : 'none'});
-	 		 
+		$('#edit_role_right_modal').on('shown.bs.modal', function () {
+			$('#cbo_edit_role').focus();
+			$('#txt_edit_id').val(id);   
+			$("#cbo_edit_role").val(role_id); 
+			$("#cbo_edit_right").val(right_id);
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -382,7 +385,8 @@ function update_role_right(){
 	
 	var id = $('#txt_edit_id').val(); 
 	var role_id = $("#cbo_edit_role").val();
-	var right_id = $("#cbo_edit_right").val();
+	var right_id = $("#cbo_edit_right").val(); 
+	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
 	
@@ -436,6 +440,7 @@ function update_role_right(){
 			"id": id, 
 			"role_id": role_id,
 			"right_id": right_id,
+			"status": status, 
 			"action": "update_role_right"
 		},//data to be posted
 	}).done(function(response){
@@ -444,6 +449,8 @@ function update_role_right(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_role_right_modal').modal('hide'); 
 
 		search_roles_rights(1);
 		

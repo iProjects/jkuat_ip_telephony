@@ -83,6 +83,7 @@ function update_user() {
 		$full_names = trim(htmlspecialchars(strip_tags($_POST['full_names'])));
 		$password = trim(htmlspecialchars(strip_tags($_POST['password'])));
 		$secretword = trim(htmlspecialchars(strip_tags($_POST['secretword']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
@@ -111,7 +112,7 @@ function update_user() {
 
 		$user_dal = new user_dal();
 
-		echo $user_dal->update_user($email, $full_names, $password, $secretword, $id);
+		echo $user_dal->update_user($email, $full_names, $password, $secretword, $status, $id);
 	 
 	}
 

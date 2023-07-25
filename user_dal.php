@@ -36,12 +36,14 @@ class user_dal
      *
 	 * @param $email
 	 * @param $full_names
-	 * @param $password
-	 * @param $secretWord 
-	 
+	 * @param $pass_word
+	 * @param $secret_word 
+	 * @param $status 
+	 * @param $addedby 
+	 *
      * @return $string
      * */
-	public function create_user($email, $full_names, $password, $secretWord, $status, $addedby)
+	public function create_user($email, $full_names, $pass_word, $secret_word, $status, $addedby)
     {
 		try{
 			
@@ -57,16 +59,16 @@ class user_dal
 			$query = "INSERT INTO tbl_users(
 			email, 
 			full_names, 
-			password,
-			secretWord,  			 
+			pass_word,
+			secret_word,  			 
 			addedby,  
 			status, 			
 			created_date) 
 			VALUES(
 			:email, 
 			:full_names, 
-			:password,
-			:secretWord, 			 
+			:pass_word,
+			:secret_word, 			 
 			:addedby,  
 			:status,			
 			:created_date)";
@@ -78,9 +80,9 @@ class user_dal
 			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
 			$full_names = ucwords($full_names); 
 			$stmt->bindParam(":full_names", $full_names, PDO::PARAM_STR);
-			$stmt->bindParam(":secretWord", $secretWord, PDO::PARAM_STR);
-			$stmt->bindParam(":password", $password, PDO::PARAM_STR);
-			$status = "active";
+			$stmt->bindParam(":pass_word", $pass_word, PDO::PARAM_STR); 
+			$stmt->bindParam(":secret_word", $secret_word, PDO::PARAM_STR);
+			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR);  
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  
@@ -173,20 +175,23 @@ class user_dal
      *
 	 * @param $email
 	 * @param $full_names
-	 * @param $password
-	 * @param $secretword 
-
+	 * @param $pass_word
+	 * @param $secret_word 
+	 * @param $status 
+	 * @param $id
+	 *
      * @return $mixed
      * */
-    public function update_user($email, $full_names, $password, $secretword, $id)
+    public function update_user($email, $full_names, $password, $secretword, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_users SET 
 			email = :email, 
 			full_names = :full_names,  
-			password = :password, 
-			secretWord = :secretword 
+			pass_word = :pass_word, 
+			secret_word = :secret_word, 
+			status = :status   
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -196,8 +201,9 @@ class user_dal
 			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
 			$full_names = ucwords($full_names); 
 			$stmt->bindParam(":full_names", $full_names, PDO::PARAM_STR);
-			$stmt->bindParam(":password", $password, PDO::PARAM_STR); 
-			$stmt->bindParam(":secretword", $secretword, PDO::PARAM_STR); 
+			$stmt->bindParam(":pass_word", $pass_word, PDO::PARAM_STR); 
+			$stmt->bindParam(":secret_word", $secret_word, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR);
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query
@@ -651,7 +657,7 @@ class user_dal
 				echo "<th scope='col'>#</th>";
 				echo "<th scope='col'>Email</th>";
 				echo "<th scope='col'>Full Names</th>"; 
-				echo "<th scope='col'>Password</th>"; 
+				echo "<th scope='col'>Pass Word</th>"; 
 				echo "<th scope='col'>Secret Word</th>"; 
 				echo "<th scope='col'>Status</th>"; 
 				echo "<th scope='col'>Created Date</th>"; 
@@ -677,8 +683,8 @@ class user_dal
 				$id = $row['id'];
 				$email = $row['email'];
 				$full_names = $row['full_names'];
-				$password = $row['password']; 
-				$secretword = $row['secretWord'];
+				$pass_word = $row['pass_word']; 
+				$secret_word = $row['secret_word'];
 				$status = $row['status'];
 				$created_date = $row['created_date']; 
  
@@ -709,13 +715,13 @@ class user_dal
 			 
 				echo "<td class='table-success'>";
 					
-				echo htmlspecialchars($password, ENT_QUOTES);
+				echo htmlspecialchars($pass_word, ENT_QUOTES);
 
 				echo "</td>"; 
 				
 				echo "<td class='table-success'>";
 					
-				echo htmlspecialchars($secretword, ENT_QUOTES);
+				echo htmlspecialchars($secret_word, ENT_QUOTES);
 
 				echo "</td>"; 
 			 

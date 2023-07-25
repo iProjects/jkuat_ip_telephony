@@ -73,6 +73,7 @@ function update_department() {
 		$id = trim(htmlspecialchars(strip_tags($_POST['id']))); 
 		$campus_id = trim(htmlspecialchars(strip_tags($_POST['campus_id'])));
 		$department_name = trim(htmlspecialchars(strip_tags($_POST['department_name']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
@@ -91,7 +92,7 @@ function update_department() {
 
 		$department_dal = new department_dal();
 
-		echo $department_dal->update_department($department_name, $id);
+		echo $department_dal->update_department($campus_id, $department_name, $status, $id);
 	 
 	}
 

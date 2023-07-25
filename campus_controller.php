@@ -68,6 +68,7 @@ function update_campus() {
 	 
 		$id = trim(htmlspecialchars(strip_tags($_POST['id']))); 
 		$campus_name = trim(htmlspecialchars(strip_tags($_POST['campus_name']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
@@ -83,7 +84,7 @@ function update_campus() {
 
 		$campus_dal = new campus_dal();
 
-		echo $campus_dal->update_campus($campus_name, $id);
+		echo $campus_dal->update_campus($campus_name, $status, $id);
 	 
 	}
 

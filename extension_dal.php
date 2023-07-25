@@ -38,6 +38,8 @@ class extension_dal
 	 * @param $department_id
 	 * @param $owner_assigned
 	 * @param $extension_number
+	 * @param $status
+	 * @param $addedby
 	 *
      * @return $string
      * */
@@ -110,7 +112,9 @@ class extension_dal
 	 * @param $department_id
 	 * @param $owner_assigned
 	 * @param $extension_number
-	 
+	 * @param $status
+	 * @param $addedby
+	 *
      * @return $string
      * */
 	public function create_extension_from_upload($campus_id, $department_id, $owner_assigned, $extension_number, $status, $addedby)
@@ -221,11 +225,12 @@ class extension_dal
 	 * @param $department_id
 	 * @param $owner_assigned
 	 * @param $extension_number
+	 * @param $status
 	 * @param $id
 
      * @return $mixed
      * */
-    public function update_extension($campus_id, $department_id, $owner_assigned, $extension_number, $id)
+    public function update_extension($campus_id, $department_id, $owner_assigned, $extension_number, $status, $id)
     {
 		try{
 			// Update query
@@ -233,7 +238,8 @@ class extension_dal
 			campus_id = :campus_id,  
 			department_id = :department_id, 			
 			owner_assigned = :owner_assigned, 
-			extension_number = :extension_number 
+			extension_number = :extension_number, 
+			status = :status 
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -245,6 +251,7 @@ class extension_dal
 			$owner_assigned = ucwords($owner_assigned);
 			$stmt->bindParam(":owner_assigned", $owner_assigned, PDO::PARAM_STR);
 			$stmt->bindParam(":extension_number", $extension_number, PDO::PARAM_STR);
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR);
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query
@@ -624,6 +631,285 @@ class extension_dal
 			}
 
 			//return $data;
+			return json_encode($data);
+
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+    /*
+     * Read department ids not saved in extensions given campus
+     *
+     * @return $mixed
+     * */
+    public function get_departments_given_campus_id_on_create($campus_id)
+    {
+		try{
+			
+			// $departments_for_campus = array($this->get_department_ids_array_given_campus_id($campus_id));
+			// var_dump($departments_for_campus);
+
+			$departments_for_campus = $this->get_department_ids_array_given_campus_id($campus_id);
+			// var_dump($departments_for_campus);
+
+			$departments_for_campus_arr = json_decode($departments_for_campus, true);
+			// var_dump($departments_for_campus_arr);
+
+			// $departments_in_extensions = array($this->get_departments_ids_array_given_campus_id_in_extensions($campus_id));
+			// var_dump($departments_in_extensions);
+
+
+			$departments_in_extensions = $this->get_departments_ids_array_given_campus_id_in_extensions($campus_id);
+			//var_dump($departments_in_extensions);
+
+			$departments_in_extensions_arr = json_decode($departments_in_extensions, true);
+			// var_dump($departments_in_extensions_arr);
+
+
+			if (is_array($departments_for_campus_arr)){
+
+				$keys = array_keys($departments_for_campus_arr);
+				// var_dump($keys);
+
+				for($i = 0; $i < count($departments_for_campus_arr); $i++) {
+					// echo $keys[$i] . "<br>";
+
+					foreach($departments_for_campus_arr[$keys[$i]] as $key => $value) {
+						//echo $key . " : " . $value . "<br>"; 
+						// echo ($value . "<br>");
+ 
+
+
+ 						if (is_array($departments_in_extensions_arr)){
+							
+							$inner_keys = array_keys($departments_in_extensions_arr);
+							// var_dump($inner_keys);
+
+							for($i = 0; $i < count($departments_in_extensions_arr); $i++) {
+								// echo $inner_keys[$i] . "<br>";
+
+								foreach($departments_in_extensions_arr[$inner_keys[$i]] as $inner_key => $inner_value) {
+									//echo $inner_key . " : " . $inner_value . "<br>";			 
+									// echo ($inner_value . "<br>");
+
+									//var_dump($departments_for_campus_arr[$keys[$i]]);
+
+									// echo ($value . "<br>");
+									// echo ($inner_value . "<br>");
+
+									if($value == $inner_value)
+									{
+										unset($departments_for_campus_arr[$keys[$i]]);
+									}
+
+
+			 
+			 					}
+
+			 				}
+			 				
+			 			}	
+
+					}
+  
+				}
+				//echo "}<br>";
+			}
+
+			$array = array_values($departments_for_campus_arr);
+			var_dump($array);
+
+			//$newArray = array_diff($departments_in_extensions_arr, $departments_for_campus_arr);
+			// var_dump($newArray);
+		
+
+			//$newArray = array_diff($departments_in_extensions_arr, $departments_for_campus_arr);
+			// var_dump($newArray);
+
+			// $keys = array_keys($departments_for_campus);
+ 
+
+			// foreach ($departments_for_campus as $innerArray) {
+			//     //  Check type
+			//     if (is_array($innerArray)){
+			//         //  Scan through inner loop
+			//         foreach ($innerArray as $value) {
+			//             //var_dump($value);
+ 
+			//              foreach ($value as $inner_value) {
+			// 				//var_dump($inner_value);  
+			// 			}
+			//         }
+			//     }else{
+			//         // one, two, three
+			//         echo $innerArray;
+			//     }
+			// }
+
+			// return;
+
+			// foreach ($departments_for_campus as $key => $value) {
+			// 	//var_dump($key);
+			// 	//var_dump($value);
+
+			// 	$myArray = array($value);
+			// 	$joinedArray = array();
+
+			// 	foreach ($myArray as $i) {
+			// 		$joinedArray[] = $i;
+			// 		var_dump($joinedArray);
+			// 	}
+
+			// 	//$keys = array_keys($value);
+			// 	//var_dump($keys);
+				
+			// 	if($key == "id") {
+			// 		$id = $value;
+			// 		//var_dump($id);
+			// 	} 
+			// }
+
+			// return;
+
+			for ($i = 0; $i < count($departments_for_campus); $i++) {
+
+				// var_dump($departments_for_campus[$i]);
+
+				// foreach ($departments_for_campus[$i] as $key => $value) { 
+					
+ 				// 	// var_dump($value);
+
+				// // 	if (is_array($value)){
+						
+				// 		foreach ($value as $key => $item) {
+				// 	        //$value[$key] = escape($item);
+				// 	        var_dump($item);
+				// 	    }
+
+				// 	}
+
+				// 	// foreach ($value as $ikey => $ivalue) { 
+ 
+				// 	// 	//var_dump($ivalue);
+				// 	// }
+
+				// 	// if($key == "id") {
+				// 	// 	$id = $value;
+				// 	// 	//var_dump($id);
+				// 	// } 
+
+				// }
+
+				// $key = $keys[$i];
+
+				// if($key == "id") {
+				// 	$value = $departments_for_campus[$key];
+				// 	var_dump($value);
+				// }
+
+				// $value = $departments_for_campus[$key];
+
+				//var_dump($value);
+
+				// $id = $departments_for_campus[$i];
+
+				// if(array_key_exists($id, $departments_in_extensions))
+				// {
+				// 	unset($departments_for_campus[$i]);
+				// }
+			}
+
+			$data = array();
+			for ($i = 0; $i < count($departments_for_campus); $i++) {
+				$data[] = $departments_for_campus[$i];
+			}
+
+			//return $data;
+			//return json_encode($data);
+
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+    /*
+     * Read department ids given campus
+     *
+     * @return $mixed
+     * */
+    public function get_department_ids_array_given_campus_id($campus_id)
+    {
+		try{
+			// select query
+			$query = "SELECT departments.id FROM tbl_departments as departments  
+			INNER JOIN tbl_campuses as campuses ON departments.campus_id = campuses.id  
+			WHERE departments.campus_id = :campus_id AND departments.status = :status   
+			ORDER BY departments.department_name ASC";
+
+			// prepare query for execution	
+			$stmt = $this->db->prepare($query);
+
+			// bind the parameters
+			$stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR);
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+
+			// Execute the query
+			$stmt->execute();
+
+			// return retrieved rows as an array
+			$data = array();
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$data[] = $row;
+			}
+
+			//return $data;
+			// return $data;
+			return json_encode($data);
+
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+    /*
+     * Read department ids already saved in extensions given campus
+     *
+     * @return $mixed
+     * */
+    public function get_departments_ids_array_given_campus_id_in_extensions($campus_id)
+    {
+		try{
+			// select query - select all data
+			$query = "SELECT departments.id FROM tbl_departments as departments    
+			INNER JOIN tbl_campuses as campuses ON departments.campus_id = campuses.id  
+			INNER JOIN tbl_extensions as extensions ON departments.id = extensions.department_id   
+			WHERE departments.campus_id = :campus_id AND departments.status = :status  
+			ORDER BY departments.department_name ASC";
+
+			// prepare query for execution	
+			$stmt = $this->db->prepare($query);
+
+			// bind the parameters
+			$stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR);
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+
+			// Execute the query
+			$stmt->execute();
+
+			// return retrieved rows as an array
+			$data = array();
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$data[] = $row;
+			}
+
+			//return $data;
+			// return $data;
 			return json_encode($data);
 
 		} catch (Exception $e){

@@ -316,14 +316,17 @@ function edit_role(id){
 				 
 		var id = data.id; 
 		var role_name = data.role_name; 
+		var status = data.status;
+ 
+		$('#edit_role_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);   
-		$("#txt_edit_role_name").val(role_name); 
-		 
-		$('#div_edit_role_container').css({'display' : 'block'});
-	 		
-		$('#role_container').css({'display' : 'none'});
-	 		 
+		$('#edit_role_modal').on('shown.bs.modal', function () {
+			$('#txt_edit_role_name').focus();
+			$('#txt_edit_id').val(id);   
+			$("#txt_edit_role_name").val(role_name); 
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -340,7 +343,8 @@ function update_role(){
 	document.querySelector("#txt_edit_role_name_error").innerHTML = "";
 	
 	var id = $('#txt_edit_id').val(); 
-	var role_name = $("#txt_edit_role_name").val().trim();  
+	var role_name = $("#txt_edit_role_name").val().trim();   
+	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
 	
@@ -370,6 +374,7 @@ function update_role(){
 		data: {
 			"id": id, 
 			"role_name": role_name, 
+			"status": status, 
 			"action": "update_role"
 		},//data to be posted
 	}).done(function(response){
@@ -378,6 +383,8 @@ function update_role(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_role_modal').modal('hide'); 
 
 		search_roles(1);
 		

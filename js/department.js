@@ -342,15 +342,18 @@ function edit_department(id){
 		var id = data.id; 
 		var department_name = data.department_name; 
 		var campus_id = data.campus_id;
+		var status = data.status;
+ 
+		$('#edit_department_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);  
-		$("#txt_edit_department_name").val(department_name); 
-		$('#cbo_edit_campus').val(campus_id);  
-		 
-		$('#div_edit_department_container').css({'display' : 'block'});
-	 		
-		$('#department_container').css({'display' : 'none'});
-	 		 
+		$('#edit_department_modal').on('shown.bs.modal', function () {
+			$('#cbo_edit_campus').focus();
+			$('#txt_edit_id').val(id);  
+			$('#cbo_edit_campus').val(campus_id);  		 
+			$("#txt_edit_department_name").val(department_name); 
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -370,6 +373,7 @@ function update_department(){
 	var id = $('#txt_edit_id').val();
 	var campus_id = $("#cbo_edit_campus").val(); 
 	var department_name = $("#txt_edit_department_name").val().trim(); 
+	var status = $("#cbo_edit_status").val();
 	
 	var isvalid = true;
 	
@@ -417,6 +421,7 @@ function update_department(){
 			"id": id,
 			"department_name": department_name, 
 			"campus_id": campus_id,
+			"status": status, 
 			"action": "update_department"
 		},//data to be posted
 	}).done(function(response){
@@ -424,7 +429,9 @@ function update_department(){
 		
 		console.log("response: " + response); 
 
-		log_info_messages(response);  
+		log_info_messages(response); 
+
+		$('#edit_department_modal').modal('hide'); 
 
 		search_departments(1);
 		

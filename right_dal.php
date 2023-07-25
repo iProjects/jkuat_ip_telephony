@@ -35,7 +35,9 @@ class right_dal
      * Add new Record
      *
 	 * @param $right_name 
-	 
+	 * @param $status  
+	 * @param $addedby  
+	 *
      * @return $string
      * */
 	public function create_right($right_name, $status, $addedby)
@@ -126,15 +128,18 @@ class right_dal
      * Update Record
      *
 	 * @param $right_name  
-
+	 * @param $status  
+	 * @param $id  
+	 *
      * @return $mixed
      * */
-    public function update_right($right_name, $id)
+    public function update_right($right_name, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_rights SET 
-			right_name = :right_name 
+			right_name = :right_name, 
+			status = :status     
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -143,6 +148,7 @@ class right_dal
 			// bind the parameters
 			$right_name = ucwords($right_name); 
 			$stmt->bindParam(":right_name", $right_name, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query

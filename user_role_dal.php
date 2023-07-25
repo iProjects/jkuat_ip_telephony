@@ -35,7 +35,9 @@ class user_role_dal
      * Add new Record
      *
 	 * @param $user_id 
-	 * @param $role_id 
+	 * @param $role_id 	 
+	 * @param $status 
+	 * @param $addedby 
 	 *
      * @return $string
      * */
@@ -142,16 +144,19 @@ class user_role_dal
      *
 	 * @param $user_id 
 	 * @param $role_id 
+	 * @param $status 
+	 * @param $id 
 	 *
      * @return $mixed
      * */
-    public function update_user_role($user_id, $role_id, $id)
+    public function update_user_role($user_id, $role_id, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_users_roles SET 
 			user_id = :user_id, 
-			role_id = :role_id 			
+			role_id = :role_id, 
+			status = :status    			
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -160,6 +165,7 @@ class user_role_dal
 			// bind the parameters
 			$stmt->bindParam(":user_id", $user_id, PDO::PARAM_STR); 
 			$stmt->bindParam(":role_id", $role_id, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR);
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query
