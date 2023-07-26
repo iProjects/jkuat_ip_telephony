@@ -231,7 +231,7 @@ function create_user(){
 	var email = $('#txt_create_email').val().trim();
 	var full_names = $("#txt_create_full_names").val().trim();
 	var pass_word = $('#txt_create_password').val().trim();
-	var secretword = $("#txt_create_secretword").val().trim(); 
+	var secret_word = $("#txt_create_secretword").val().trim(); 
 	var status = $("#cbo_create_status").val();
 	var addedby = readCookie("loggedinuser"); 
 
@@ -269,7 +269,7 @@ function create_user(){
   		document.querySelector("#txt_create_password_error").style.display = "block";	
 		isvalid = false;
 	} 
-	if(secretword.length == 0)
+	if(secret_word.length == 0)
 	{ 
 		//log_error_messages("Secret Word cannot be null."); 		
 		document.querySelector("#txt_create_secretword_error").innerHTML = "Secret Word cannot be null.";
@@ -291,8 +291,8 @@ function create_user(){
 		data: {
 			"email": email,
 			"full_names": full_names,
-			"password": pass_word, 
-			"secretword": secretword, 
+			"pass_word": pass_word, 
+			"secret_word": secret_word, 
 			"status": status, 
 			"addedby": addedby, 
 			"action": "create_user"
@@ -373,8 +373,8 @@ function edit_user(id){
 		var id = data.id;
 		var email = data.email;
 		var full_names = data.full_names;
-		var pass_word = data.password; 
-		var secretword = data.secretWord; 
+		var pass_word = data.pass_word; 
+		var secret_word = data.secret_word; 
 		var status = data.status;
  
 		$('#edit_user_modal').modal('show'); 
@@ -385,7 +385,7 @@ function edit_user(id){
 			$("#txt_edit_email").val(email);
 			$("#txt_edit_full_names").val(full_names);
 			$("#txt_edit_password").val(pass_word);
-			$("#txt_edit_secretword").val(secretword);
+			$("#txt_edit_secretword").val(secret_word);
 			$('#cbo_edit_status').val(status); 
 		})  
 
@@ -411,7 +411,7 @@ function update_user(){
 	var email = $('#txt_edit_email').val().trim();
 	var full_names = $("#txt_edit_full_names").val().trim();  
 	var pass_word = $('#txt_edit_password').val().trim();
-	var secretword = $("#txt_edit_secretword").val().trim();   
+	var secret_word = $("#txt_edit_secretword").val().trim();   
 	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
@@ -453,7 +453,7 @@ function update_user(){
   		document.querySelector("#txt_edit_password_error").style.display = "block";	
 		isvalid = false;
 	} 
-	if(secretword.length == 0)
+	if(secret_word.length == 0)
 	{ 
 		//log_error_messages("Secret Word cannot be null."); 		
 		document.querySelector("#txt_edit_secretword_error").innerHTML = "Secret Word cannot be null.";
@@ -475,8 +475,8 @@ function update_user(){
 			"id": id,
 			"email": email,
 			"full_names": full_names,
-			"password": pass_word, 
-			"secretword": secretword, 
+			"pass_word": pass_word, 
+			"secret_word": secret_word, 
 			"status": status, 
 			"action": "update_user"
 		},//data to be posted
@@ -508,7 +508,7 @@ function delete_user(id){
 	 
 	show_progress();
 	
-	var delete_prompt = get_delete_extension_prompt(id);
+	var delete_prompt = get_delete_user_prompt(id);
 	
 	hide_progress();
 	
@@ -552,8 +552,8 @@ function get_delete_user_prompt(id){
 		var id = data.id;
 		var email = data.email;
 		var full_names = data.full_names;
-		var pass_word = data.password; 
-		var secretword = data.secretWord; 
+		var pass_word = data.pass_word; 
+		var secret_word = data.secret_word; 
 		
 		var delete_prompt = "Are you sure you wish to delete User with Email [ " + email + " ] for [ " + full_names + " ].";
 		

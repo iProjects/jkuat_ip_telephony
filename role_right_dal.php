@@ -51,7 +51,7 @@ class role_right_dal
 			$role_name = $this->get_role_name_given_role_id($role_id);
 			$right_name = $this->get_right_name_given_right_id($right_id);
 
-			if(!empty($is_role_right))
+			if($is_role_right)
 			{
 				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Right [ ' . $right_name . ' ] for Role [ ' . $role_name . ' ] exists.</div>';
 				return $response;
@@ -772,10 +772,15 @@ class role_right_dal
 		try{
 			// select query - select all data
 			$query = "SELECT * FROM tbl_rights 
+			WHERE status = :status 
 			ORDER BY right_name ASC";
 
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
+			// bind the parameters 
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 
 			// Execute the query
 			$stmt->execute();
@@ -804,10 +809,15 @@ class role_right_dal
 		try{
 			// select query - select all data
 			$query = "SELECT * FROM tbl_roles 
+			WHERE status = :status 
 			ORDER BY role_name ASC";
 
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
+			// bind the parameters 
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 
 			// Execute the query
 			$stmt->execute();

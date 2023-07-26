@@ -85,7 +85,7 @@ if (isset($_COOKIE["origin"])) {
 	 
 	 <div id="dashboard_container">
 	 
-		<div id="div_edit_extension_container">
+		<div id="div_login_container">
  
  
 			<div class="modal-content">

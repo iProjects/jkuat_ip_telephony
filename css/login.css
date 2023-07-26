@@ -572,7 +572,9 @@ div.div_error_message_item {
 }
 
 body{
-    background: #f5f6fa;
+    background-image: url('../images/jkuat.jpg');
+    background-repeat: no-repeat; 
+    background-size: cover;
 }
 
 
@@ -588,25 +590,11 @@ body{
 	left: 40%; 
 }
 
-#div_edit_extension_container {
+#div_login_container {
 	display: block;	
 	width: 100%;
 }
-
-#maincontainer {
-	background-color: #fff;
-	position: relative;
-	margin: 1px;
-    padding: 1px;
-	top: 10px;
-	width: auto;
-	height: 95%;
-	float: left;
-    clear: both; 
-	left: 55%;
-	transform: translate(-50%);
-}
-
+ 
 #div_navigation {
     background-color: inherit;
 	display: block;

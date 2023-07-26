@@ -121,14 +121,10 @@ function login_ajax(){
 		
 		console.log("response: " + response); 
 		
-		if(response == "successfull")
+		if(response == "success")
 		{ 		
 			log_info_messages("login successful Redirecting...");
 			window.location.href = global_path + 'admin.php';
-		}
-		else if(response == "failure")
-		{
-			log_error_messages("error authenticating the user.");
 		}
 		else
 		{ 

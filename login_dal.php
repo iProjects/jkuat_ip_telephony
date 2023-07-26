@@ -42,7 +42,7 @@ class login_dal
 		try{
 			// select query
 			$query = "SELECT * FROM tbl_users 
-			WHERE email = :email AND password = :pass_word";
+			WHERE email = :email AND password = :pass_word AND status = :status";
 			
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
@@ -50,6 +50,8 @@ class login_dal
 			// bind the parameters
 			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
 			$stmt->bindParam(":pass_word", $pass_word, PDO::PARAM_STR);
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			
 			// Execute the query
 			$stmt->execute();
@@ -58,7 +60,7 @@ class login_dal
 			 
 			if(!$row)
 			{
-				return 'failure';
+				return 'Error retrieving the user.';
 			}
 			else
 			{
@@ -74,10 +76,81 @@ class login_dal
 
 				if(!$role)
 				{
-					return '<br />failure';
+					return '<br />Error authenticating the user.';
 				}else{
 					return 'successfull';
 				}
+			}
+			 
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+		 
+    }
+	
+    /*
+     * Login
+     *
+     * @param $email
+	 * @param $pass_word
+     * */
+    public function Login_from_password_hash($email, $pass_word)
+    {
+		try{
+			// select query
+			$query = "SELECT * FROM tbl_users 
+			WHERE email = :email AND status = :status";
+			
+			// prepare query for execution			
+			$stmt = $this->db->prepare($query);
+			
+			// bind the parameters
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR); 
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+
+			
+			// Execute the query
+			$stmt->execute();
+			
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			 
+			if(!$row)
+			{
+				return 'Error retrieving the user.';
+			}
+			else
+			{
+
+				//$data = json_decode($row, true);
+				// echo $data["password_hash"];
+
+				$saved_hash = $row["password_hash"];
+
+				if (password_verify($pass_word, $saved_hash)) {
+
+					$_SESSION['loggedinuser'] = $email;
+					$_SESSION['loggedintime'] = date("d-m-Y h:i:s a");
+					$_SESSION['logged_in_user_email'] = $row['email'];
+					
+					setcookie('loggedinuser', $email, time() + (60*60*24*365), '/');
+					setcookie('loggedintime', date("d-m-Y h:i:s a"), time() + (60*60*24*365), '/');
+					setcookie('logged_in_user_email', $row['email'], time() + (60*60*24*365), '/');
+					 
+					$role = $this->get_user_role($email);
+
+					if(!$role)
+					{
+						return;
+					}else{
+						return 'success';
+					}
+
+				} else { 
+					return 'Error authenticating the user.';
+				}
+
 			}
 			 
 		} catch (Exception $e){
@@ -100,13 +173,15 @@ class login_dal
 			$query = "SELECT role_name FROM tbl_roles AS roles 
 			INNER JOIN tbl_users_roles AS users_roles ON roles.id = users_roles.role_id 
 			INNER JOIN tbl_users AS users ON users_roles.user_id = users.id 
-			WHERE users.email = :email";
+			WHERE users.email = :email AND roles.status = :status";
 			
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
 			
 			// bind the parameters
-			$stmt->bindParam(":email", $email, PDO::PARAM_STR); 
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR);  
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			
 			// Execute the query
 			$stmt->execute();
@@ -115,7 +190,7 @@ class login_dal
 			 
 			if(!$row)
 			{
-				echo "Error retrieving user Role.";
+				echo "Error retrieving user role.";
 				return false;
 			}
 			else

@@ -43,13 +43,13 @@ class user_dal
 	 *
      * @return $string
      * */
-	public function create_user($email, $full_names, $pass_word, $secret_word, $status, $addedby)
+	public function create_user($email, $full_names, $pass_word, $secret_word, $status, $addedby, $password_hash)
     {
 		try{
 			
 			$is_email = $this->check_if_email_exists($email);
 			 
-			if(!empty($is_email))
+			if($is_email)
 			{
 				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>User with Email [ ' . $email . ' ] exists.</div>';
 				return $response;
@@ -60,6 +60,7 @@ class user_dal
 			email, 
 			full_names, 
 			pass_word,
+			password_hash,
 			secret_word,  			 
 			addedby,  
 			status, 			
@@ -68,6 +69,7 @@ class user_dal
 			:email, 
 			:full_names, 
 			:pass_word,
+			:password_hash,
 			:secret_word, 			 
 			:addedby,  
 			:status,			
@@ -81,11 +83,12 @@ class user_dal
 			$full_names = ucwords($full_names); 
 			$stmt->bindParam(":full_names", $full_names, PDO::PARAM_STR);
 			$stmt->bindParam(":pass_word", $pass_word, PDO::PARAM_STR); 
+			$stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR); 
 			$stmt->bindParam(":secret_word", $secret_word, PDO::PARAM_STR);
 			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR);  
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
-			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  
+			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);   
 			
 			// Execute the query
 			$stmt->execute();
@@ -145,11 +148,15 @@ class user_dal
     {
 		try{
 			// select query
-			$query = "SELECT * FROM tbl_users WHERE full_names = :full_names";
+			$query = "SELECT * FROM tbl_users 
+			WHERE full_names = :full_names";
+
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
+
 			// bind the parameters
 			$stmt->bindParam(":full_names", $full_names, PDO::PARAM_STR);
+
 			// Execute the query
 			$stmt->execute();
 			
@@ -182,7 +189,7 @@ class user_dal
 	 *
      * @return $mixed
      * */
-    public function update_user($email, $full_names, $password, $secretword, $status, $id)
+    public function update_user($email, $full_names, $pass_word, $secret_word, $status, $password_hash, $id)
     {
 		try{
 			// Update query
@@ -190,6 +197,7 @@ class user_dal
 			email = :email, 
 			full_names = :full_names,  
 			pass_word = :pass_word, 
+			password_hash = :password_hash, 
 			secret_word = :secret_word, 
 			status = :status   
 			WHERE id = :id";
@@ -202,9 +210,46 @@ class user_dal
 			$full_names = ucwords($full_names); 
 			$stmt->bindParam(":full_names", $full_names, PDO::PARAM_STR);
 			$stmt->bindParam(":pass_word", $pass_word, PDO::PARAM_STR); 
+			$stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR); 
 			$stmt->bindParam(":secret_word", $secret_word, PDO::PARAM_STR); 
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR);
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
+			
+			// Execute the query
+			$stmt->execute();
+ 
+			$response = "<div class='alert alert-success'>User with Email [ " . $email . " ] was successfully updated.</div>";
+			
+			return $response;
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+    /*
+     * Update Record
+     *
+	 * @param $email
+	 * @param $password_hash 
+	 *
+     * @return $mixed
+     * */
+    public function update_user_password_hash($email, $password_hash)
+    {
+		try{
+			// Update query
+			$query = "UPDATE tbl_users SET  
+			password_hash = :password_hash 
+			WHERE email = :email";
+			
+			// prepare query for execution
+			$stmt = $this->db->prepare($query);
+			
+			// bind the parameters
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR);  
+			$stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR);  
 			
 			// Execute the query
 			$stmt->execute();
@@ -228,7 +273,8 @@ class user_dal
     {
 		try{
 			// select query
-			$query = "SELECT * FROM tbl_users WHERE id = :id";
+			$query = "SELECT * FROM tbl_users 
+			WHERE id = :id";
 			
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
@@ -257,7 +303,8 @@ class user_dal
     {
 		try{
 			// select query
-			$query = "SELECT * FROM tbl_users WHERE id = :id";
+			$query = "SELECT * FROM tbl_users 
+			WHERE id = :id";
 			
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
@@ -286,11 +333,15 @@ class user_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM tbl_users ORDER BY id DESC";
+			$query = "SELECT * FROM tbl_users 
+			ORDER BY id DESC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -362,8 +413,50 @@ class user_dal
 				return $response;			
 			}
 
+			//check if this user has a role associated with it.
+			$users_roles_query =  "SELECT * FROM tbl_users_roles as users_roles  
+			INNER JOIN tbl_users as users ON users_roles.user_id = users.id 
+			WHERE users_roles.user_id = :user_id";
+
+			// prepare query for execution
+			$users_roles_stmt = $this->db->prepare($users_roles_query);
+
+			// bind the parameters
+			$users_roles_stmt->bindParam(":user_id", $id, PDO::PARAM_STR);
+
+			// Execute the query
+			$users_roles_stmt->execute();
+			
+			$users_roles_arr = $users_roles_stmt->fetch(PDO::FETCH_ASSOC);
+			
+			$users_roles_count = $users_roles_stmt->rowCount();
+
+			$response = null;
+			
+			if (!$users_roles_arr) {
+				// array is empty.
+				//continue with deletion.
+			}else{
+				//array has something, which means there is atleast an role tied to this user.
+				//warn the user.
+
+				if($users_roles_count > 1)
+				{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $users_roles_count . ' ] roles are associated with this user.</div>';
+				}else{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $users_roles_count . ' ] role is associated with this user.</div>';
+				}
+			
+			}
+
+			if($response)
+			{
+				return $response;
+			}
+
 			// delete query
-			$query = "DELETE FROM tbl_users WHERE id = :id";
+			$query = "DELETE FROM tbl_users 
+			WHERE id = :id";
 
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);
@@ -393,13 +486,18 @@ class user_dal
     {
 		try{
 			// select query
-			$query = "SELECT * FROM tbl_users WHERE email = :email";
+			$query = "SELECT * FROM tbl_users 
+			WHERE email = :email";
+
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
+
 			// bind the parameters
 			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved row as a json object
 			return json_encode($stmt->fetch(PDO::FETCH_ASSOC));
 			
@@ -419,16 +517,21 @@ class user_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM tbl_users ORDER BY id DESC";
+			$query = "SELECT * FROM tbl_users 
+			ORDER BY id DESC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $row;
 			}
+
 			//return $data;
 			return json_encode($data);
 		} catch (Exception $e){
@@ -446,16 +549,21 @@ class user_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT DISTINCT full_names FROM tbl_users ORDER BY id ASC";
+			$query = "SELECT DISTINCT full_names FROM tbl_users 
+			ORDER BY id ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $row;
 			}
+
 			//return $data;
 			return json_encode($data);
 		} catch (Exception $e){
@@ -473,16 +581,21 @@ class user_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT DISTINCT email FROM tbl_users ORDER BY id ASC";
+			$query = "SELECT DISTINCT email FROM tbl_users 
+			ORDER BY id ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $row;
 			}
+
 			//return $data;
 			return json_encode($data);
 		} catch (Exception $e){
@@ -656,8 +769,7 @@ class user_dal
 			echo "<tr>";
 				echo "<th scope='col'>#</th>";
 				echo "<th scope='col'>Email</th>";
-				echo "<th scope='col'>Full Names</th>"; 
-				echo "<th scope='col'>Pass Word</th>"; 
+				echo "<th scope='col'>Full Names</th>";  
 				echo "<th scope='col'>Secret Word</th>"; 
 				echo "<th scope='col'>Status</th>"; 
 				echo "<th scope='col'>Created Date</th>"; 
@@ -712,13 +824,7 @@ class user_dal
 				echo htmlspecialchars($full_names, ENT_QUOTES);
 
 				echo "</td>";
-			 
-				echo "<td class='table-success'>";
-					
-				echo htmlspecialchars($pass_word, ENT_QUOTES);
-
-				echo "</td>"; 
-				
+			  
 				echo "<td class='table-success'>";
 					
 				echo htmlspecialchars($secret_word, ENT_QUOTES);

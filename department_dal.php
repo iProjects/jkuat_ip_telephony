@@ -46,7 +46,7 @@ class department_dal
 			$is_department_name = $this->check_if_department_for_campus_exists( $campus_id, $department_name);
 			$campus_name = $this->get_campus_name_given_id($campus_id);
 			 
-			if(!empty($is_department_name))
+			if($is_department_name)
 			{
 				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Department  [ ' . $department_name . ' ] for Campus [ ' . $campus_name . ' ] exists.</div>';
 				return $response;
@@ -309,6 +309,8 @@ class department_dal
 			
 			$extensions_count = $extensions_stmt->rowCount();
 
+			$response = null;
+			
 			if (!$extensions_arr) {
 				// array is empty.
 				//continue with deletion.
@@ -322,7 +324,10 @@ class department_dal
 				}else{
 					$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $extensions_count . ' ] extension is associated with this department.</div>';
 				}
-			
+			}
+
+			if($response)
+			{
 				return $response;
 			}
 

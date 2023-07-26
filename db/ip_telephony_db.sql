@@ -1797,6 +1797,7 @@ CREATE TABLE IF NOT EXISTS tbl_users (
   full_names varchar(200) NOT NULL COMMENT 'Full Names',
   pass_word varchar(200) NOT NULL COMMENT 'Password',
   secret_word varchar(200) NOT NULL COMMENT 'Secret Word', 
+  password_hash varchar(500) NULL COMMENT 'Password Hash', 
   status varchar(200) NULL COMMENT 'Status',
   created_date varchar(200) NULL COMMENT 'Created Date',
   addedby varchar(200) NULL COMMENT 'Added By',
@@ -1809,8 +1810,8 @@ CREATE TABLE IF NOT EXISTS tbl_users (
 LOCK TABLES tbl_users WRITE;
 /*!40000 ALTER TABLE tbl_users DISABLE KEYS */;
 INSERT INTO tbl_users VALUES 
-(1,'admin@gmail.com','admin admin','admin','admin','active','21-06-2023 08:46:43 AM','admin'),
-(2,'fanikiwa254@gmail.com','fanikiwa fanikiwa','fanikiwa','fanikiwa','active','21-06-2023 08:46:43 AM','admin');
+(1,'admin@gmail.com','admin admin','admin','admin','$2y$12$OuH5IFxhqnhTCSnm7kCuj.Ru1Y.hqIy89HcjnWMGsoKiBggqst.A2','active','21-06-2023 08:46:43 AM','admin'),
+(2,'fanikiwa254@gmail.com','fanikiwa fanikiwa','fanikiwa','fanikiwa','$2y$12$gUVOKcgT1j6G3uBR30ZLMeaRipwhInInXfctdGJanQOjay6Ufjfaq','active','21-06-2023 08:46:43 AM','admin');
 /*!40000 ALTER TABLE tbl_users ENABLE KEYS */;
 UNLOCK TABLES;
 

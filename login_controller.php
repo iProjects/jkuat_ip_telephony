@@ -33,7 +33,8 @@ if(isset($_POST))
 
 	$login_dal = new login_dal();
 
-	echo $login_dal->Login($email, $pass_word);
+	//echo $login_dal->Login($email, $pass_word);
+	echo $login_dal->Login_from_password_hash($email, $pass_word);
  
 }
 

@@ -310,7 +310,7 @@ if (isset($_COOKIE['loggedinuser']))
   
 					<div class="form-group">
 						<label for="txt_edit_email">Email<span class="text-danger">*</span></label> 
-						<input type="email" id="txt_edit_email" name="txt_edit_email" placeholder="Email" class="form-control" required placeholder="Email" />
+						<input type="email" id="txt_edit_email" name="txt_edit_email" placeholder="Email" class="form-control" disabled required placeholder="Email" />
 						<p id="txt_edit_email_error" class="error"></p>
 					</div>
 					 

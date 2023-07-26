@@ -49,7 +49,7 @@ class extension_dal
 			
 			$extension_no = $this->check_if_extension_number_exists($extension_number);
 			 
-			if(!empty($extension_no))
+			if($extension_no)
 			{
 				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Extension Number [ ' . $extension_number . ' ] exists.</div>';
 				return $response;
@@ -443,61 +443,7 @@ class extension_dal
 			return $response;
 		}
     }
-
-    /*
-     * Get campus Details
-     *
-     * @param $ccode
-     * */
-    public function get_campus_given_code($ccode)
-    {
-		try{
-			// select query
-			$query = "SELECT * FROM campuses WHERE ccode = :ccode";
-			// prepare query for execution			
-			$stmt = $this->db->prepare($query);
-			// bind the parameters
-			$stmt->bindParam(":ccode", $ccode, PDO::PARAM_STR);
-			// Execute the query
-			$stmt->execute();
-			// return retrieved row as a json object
-			return json_encode($stmt->fetch(PDO::FETCH_ASSOC));
-			
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-	
-    /*
-     * Get campus Details
-     *
-     * @param $ccode
-     * */
-    public function get_campus_name_given_code($ccode)
-    {
-		try{
-			// select query
-			$query = "SELECT cname  FROM campuses WHERE ccode = :ccode";
-			// prepare query for execution			
-			$stmt = $this->db->prepare($query);
-			// bind the parameters
-			$stmt->bindParam(":ccode", $ccode, PDO::PARAM_STR);
-			// Execute the query
-			$stmt->execute();
-			
-			$arr = $stmt->fetch(PDO::FETCH_ASSOC);
-			
-			extract($arr); 
-			
-			return $cname;
-			
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-	
+ 
     /*
      * Read all campus records
      *
@@ -508,7 +454,7 @@ class extension_dal
 		try{
 			// select query - select all data
 			$query = "SELECT * FROM tbl_campuses 
-			WHERE status = :status
+			WHERE status = :status 
 			ORDER BY campus_name ASC";
 
 			// prepare query for execution	
@@ -535,38 +481,7 @@ class extension_dal
 			return $response;
 		}
     }
-
-    /*
-     * Read all campus codes
-     *
-     * @return $mixed
-     * */
-    public function get_campus_codes()
-    {
-		try{
-			// select query - select all data
-			$query = "SELECT ccode FROM tbl_campuses 
-			ORDER BY id ASC";
-
-			// prepare query for execution	
-			$stmt = $this->db->prepare($query);
-
-			// Execute the query
-			$stmt->execute();
-
-			// return retrieved rows as an array
-			$data = array();
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-				$data[] = $row;
-			}
-			//return $data;
-			return json_encode($data);
-		} catch (Exception $e){
-			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
-			return $response;
-		}
-    }
-
+ 
     /*
      * Read all campus names
      *
@@ -577,10 +492,15 @@ class extension_dal
 		try{
 			// select query - select all data
 			$query = "SELECT DISTINCT campus_name FROM tbl_campuses 
-			ORDER BY id ASC";
+			WHERE status = :status 
+			ORDER BY campus_name ASC";
 
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
+			// bind the parameters
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 
 			// Execute the query
 			$stmt->execute();
@@ -929,7 +849,7 @@ class extension_dal
 			// select query - select all data
 			$query = "SELECT DISTINCT department_name FROM tbl_departments as departments  
 			INNER JOIN tbl_extensions as extensions ON departments.id = extensions.department_id 
-			WHERE extensions.campus_id = :campus_id 
+			WHERE extensions.campus_id = :campus_id AND departments.status = :status  
 			ORDER BY departments.department_name ASC";
 
 			// prepare query for execution	
@@ -937,6 +857,8 @@ class extension_dal
 
 			// bind the parameters
 			$stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR);
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 
 			// Execute the query
 			$stmt->execute();

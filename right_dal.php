@@ -268,6 +268,47 @@ class right_dal
 				}  
 			}
 			
+			//check if this right has a role associated with it.
+			$roles_rights_query =  "SELECT * FROM tbl_roles_rights as roles_rights  
+			INNER JOIN tbl_rights as rights ON roles_rights.right_id = rights.id 
+			WHERE roles_rights.right_id = :right_id";
+
+			// prepare query for execution
+			$roles_rights_stmt = $this->db->prepare($roles_rights_query);
+
+			// bind the parameters
+			$roles_rights_stmt->bindParam(":right_id", $id, PDO::PARAM_STR);
+
+			// Execute the query
+			$roles_rights_stmt->execute();
+			
+			$roles_rights_arr = $roles_rights_stmt->fetch(PDO::FETCH_ASSOC);
+			
+			$roles_rights_count = $roles_rights_stmt->rowCount();
+
+			$response = null;
+			
+			if (!$roles_rights_arr) {
+				// array is empty.
+				//continue with deletion.
+			}else{
+				//array has something, which means there is atleast a role tied to this right.
+				//warn the user.
+
+				if($roles_rights_count > 1)
+				{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $roles_rights_count . ' ] roles are associated with this right.</div>';
+				}else{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $roles_rights_count . ' ] role is associated with this right.</div>';
+				}
+			
+			}
+
+			if($response)
+			{
+				return $response;
+			}
+
 			// delete query
 			$query = "DELETE FROM tbl_rights WHERE id = :id";
 			// prepare query for execution

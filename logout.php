@@ -20,6 +20,11 @@ if (isset($_COOKIE['logged_in_user_email'])) {
 	setcookie('logged_in_user_email', '', time() - 3600, '/'); // empty value and old timestamp
 } 
 
+if (isset($_COOKIE['logged_in_user_role'])) { 
+	unset($_COOKIE['logged_in_user_role']);  
+	setcookie('logged_in_user_role', '', time() - 3600, '/'); // empty value and old timestamp
+} 
+
 return print_r($_SESSION);
 
 ?>
