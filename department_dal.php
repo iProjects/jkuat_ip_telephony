@@ -84,7 +84,7 @@ class department_dal
 			// save lastInsertId in a variable
 			$lastInsertId = $this->db->lastInsertId();
 			
-			$response = "<div class='alert alert-success'>Department  [ ' . $department_name . ' ] for Campus [ ' . $campus_name . ' ] was successfully created. <br /> Last Insert Id = [ " . $lastInsertId . " ]</div>";
+			$response = "<div class='alert alert-success'>Department  [ " . $department_name . " ] for Campus [ " . $campus_name . " ] was successfully created. <br /> Last Insert Id = [ " . $lastInsertId . " ]</div>";
 			return $response;
 			
 		} catch (Exception $e){
@@ -167,7 +167,7 @@ class department_dal
  
  			$campus_name = $this->get_campus_name_given_id($campus_id);
 
-			$response = "<div class='alert alert-success'>Department  [ ' . $department_name . ' ] for Campus [ ' . $campus_name . ' ] was successfully updated.</div>";
+			$response = "<div class='alert alert-success'>Department  [ " . $department_name . " ] for Campus [ " . $campus_name . " ] was successfully updated.</div>";
 			
 			return $response;
 			
@@ -346,7 +346,7 @@ class department_dal
 			
 			$campus_name = $this->get_campus_name_given_id($campus_id);
 
-			$response = "<div class='alert alert-success'>Department  [ ' . $department_name . ' ] for Campus [ ' . $campus_name . ' ] was successfully deleted.</div>";
+			$response = "<div class='alert alert-success'>Department  [ " . $department_name . " ] for Campus [ " . $campus_name . " ] was successfully deleted.</div>";
 			return $response;
 			
 		} catch (Exception $e){

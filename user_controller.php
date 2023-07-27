@@ -66,9 +66,11 @@ function create_user() {
 
 		$password_hash = create_hash($pass_word);
 
+		$password_md5_hash = md5($pass_word);
+
 		$user_dal = new user_dal();
 
-		echo $user_dal->create_user($email, $full_names, $pass_word, $secret_word, $status, $addedby, $password_hash);
+		echo $user_dal->create_user($email, $full_names, $password_md5_hash, $secret_word, $status, $addedby, $password_hash);
 	 
 	}
 
@@ -123,9 +125,11 @@ function update_user() {
 
 		$password_hash = create_hash($pass_word);
  
+		$password_md5_hash = md5($pass_word);
+
 		$user_dal = new user_dal();
 
-		echo $user_dal->update_user($email, $full_names, $pass_word, $secret_word, $status, $password_hash, $id);
+		echo $user_dal->update_user($email, $full_names, $password_md5_hash, $secret_word, $status, $password_hash, $id);
 	 
 	}
 
