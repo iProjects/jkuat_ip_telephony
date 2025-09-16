@@ -1,8 +1,6 @@
  
 $(document).ready(function () {
     
-	disable_all_actions();
-	
 	//listen for enter key event in document.
 	document.addEventListener("keypress", documententerkeyglobalhandler, false);
   
@@ -116,7 +114,20 @@ $(document).ready(function () {
 		return ($('.sidebar').width() - 55) + "px";
 	});
 		
-	authorization();
+	var select_options_arr = "";
+	select_options_arr += '<option value="active">active</option>';
+	select_options_arr += '<option value="inactive">inactive</option>'; 
+	
+	$('#cbo_create_status').html(select_options_arr);	
+	$('#cbo_edit_status').html(select_options_arr);	
+
+	wire_events();
+
+	disable_all_actions();
+		
+	setTimeout(function() {
+		authorization();
+	}, 1000);
 	
 	$("#progress_bar").hide();
 	 
@@ -208,32 +219,43 @@ function create_user_role(){
 	
 	show_progress();
 	clear_logs(); 
+	document.querySelector("#cbo_create_user_error").innerHTML = "";
+	document.querySelector("#cbo_create_role_error").innerHTML = "";
 	 
 	var user_id = $("#cbo_create_user").val();
 	var role_id = $("#cbo_create_role").val();
+	var status = $("#cbo_create_status").val();
 	var addedby = readCookie("loggedinuser"); 
 
 	var isvalid = true;
 	
 	if(user_id == null)
 	{ 
-		log_error_messages("Select User."); 		
+		//log_error_messages("Select User."); 		
+		document.querySelector("#cbo_create_user_error").innerHTML = "Select User.";
+  		document.querySelector("#cbo_create_user_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(user_id.length == 0)
 		{ 
-			log_error_messages("Select User."); 		
+			//log_error_messages("Select User."); 		
+			document.querySelector("#cbo_create_user_error").innerHTML = "Select User.";
+  			document.querySelector("#cbo_create_user_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
 	if(role_id == null)
 	{ 
-		log_error_messages("Select Role."); 		
+		//log_error_messages("Select Role."); 		
+		document.querySelector("#cbo_create_role_error").innerHTML = "Select Role.";
+  		document.querySelector("#cbo_create_role_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(role_id.length == 0)
 		{ 
-			log_error_messages("Select Role."); 		
+			//log_error_messages("Select Role."); 		
+			document.querySelector("#cbo_create_role_error").innerHTML = "Select Role.";
+  			document.querySelector("#cbo_create_role_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
@@ -262,6 +284,7 @@ function create_user_role(){
 		data: { 
 			"user_id": user_id,
 			"role_id": role_id,
+			"status": status, 
 			"addedby": addedby, 
 			"action": "create_user_role"
 		},//data to be posted
@@ -330,15 +353,18 @@ function edit_user_role(id){
 		var id = data.id; 
 		var user_id = data.user_id; 
 		var role_id = data.role_id; 
+		var status = data.status;
+ 
+		$('#edit_user_role_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);   
-		$("#cbo_edit_user").val(user_id); 
-		$("#cbo_edit_role").val(role_id); 
-		 
-		$('#div_edit_user_role_container').css({'display' : 'block'});
-	 		
-		$('#user_role_container').css({'display' : 'none'});
-	 		 
+		$('#edit_user_role_modal').on('shown.bs.modal', function () {
+			$('#cbo_edit_user').focus();
+			$('#txt_edit_id').val(id);   
+			$("#cbo_edit_user").val(user_id); 
+			$("#cbo_edit_role").val(role_id); 
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -352,10 +378,13 @@ function update_user_role(){
 	
 	show_progress();
 	clear_logs();  
+	document.querySelector("#cbo_edit_user_error").innerHTML = "";
+	document.querySelector("#cbo_edit_role_error").innerHTML = "";
 	
 	var id = $('#txt_edit_id').val(); 
 	var user_id = $("#cbo_edit_user").val();
-	var role_id = $("#cbo_edit_role").val();
+	var role_id = $("#cbo_edit_role").val(); 
+	var status = $("#cbo_edit_status").val();
 	
 	var isvalid = true;
 	
@@ -366,23 +395,31 @@ function update_user_role(){
 	}  
 	if(user_id == null)
 	{ 
-		log_error_messages("Select User."); 		
+		//log_error_messages("Select User."); 		
+		document.querySelector("#cbo_edit_user_error").innerHTML = "Select User.";
+  		document.querySelector("#cbo_edit_user_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(user_id.length == 0)
 		{ 
-			log_error_messages("Select User."); 		
+			//log_error_messages("Select User."); 		
+			document.querySelector("#cbo_edit_user_error").innerHTML = "Select User.";
+  			document.querySelector("#cbo_edit_user_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
 	if(role_id == null)
 	{ 
-		log_error_messages("Select Role."); 		
+		//log_error_messages("Select Role."); 		
+		document.querySelector("#cbo_edit_role_error").innerHTML = "Select Role.";
+  		document.querySelector("#cbo_edit_role_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(role_id.length == 0)
 		{ 
-			log_error_messages("Select Role."); 		
+			//log_error_messages("Select Role."); 		
+			document.querySelector("#cbo_edit_role_error").innerHTML = "Select Role.";
+  			document.querySelector("#cbo_edit_role_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
@@ -401,6 +438,7 @@ function update_user_role(){
 			"id": id, 
 			"user_id": user_id,
 			"role_id": role_id,
+			"status": status, 
 			"action": "update_user_role"
 		},//data to be posted
 	}).done(function(response){
@@ -409,6 +447,8 @@ function update_user_role(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_user_role_modal').modal('hide'); 
 
 		search_users_roles(1);
 		
@@ -592,6 +632,12 @@ function search_users_roles(page){
 		$('#div_content').html(response);
 		
 		get_users_roles_search_count();
+		
+		disable_all_actions();
+
+		setTimeout(function() {
+			authorization();
+		}, 1000);
 		
 		hide_progress();
 		
@@ -807,17 +853,20 @@ function disable_all_actions()
 			 
 			console.log("rights_obj: " + rights_obj); 
 				 
-			var rights_arr = jQuery.parseJSON(rights_obj);
+			//var rights_arr = jQuery.parseJSON(rights_obj);
  
-			console.log("rights_arr: " + rights_arr); 
+			//console.log("rights_arr: " + rights_arr); 
 				 
-			for (var i = 0; i < rights_arr.length; i++) {
-				var right_code = rights_arr[i].right_code; 
+			for (var i = 0; i < rights_obj.length; i++) {
+				var right_code = rights_obj[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $('"#"' + right_code + '""')[0]; 
-				var dom_element_from_class = $('"."' + right_code + '""')[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -832,7 +881,18 @@ function disable_all_actions()
 						'display: none',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "none";
+					}
+
 				}
 
 			}
@@ -887,9 +947,12 @@ function authorization()
 				var right_code = rights_arr[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $("#" + right_code + "")[0]; 
-				var dom_element_from_class = $("." + right_code + "")[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -905,7 +968,18 @@ function authorization()
 						'display: block',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+					
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "block";
+					}
+				
 				}
 
 			}
@@ -923,21 +997,6 @@ function authorization()
         console.log(err);
     }	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

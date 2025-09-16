@@ -592,37 +592,37 @@ body{
 }
 
 #div_logggin_info {
-	margin-right: 1px;
-	margin-top: 5px;
-	position: relative;
+    margin-right: 1px;
+    margin-top: 5px;
+    position: relative;
     float: right;
     clear: none; 
-	width: auto;
-	color: rgb(0, 0, 0);
+    width: auto;
+    color: rgb(0, 0, 0);
 }
 
 #lbllogginuser {
-	position: relative;
+    position: relative;
     float: left;
     clear: none;
-	padding: 5px;
-	margin: 1px;
-	cursor: text;
-	background-color: inherit; 
-	border: 0px solid rgb(157, 216, 49);
-	color: rgb(0, 0, 0);
+    padding: 5px;
+    margin: 1px;
+    cursor: text;
+    background-color: inherit; 
+    border: 0px solid rgb(157, 216, 49);
+    color: rgb(0, 0, 0);
 }
  
 #lblloggedintime {
-	position: relative;
+    position: relative;
     float: left;
     clear: none;
-	padding: 5px;
-	margin: 1px;
-	cursor: text;
-	background-color: inherit; 
-	border: 0px solid rgb(157, 216, 49);
-	color: rgb(0, 0, 0);
+    padding: 5px;
+    margin: 1px;
+    cursor: text;
+    background-color: inherit; 
+    border: 0px solid rgb(157, 216, 49);
+    color: rgb(0, 0, 0);
 }
 
 #progress_bar

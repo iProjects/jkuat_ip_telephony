@@ -1,8 +1,6 @@
  
 $(document).ready(function () {
     
-	disable_all_actions();
-	
 	//listen for enter key event in document.
 	document.addEventListener("keypress", documententerkeyglobalhandler, false);
   
@@ -111,7 +109,20 @@ $(document).ready(function () {
 		return ($('.sidebar').width() - 55) + "px";
 	});
 		
-	authorization();
+	var select_options_arr = "";
+	select_options_arr += '<option value="active">active</option>';
+	select_options_arr += '<option value="inactive">inactive</option>'; 
+	
+	$('#cbo_create_status').html(select_options_arr);	
+	$('#cbo_edit_status').html(select_options_arr);	
+
+	wire_events();
+
+	disable_all_actions();
+		
+	setTimeout(function() {
+		authorization();
+	}, 1000);
 	
 	$("#progress_bar").hide();
 	 
@@ -203,15 +214,19 @@ function create_right(){
 	
 	show_progress();
 	clear_logs();
-	 
+	document.querySelector("#txt_create_right_name_error").innerHTML = "";
+
 	var right_name = $("#txt_create_right_name").val().trim();
+	var status = $("#cbo_create_status").val();
 	var addedby = readCookie("loggedinuser"); 
 
 	var isvalid = true;
 	 
 	if(right_name.length == 0)
 	{ 
-		log_error_messages("Name cannot be null."); 		
+		//log_error_messages("Name cannot be null."); 		
+		document.querySelector("#txt_create_right_name_error").innerHTML = "Name cannot be null.";
+  		document.querySelector("#txt_create_right_name_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(addedby == null)
@@ -238,6 +253,7 @@ function create_right(){
 		type: "POST",
 		data: { 
 			"right_name": right_name,
+			"status": status, 
 			"addedby": addedby, 
 			"action": "create_right"
 		},//data to be posted
@@ -301,15 +317,18 @@ function edit_right(id){
 		var data = JSON.parse(response);
 				 
 		var id = data.id; 
-		var right_name = data.right_name.trim(); 
+		var right_name = data.right_name; 
+		var status = data.status;
+   
+		$('#edit_right_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);   
-		$("#txt_edit_right_name").val(right_name); 
-		 
-		$('#div_edit_right_container').css({'display' : 'block'});
-	 		
-		$('#right_container').css({'display' : 'none'});
-	 		 
+		$('#edit_right_modal').on('shown.bs.modal', function () {
+			$('#txt_edit_right_name').focus();
+			$('#txt_edit_id').val(id);   
+			$("#txt_edit_right_name").val(right_name); 
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -323,9 +342,11 @@ function update_right(){
 	
 	show_progress();
 	clear_logs();  
-	
+	document.querySelector("#txt_edit_right_name_error").innerHTML = "";
+
 	var id = $('#txt_edit_id').val(); 
-	var right_name = $("#txt_edit_right_name").val().trim();  
+	var right_name = $("#txt_edit_right_name").val().trim();   
+	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
 	
@@ -336,7 +357,9 @@ function update_right(){
 	}  
 	if(right_name.length == 0)
 	{ 
-		log_error_messages("Name cannot be null."); 		
+		//log_error_messages("Name cannot be null."); 		
+		document.querySelector("#txt_edit_right_name_error").innerHTML = "Name cannot be null.";
+  		document.querySelector("#txt_edit_right_name_error").style.display = "block";	
 		isvalid = false;
 	} 
 	 	
@@ -353,6 +376,7 @@ function update_right(){
 		data: {
 			"id": id, 
 			"right_name": right_name, 
+			"status": status, 
 			"action": "update_right"
 		},//data to be posted
 	}).done(function(response){
@@ -361,6 +385,8 @@ function update_right(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_right_modal').modal('hide'); 
 
 		search_rights(1);
 		
@@ -423,7 +449,7 @@ function get_delete_extension_prompt(id){
 		var data = JSON.parse(response);
 				 
 		var id = data.id; 
-		var right_name = data.right_name.trim(); 
+		var right_name = data.right_name; 
 		
 		var delete_prompt = "Are you sure you wish to delete Right [ " + right_name + " ].";
 		
@@ -579,6 +605,12 @@ function search_rights(page){
 		
 		get_rights_search_count();
 		
+		disable_all_actions();
+
+		setTimeout(function() {
+			authorization();
+		}, 1000);
+		
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -695,7 +727,7 @@ function toggle_navigation()
 		
 	}
 }
- 
+
 function disable_all_actions()
 {
 	try{		
@@ -718,17 +750,20 @@ function disable_all_actions()
 			 
 			console.log("rights_obj: " + rights_obj); 
 				 
-			var rights_arr = jQuery.parseJSON(rights_obj);
+			//var rights_arr = jQuery.parseJSON(rights_obj);
  
-			console.log("rights_arr: " + rights_arr); 
+			//console.log("rights_arr: " + rights_arr); 
 				 
-			for (var i = 0; i < rights_arr.length; i++) {
-				var right_code = rights_arr[i].right_code; 
+			for (var i = 0; i < rights_obj.length; i++) {
+				var right_code = rights_obj[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $('"#"' + right_code + '""')[0]; 
-				var dom_element_from_class = $('"."' + right_code + '""')[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -743,7 +778,18 @@ function disable_all_actions()
 						'display: none',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "none";
+					}
+
 				}
 
 			}
@@ -798,9 +844,12 @@ function authorization()
 				var right_code = rights_arr[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $("#" + right_code + "")[0]; 
-				var dom_element_from_class = $("." + right_code + "")[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -816,7 +865,18 @@ function authorization()
 						'display: block',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+					
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "block";
+					}
+				
 				}
 
 			}
@@ -834,21 +894,6 @@ function authorization()
         console.log(err);
     }	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

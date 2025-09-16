@@ -204,7 +204,7 @@ function show_error_toast(message) {
 		'bottom: 5%',
 		'float: right',
 		'background-color: rgb(241, 10, 10)',
-		'color: rgb(0, 0, 0)',
+		'color: rgb(255 255 255)',
 		'animation: fadein 5s, fadeout 5s 60s',
 	].join(';');
 	
@@ -239,7 +239,7 @@ function show_info_toast(message) {
 		'bottom: 5%',
 		'float: right',
 		'background-color: rgb(6 104 4)',
-		'color: rgb(0, 0, 0)',
+		'color: rgb(255 255 255)',
 		'animation: fadein 5s, fadeout 5s 60s',
 		'border-radius: 5px',
 	].join(';');

@@ -39,14 +39,14 @@ class department_dal
 	 
      * @return $string
      * */
-	public function create_department($department_name, $campus_id, $addedby)
+	public function create_department($campus_id, $department_name, $status, $addedby)
     {
 		try{
 			
-			$is_department_name = $this->check_if_department_for_campus_exists($department_name, $campus_id);
+			$is_department_name = $this->check_if_department_for_campus_exists( $campus_id, $department_name);
 			$campus_name = $this->get_campus_name_given_id($campus_id);
 			 
-			if(!empty($is_department_name))
+			if($is_department_name)
 			{
 				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Department  [ ' . $department_name . ' ] for Campus [ ' . $campus_name . ' ] exists.</div>';
 				return $response;
@@ -72,8 +72,7 @@ class department_dal
 			// bind the parameters 
 			$department_name = ucwords($department_name);
 			$stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR);
-			$stmt->bindParam(":department_name", $department_name, PDO::PARAM_STR);
-			$status = "active";
+			$stmt->bindParam(":department_name", $department_name, PDO::PARAM_STR);			
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR); 
@@ -85,7 +84,7 @@ class department_dal
 			// save lastInsertId in a variable
 			$lastInsertId = $this->db->lastInsertId();
 			
-			$response = "<div class='alert alert-success'>Department  [ ' . $department_name . ' ] for Campus [ ' . $campus_name . ' ] was successfully created. <br /> Last Insert Id = [ " . $lastInsertId . " ]</div>";
+			$response = "<div class='alert alert-success'>Department  [ " . $department_name . " ] for Campus [ " . $campus_name . " ] was successfully created. <br /> Last Insert Id = [ " . $lastInsertId . " ]</div>";
 			return $response;
 			
 		} catch (Exception $e){
@@ -99,7 +98,7 @@ class department_dal
      *
      * @param $department_name
      * */
-    public function check_if_department_for_campus_exists($department_name, $campus_id)
+    public function check_if_department_for_campus_exists($campus_id, $department_name)
     {
 		try{
 			// select query
@@ -136,27 +135,31 @@ class department_dal
     /*
      * Update Record
      * 
+	 * @param $campus_id 
 	 * @param $department_name 
+	 * @param $status 
 	 * @param $id 
 
      * @return $mixed
      * */
-    public function update_department($department_name, $campus_id, $id)
+    public function update_department($campus_id, $department_name, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_departments SET 
 			campus_id = :campus_id, 
-			department_name = :department_name  
+			department_name = :department_name, 
+			status = :status    
 			WHERE id = :id";
 			
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);
 			
 			// bind the parameters 
-			$department_name = ucwords($department_name);
 			$stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR); 
+			$department_name = ucwords($department_name);
 			$stmt->bindParam(":department_name", $department_name, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query
@@ -164,7 +167,7 @@ class department_dal
  
  			$campus_name = $this->get_campus_name_given_id($campus_id);
 
-			$response = "<div class='alert alert-success'>Department  [ ' . $department_name . ' ] for Campus [ ' . $campus_name . ' ] was successfully updated.</div>";
+			$response = "<div class='alert alert-success'>Department  [ " . $department_name . " ] for Campus [ " . $campus_name . " ] was successfully updated.</div>";
 			
 			return $response;
 			
@@ -274,16 +277,63 @@ class department_dal
     {
 		try{
 			
+			//fetch the record.
 			$department_record = $this->fetch_department($id);
 			 
 			foreach ($department_record as $key => $value) {
 				if($key == "department_name") {
 					$department_name = $value; 
 				} 
+				if($key == "campus_id") {
+					$campus_id = $value; 
+				} 
 			}
 			
+			//check if this department has an extension associated with it.
+			$extensions_query =  "SELECT * FROM tbl_extensions as extensions 
+			INNER JOIN tbl_departments as departments ON extensions.department_id = departments.id 
+			INNER JOIN tbl_campuses as campuses ON extensions.campus_id = campuses.id 
+			WHERE extensions.department_id = :id AND extensions.campus_id = :campus_id";
+
+			// prepare query for execution
+			$extensions_stmt = $this->db->prepare($extensions_query);
+
+			// bind the parameters
+			$extensions_stmt->bindParam(":id", $id, PDO::PARAM_STR);
+			$extensions_stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR);
+
+			// Execute the query
+			$extensions_stmt->execute();
+			
+			$extensions_arr = $extensions_stmt->fetch(PDO::FETCH_ASSOC);
+			
+			$extensions_count = $extensions_stmt->rowCount();
+
+			$response = null;
+			
+			if (!$extensions_arr) {
+				// array is empty.
+				//continue with deletion.
+			}else{
+				//array has something, which means there is atleast an extension tied to this department.
+				//warn the user.
+
+				if($extensions_count > 1)
+				{
+					$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $extensions_count . ' ] extensions are associated with this department.</div>';
+				}else{
+					$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $extensions_count . ' ] extension is associated with this department.</div>';
+				}
+			}
+
+			if($response)
+			{
+				return $response;
+			}
+
 			// delete query
-			$query = "DELETE FROM tbl_departments WHERE id = :id";
+			$query = "DELETE FROM tbl_departments 
+			WHERE id = :id";
 
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);
@@ -296,7 +346,7 @@ class department_dal
 			
 			$campus_name = $this->get_campus_name_given_id($campus_id);
 
-			$response = "<div class='alert alert-success'>Department  [ ' . $department_name . ' ] for Campus [ ' . $campus_name . ' ] was successfully deleted.</div>";
+			$response = "<div class='alert alert-success'>Department  [ " . $department_name . " ] for Campus [ " . $campus_name . " ] was successfully deleted.</div>";
 			return $response;
 			
 		} catch (Exception $e){

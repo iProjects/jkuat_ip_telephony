@@ -35,16 +35,18 @@ class role_dal
      * Add new Record
      *
 	 * @param $role_name 
-	 
+	 * @param $status  
+	 * @param $addedby  
+	 *
      * @return $string
      * */
-	public function create_role($role_name, $addedby)
+	public function create_role($role_name, $status, $addedby)
     {
 		try{
 			
 			$is_role_name = $this->check_if_role_name_exists($role_name);
 			 
-			if(!empty($is_role_name))
+			if($is_role_name)
 			{
 				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Role with Name [ ' . $role_name . ' ] exists.</div>';
 				return $response;
@@ -68,8 +70,7 @@ class role_dal
 			// bind the parameters
 			$role_name = ucwords($role_name); 
 			$stmt->bindParam(":role_name", $role_name, PDO::PARAM_STR); 
-			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR); 
-			$status = "active";
+			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR);  
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  
@@ -127,15 +128,18 @@ class role_dal
      * Update Record
      *
 	 * @param $role_name 
-
+	 * @param $status  
+	 * @param $id  
+	 *
      * @return $mixed
      * */
-    public function update_role($role_name, $id)
+    public function update_role($role_name, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_roles SET 
-			role_name = :role_name 
+			role_name = :role_name, 
+			status = :status     
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -144,6 +148,7 @@ class role_dal
 			// bind the parameters
 			$role_name = ucwords($role_name); 
 			$stmt->bindParam(":role_name", $role_name, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query
@@ -168,7 +173,8 @@ class role_dal
     {
 		try{
 			// select query
-			$query = "SELECT * FROM tbl_roles WHERE id = :id";
+			$query = "SELECT * FROM tbl_roles 
+			WHERE id = :id";
 			
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
@@ -197,7 +203,8 @@ class role_dal
     {
 		try{
 			// select query
-			$query = "SELECT * FROM tbl_roles WHERE id = :id";
+			$query = "SELECT * FROM tbl_roles 
+			WHERE id = :id";
 			
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
@@ -226,11 +233,15 @@ class role_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM tbl_roles ORDER BY role_name ASC";
+			$query = "SELECT * FROM tbl_roles 
+			ORDER BY role_name ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -293,14 +304,94 @@ class role_dal
 				}  
 			}
 			
-			if($role_id == 1)
+			if($id == 1)
 			{
 				$response = "<div class='alert alert-danger'>Cannot delete Role [ ' . $role_name . ' ].</div>";		
 				return $response;			
 			}
 
+			//check if this role has a user associated with it.
+			$users_roles_query =  "SELECT * FROM tbl_users_roles as users_roles  
+			INNER JOIN tbl_roles as roles ON users_roles.role_id = roles.id 
+			WHERE users_roles.role_id = :role_id";
+
+			// prepare query for execution
+			$users_roles_stmt = $this->db->prepare($users_roles_query);
+
+			// bind the parameters
+			$users_roles_stmt->bindParam(":role_id", $id, PDO::PARAM_STR);
+
+			// Execute the query
+			$users_roles_stmt->execute();
+			
+			$users_roles_arr = $users_roles_stmt->fetch(PDO::FETCH_ASSOC);
+			
+			$users_roles_count = $users_roles_stmt->rowCount();
+			
+			//echo $users_roles_count;
+
+			$response = null;
+			
+			if (!$users_roles_arr) {
+				// array is empty.
+				//continue with deletion.
+			}else{
+				//array has something, which means there is atleast an user tied to this role.
+				//warn the user.
+
+				if($users_roles_count > 1)
+				{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $users_roles_count . ' ] users are associated with this role.</div>';
+				}else{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $users_roles_count . ' ] user is associated with this role.</div>';
+				}
+			
+			}
+
+			//check if this role has a right associated with it.
+			$roles_rights_query =  "SELECT * FROM tbl_roles_rights as roles_rights  
+			INNER JOIN tbl_roles as roles ON roles_rights.role_id = roles.id 
+			WHERE roles_rights.role_id = :role_id";
+
+			// prepare query for execution
+			$roles_rights_stmt = $this->db->prepare($roles_rights_query);
+
+			// bind the parameters
+			$roles_rights_stmt->bindParam(":role_id", $id, PDO::PARAM_STR);
+
+			// Execute the query
+			$roles_rights_stmt->execute();
+			
+			$roles_rights_arr = $roles_rights_stmt->fetch(PDO::FETCH_ASSOC);
+			
+			$roles_rights_count = $roles_rights_stmt->rowCount();
+
+			//echo $roles_rights_count;
+			
+			if (!$roles_rights_arr) {
+				// array is empty.
+				//continue with deletion.
+			}else{
+				//array has something, which means there is atleast a right tied to this role.
+				//warn the user.
+
+				if($roles_rights_count > 1)
+				{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $roles_rights_count . ' ] rights are associated with this role.</div>';
+				}else{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $roles_rights_count . ' ] right is associated with this role.</div>';
+				}
+			
+			}
+
+			if($response)
+			{
+				return $response;
+			}
+
 			// delete query
-			$query = "DELETE FROM tbl_roles WHERE id = :id";
+			$query = "DELETE FROM tbl_roles 
+			WHERE id = :id";
 
 			// prepare query for execution
 			$stmt = $this->db->prepare($query);

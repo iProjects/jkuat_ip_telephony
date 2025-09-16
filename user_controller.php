@@ -1,6 +1,7 @@
 <?php
 
 require 'user_dal.php';
+require 'password_encryption_utility.php';
 
 if(isset($_POST['action'])){
 	if ($_POST['action'] == "create_user") 
@@ -37,8 +38,10 @@ function create_user() {
 	 
 		$email = trim(htmlspecialchars(strip_tags($_POST['email'])));
 		$full_names = trim(htmlspecialchars(strip_tags($_POST['full_names'])));
-		$password = trim(htmlspecialchars(strip_tags($_POST['password'])));
-		$secretword = trim(htmlspecialchars(strip_tags($_POST['secretword']))); 
+		$pass_word = trim(htmlspecialchars(strip_tags($_POST['pass_word'])));
+		$secret_word = trim(htmlspecialchars(strip_tags($_POST['secret_word']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
+		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		
 		if(!isset($email)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Email is mandatory field.</div>';
@@ -50,10 +53,10 @@ function create_user() {
 		if(!isset($full_names)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> User Name is mandatory field.</div>';
 		} 
-		if(!isset($password)){
+		if(!isset($pass_word)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Password is mandatory field.</div>';
 		} 
-		if(!isset($secretword)){
+		if(!isset($secret_word)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Secret Word is mandatory field.</div>';
 		}  
 
@@ -62,14 +65,28 @@ function create_user() {
 			return;
 		}
 
+		$password_hash = create_hash($pass_word);
+ 
+		$converter = new Encryption;
+		$encoded_password = $converter->encode($pass_word);
+		
 		$user_dal = new user_dal();
 
-		echo $user_dal->create_user($email, $full_names, $password, $secretword);
+		echo $user_dal->create_user($email, $full_names, $encoded_password, $password_hash, $secret_word, $status, $addedby);
 	 
 	}
 
 }
  
+function create_hash($pass_word) {
+
+	$options['cost'] = 12;
+
+	$default_hash = password_hash($pass_word, PASSWORD_DEFAULT, $options);
+	return $default_hash;
+
+}
+
 function update_user() {
  
 	$response = "";
@@ -79,8 +96,9 @@ function update_user() {
 		$id = trim(htmlspecialchars(strip_tags($_POST['id'])));
 		$email = trim(htmlspecialchars(strip_tags($_POST['email'])));
 		$full_names = trim(htmlspecialchars(strip_tags($_POST['full_names'])));
-		$password = trim(htmlspecialchars(strip_tags($_POST['password'])));
-		$secretword = trim(htmlspecialchars(strip_tags($_POST['secretword']))); 
+		$pass_word = trim(htmlspecialchars(strip_tags($_POST['pass_word'])));
+		$secret_word = trim(htmlspecialchars(strip_tags($_POST['secret_word']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
@@ -95,10 +113,10 @@ function update_user() {
 		if(!isset($full_names)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> User Name is mandatory field.</div>';
 		} 
-		if(!isset($password)){
+		if(!isset($pass_word)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Password is mandatory field.</div>';
 		} 
-		if(!isset($secretword)){
+		if(!isset($secret_word)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Secret Word is mandatory field.</div>';
 		}   
 
@@ -107,9 +125,14 @@ function update_user() {
 			return;
 		}
 
+		$password_hash = create_hash($pass_word);
+ 
+		$converter = new Encryption;
+		$encoded_password = $converter->encode($pass_word);
+		
 		$user_dal = new user_dal();
 
-		echo $user_dal->update_user($email, $full_names, $password, $secretword, $id);
+		echo $user_dal->update_user($email, $full_names, $encoded_password, $password_hash, $secret_word, $status, $id);
 	 
 	}
 
@@ -135,7 +158,7 @@ function get_user() {
 		$user_dal = new user_dal();
 
 		echo $user_dal->get_user($id);
-	 
+  
 	}
 
 }

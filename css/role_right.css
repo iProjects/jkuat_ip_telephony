@@ -592,37 +592,37 @@ body{
 }
 
 #div_logggin_info {
-	margin-right: 1px;
-	margin-top: 5px;
-	position: relative;
+    margin-right: 1px;
+    margin-top: 5px;
+    position: relative;
     float: right;
     clear: none; 
-	width: auto;
-	color: rgb(0, 0, 0);
+    width: auto;
+    color: rgb(0, 0, 0);
 }
 
 #lbllogginuser {
-	position: relative;
+    position: relative;
     float: left;
     clear: none;
-	padding: 5px;
-	margin: 1px;
-	cursor: text;
-	background-color: inherit; 
-	border: 0px solid rgb(157, 216, 49);
-	color: rgb(0, 0, 0);
+    padding: 5px;
+    margin: 1px;
+    cursor: text;
+    background-color: inherit; 
+    border: 0px solid rgb(157, 216, 49);
+    color: rgb(0, 0, 0);
 }
  
 #lblloggedintime {
-	position: relative;
+    position: relative;
     float: left;
     clear: none;
-	padding: 5px;
-	margin: 1px;
-	cursor: text;
-	background-color: inherit; 
-	border: 0px solid rgb(157, 216, 49);
-	color: rgb(0, 0, 0);
+    padding: 5px;
+    margin: 1px;
+    cursor: text;
+    background-color: inherit; 
+    border: 0px solid rgb(157, 216, 49);
+    color: rgb(0, 0, 0);
 }
 
 #progress_bar
@@ -1074,7 +1074,18 @@ margin-right:-30vw!important}
   transition: transform 0.4s ease-in-out;
 }
  
-
+input[type="checkbox"],
+input[type="radio"] {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; 
+    border:0px solid #ECECEA; 
+    clear: both;
+    float: left;   
+    padding: 1px;
+    margin: 1px;  
+    width: 10%; 
+}
 
 
 

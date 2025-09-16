@@ -2,7 +2,8 @@
 
 require 'extension_dal.php';
 
-if(isset($_POST['action'])){
+if(isset($_POST['action']))
+{
 	if ($_POST['action'] == "create_extension") 
 	{ 
 		create_extension(); 
@@ -26,6 +27,10 @@ if(isset($_POST['action'])){
 	if ($_POST['action'] == "get_departments_given_campus_id") 
 	{ 
 		get_departments_given_campus_id(); 
+	} 
+	if ($_POST['action'] == "get_departments_given_campus_id_on_create") 
+	{ 
+		get_departments_given_campus_id_on_create(); 
 	} 
 	if ($_POST['action'] == "search_extensions") 
 	{ 
@@ -59,6 +64,7 @@ function create_extension() {
 		$department_id = trim(htmlspecialchars(strip_tags($_POST['department_id'])));
 		$owner_assigned = trim(htmlspecialchars(strip_tags($_POST['owner_assigned'])));
 		$extension_number = trim(htmlspecialchars(strip_tags($_POST['extension_number'])));  
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		
 		if(!isset($campus_id)){
@@ -84,7 +90,7 @@ function create_extension() {
 
 		$extension_dal = new extension_dal();
 
-		echo $extension_dal->create_extension($campus_id, $department_id, $owner_assigned, $extension_number, $addedby);
+		echo $extension_dal->create_extension($campus_id, $department_id, $owner_assigned, $extension_number, $status, $addedby);
 	 
 	}
 
@@ -101,6 +107,7 @@ function update_extension() {
 		$department_id = trim(htmlspecialchars(strip_tags($_POST['department_id'])));
 		$owner_assigned = trim(htmlspecialchars(strip_tags($_POST['owner_assigned'])));
 		$extension_number = trim(htmlspecialchars(strip_tags($_POST['extension_number']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> error retrieving the primary key.</div>';
@@ -125,7 +132,7 @@ function update_extension() {
 
 		$extension_dal = new extension_dal();
 
-		echo $extension_dal->update_extension($campus_id, $department_id, $owner_assigned, $extension_number, $id);
+		echo $extension_dal->update_extension($campus_id, $department_id, $owner_assigned, $extension_number, $status, $id);
 	 
 	}
 
@@ -244,6 +251,29 @@ function get_departments_given_campus_id() {
 		$extension_dal = new extension_dal();
 
 		echo $extension_dal->get_departments_given_campus_id($campus_id);
+	   
+	}
+
+}
+
+function get_departments_given_campus_id_on_create() {
+	
+	if(isset($_POST)){
+	 
+		$campus_id = trim(htmlspecialchars(strip_tags($_POST['campus_id']))); 
+ 
+		if(!isset($campus_id)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> campus is mandatory field.</div>';
+		}  
+
+		if(!empty($response)){
+			//echo $response;
+			return;
+		}
+
+		$extension_dal = new extension_dal();
+
+		echo $extension_dal->get_departments_given_campus_id_on_create($campus_id);
 	   
 	}
 

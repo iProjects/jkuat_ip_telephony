@@ -8,17 +8,7 @@ if (isset($_COOKIE['loggedinuser']))
 {
 	// 👇 check if cookie exists
 	if (isset($_COOKIE["origin"])) {
-		
-		//get the logged in user role from the session		
-		$logged_in_user_role = $_COOKIE['logged_in_user_role'];
-		
-		if($logged_in_user_role == "LimitedAdmin" || $logged_in_user_role == "Superadmin")
-		{ 
-			$global_path = $_COOKIE["origin"];
-			//echo $global_path; 
-			//header('Location: ' . $global_path . 'admin.php');
-			//exit(); 
-		}
+		 
 	}else{
 		$cookie_name = "origin";
 		$cookie_value = $server_path;

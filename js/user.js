@@ -1,8 +1,6 @@
  
 $(document).ready(function () {
     
-	disable_all_actions();
-	
 	//listen for enter key event in document.
 	document.addEventListener("keypress", documententerkeyglobalhandler, false);
   
@@ -122,7 +120,102 @@ $(document).ready(function () {
 		return ($('.sidebar').width() - 55) + "px";
 	});
 		
-	authorization();
+	var select_options_arr = "";
+	select_options_arr += '<option value="active">active</option>';
+	select_options_arr += '<option value="inactive">inactive</option>'; 
+	
+	$('#cbo_create_status').html(select_options_arr);	
+	$('#cbo_edit_status').html(select_options_arr);	
+
+    $('#txt_create_password').on('input', function(){
+     	var pass_word = $('#txt_create_password').val().trim();
+
+		document.querySelector("#txt_create_password_error").innerHTML = "";
+
+		if(pass_word.length > 0)
+		{
+			var uppercase = new RegExp('[A-Z]');
+			var lowercase = new RegExp('[a-z]');
+			var numbers = new RegExp('[0-9]');
+			var symbols = new RegExp('[-+_!@#$%^&*.,?]');
+
+			if(!pass_word.match(uppercase))
+			{
+				document.querySelector("#txt_create_password_error").innerHTML = "Password must have an upper case.";
+				document.querySelector("#txt_create_password_error").style.display = "block";	 
+			}
+			if(!pass_word.match(lowercase))
+			{
+				document.querySelector("#txt_create_password_error").innerHTML += "<br />Password must have a lower case.";
+				document.querySelector("#txt_create_password_error").style.display = "block";	 
+			}
+			if(!pass_word.match(numbers))
+			{
+				document.querySelector("#txt_create_password_error").innerHTML += "<br />Password must have a number.";
+				document.querySelector("#txt_create_password_error").style.display = "block";	 
+			}
+			if(!pass_word.match(symbols))
+			{
+				document.querySelector("#txt_create_password_error").innerHTML += "<br />Password must have a symbol.";
+				document.querySelector("#txt_create_password_error").style.display = "block";	 
+			}
+			if(pass_word.length < 8)
+			{
+				document.querySelector("#txt_create_password_error").innerHTML += "<br />Password must have atleast 8 characters.";
+				document.querySelector("#txt_create_password_error").style.display = "block";	 
+			}
+		} 
+
+    });
+	
+    $('#txt_edit_password').on('input', function(){
+     	var pass_word = $('#txt_edit_password').val().trim();
+
+		document.querySelector("#txt_edit_password_error").innerHTML = "";
+
+		if(pass_word.length > 0)
+		{
+			var uppercase = new RegExp('[A-Z]');
+			var lowercase = new RegExp('[a-z]');
+			var numbers = new RegExp('[0-9]');
+			var symbols = new RegExp('[-+_!@#$%^&*.,?]');
+
+			if(!pass_word.match(uppercase))
+			{
+				document.querySelector("#txt_edit_password_error").innerHTML = "Password must have an upper case.";
+				document.querySelector("#txt_edit_password_error").style.display = "block";	 
+			}
+			if(!pass_word.match(lowercase))
+			{
+				document.querySelector("#txt_edit_password_error").innerHTML += "<br />Password must have a lower case.";
+				document.querySelector("#txt_edit_password_error").style.display = "block";	 
+			}
+			if(!pass_word.match(numbers))
+			{
+				document.querySelector("#txt_edit_password_error").innerHTML += "<br />Password must have a number.";
+				document.querySelector("#txt_edit_password_error").style.display = "block";	 
+			}
+			if(!pass_word.match(symbols))
+			{
+				document.querySelector("#txt_edit_password_error").innerHTML += "<br />Password must have a symbol.";
+				document.querySelector("#txt_edit_password_error").style.display = "block";	 
+			}
+			if(pass_word.length < 8)
+			{
+				document.querySelector("#txt_edit_password_error").innerHTML += "<br />Password must have atleast 8 characters.";
+				document.querySelector("#txt_edit_password_error").style.display = "block";	 
+			}
+		} 
+
+    });
+	
+	wire_events();
+
+	disable_all_actions();
+	
+	setTimeout(function() {
+		authorization();
+	}, 1000);
 	
 	$("#progress_bar").hide();
 	 
@@ -214,17 +307,25 @@ function create_user(){
 	
 	show_progress();
 	clear_logs();
+	document.querySelector("#txt_create_email_error").innerHTML = "";
+	document.querySelector("#txt_create_full_names_error").innerHTML = "";
+	document.querySelector("#txt_create_password_error").innerHTML = "";
+	document.querySelector("#txt_create_secretword_error").innerHTML = "";
 	
 	var email = $('#txt_create_email').val().trim();
 	var full_names = $("#txt_create_full_names").val().trim();
 	var pass_word = $('#txt_create_password').val().trim();
-	var secretword = $("#txt_create_secretword").val().trim(); 
+	var secret_word = $("#txt_create_secretword").val().trim(); 
+	var status = $("#cbo_create_status").val();
+	var addedby = readCookie("loggedinuser"); 
 
 	var isvalid = true;
 	
 	if(email.length == 0)
 	{
-		log_error_messages("Email cannot be null."); 
+		//log_error_messages("Email cannot be null."); 
+		document.querySelector("#txt_create_email_error").innerHTML = "Email cannot be null.";
+  		document.querySelector("#txt_create_email_error").style.display = "block";	
 		isvalid = false;
 	} 
 	if(email.length != 0)
@@ -232,23 +333,69 @@ function create_user(){
 		var is_email_valid = validate_email(email);
 		if(!is_email_valid)
 		{
-			log_error_messages("Please provide a valid email address."); 
+			//log_error_messages("Please provide a valid email address."); 
+			document.querySelector("#txt_create_email_error").innerHTML = "Please provide a valid email address.";
+  			document.querySelector("#txt_create_email_error").style.display = "block";	
 			isvalid = false;
 		} 
 	} 
 	if(full_names.length == 0)
 	{ 
-		log_error_messages("User Name cannot be null."); 		
+		//log_error_messages("User Name cannot be null."); 		
+		document.querySelector("#txt_create_full_names_error").innerHTML = "User Name cannot be null.";
+  		document.querySelector("#txt_create_full_names_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(pass_word.length == 0)
 	{
-		log_error_messages("Password cannot be null."); 
+		//log_error_messages("Password cannot be null."); 
+		document.querySelector("#txt_create_password_error").innerHTML = "Password cannot be null.";
+  		document.querySelector("#txt_create_password_error").style.display = "block";	
 		isvalid = false;
 	} 
-	if(secretword.length == 0)
+	if(pass_word.length > 0)
+	{
+		var uppercase = new RegExp('[A-Z]');
+		var lowercase = new RegExp('[a-z]');
+		var numbers = new RegExp('[0-9]');
+		var symbols = new RegExp('[-+_!@#$%^&*.,?]');
+
+		if(!pass_word.match(uppercase))
+		{
+			document.querySelector("#txt_create_password_error").innerHTML = "Password must have an upper case.";
+	  		document.querySelector("#txt_create_password_error").style.display = "block";	
+			isvalid = false;
+		}
+		if(!pass_word.match(lowercase))
+		{
+			document.querySelector("#txt_create_password_error").innerHTML += "<br />Password must have a lower case.";
+	  		document.querySelector("#txt_create_password_error").style.display = "block";	
+			isvalid = false;
+		}
+		if(!pass_word.match(numbers))
+		{
+			document.querySelector("#txt_create_password_error").innerHTML += "<br />Password must have a number.";
+	  		document.querySelector("#txt_create_password_error").style.display = "block";	
+			isvalid = false;
+		}
+		if(!pass_word.match(symbols))
+		{
+			document.querySelector("#txt_create_password_error").innerHTML += "<br />Password must have a symbol.";
+	  		document.querySelector("#txt_create_password_error").style.display = "block";	
+			isvalid = false;
+		}
+		if(pass_word.length < 8)
+		{
+			document.querySelector("#txt_create_password_error").innerHTML += "<br />Password must have atleast 8 characters.";
+	  		document.querySelector("#txt_create_password_error").style.display = "block";	
+			isvalid = false;
+		}
+	} 
+	if(secret_word.length == 0)
 	{ 
-		log_error_messages("Secret Word cannot be null."); 		
+		//log_error_messages("Secret Word cannot be null."); 		
+		document.querySelector("#txt_create_secretword_error").innerHTML = "Secret Word cannot be null.";
+  		document.querySelector("#txt_create_secretword_error").style.display = "block";	
 		isvalid = false;
 	}
 	 	
@@ -266,8 +413,10 @@ function create_user(){
 		data: {
 			"email": email,
 			"full_names": full_names,
-			"password": pass_word, 
-			"secretword": secretword, 
+			"pass_word": pass_word, 
+			"secret_word": secret_word, 
+			"status": status, 
+			"addedby": addedby, 
 			"action": "create_user"
 		},//data to be posted
 	}).done(function(response){
@@ -307,7 +456,17 @@ function validate_email(email) {
 	   return true;
 	}
 }
-	
+
+function validate_password()
+{
+	//regex to check if a string contains uppercase, lowercase, special character and numeric value
+	var pattern = new RegExp("^(?=.*[a-z)(?=.*[A-Z)(?=.*\\d)(?=.*[-+_!@#$%^&*.,?]).+$");
+	var uppercase = new RegExp('A-Z');
+	var lowercase = new RegExp('a-z');
+	var numbers = new RegExp('[0-9]');
+
+}
+
 function edit_user(id){
 	 
 	show_progress();
@@ -344,21 +503,24 @@ function edit_user(id){
 		var data = JSON.parse(response);
 			 
 		var id = data.id;
-		var email = data.email.trim();
-		var full_names = data.full_names.trim();
-		var pass_word = data.password.trim(); 
-		var secretword = data.secretWord.trim(); 
+		var email = data.email;
+		var full_names = data.full_names;
+		var pass_word = data.pass_word; 
+		var secret_word = data.secret_word; 
+		var status = data.status;
+ 
+		$('#edit_user_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);  
-		$("#txt_edit_email").val(email);
-		$("#txt_edit_full_names").val(full_names);
-		$("#txt_edit_password").val(pass_word);
-		$("#txt_edit_secretword").val(secretword);
-		 
-		$('#div_edit_user_container').css({'display' : 'block'});
-	 		
-		$('#user_container').css({'display' : 'none'});
-	 		 
+		$('#edit_user_modal').on('shown.bs.modal', function () {
+			$('#txt_edit_full_names').focus();
+			$('#txt_edit_id').val(id);  
+			$("#txt_edit_email").val(email);
+			$("#txt_edit_full_names").val(full_names);
+			$("#txt_edit_password").val(pass_word);
+			$("#txt_edit_secretword").val(secret_word);
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -372,12 +534,17 @@ function update_user(){
 	
 	show_progress();
 	clear_logs();  
+	document.querySelector("#txt_edit_email_error").innerHTML = "";
+	document.querySelector("#txt_edit_full_names_error").innerHTML = "";
+	document.querySelector("#txt_edit_password_error").innerHTML = "";
+	document.querySelector("#txt_edit_secretword_error").innerHTML = "";
 	
 	var id = $('#txt_edit_id').val();
 	var email = $('#txt_edit_email').val().trim();
 	var full_names = $("#txt_edit_full_names").val().trim();  
 	var pass_word = $('#txt_edit_password').val().trim();
-	var secretword = $("#txt_edit_secretword").val().trim();  
+	var secret_word = $("#txt_edit_secretword").val().trim();   
+	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
 	
@@ -388,7 +555,9 @@ function update_user(){
 	} 
 	if(email.length == 0)
 	{
-		log_error_messages("Email cannot be null."); 
+		//log_error_messages("Email cannot be null."); 
+		document.querySelector("#txt_edit_email_error").innerHTML = "Email cannot be null.";
+  		document.querySelector("#txt_edit_email_error").style.display = "block";	
 		isvalid = false;
 	} 
 	if(email.length != 0)
@@ -396,25 +565,71 @@ function update_user(){
 		var is_email_valid = validate_email(email);
 		if(!is_email_valid)
 		{
-			log_error_messages("Please provide a valid email address."); 
+			//log_error_messages("Please provide a valid email address."); 
+			document.querySelector("#txt_edit_email_error").innerHTML = "Please provide a valid email address.";
+  			document.querySelector("#txt_edit_email_error").style.display = "block";	
 			isvalid = false;
 		} 
 	} 
 	if(full_names.length == 0)
 	{ 
-		log_error_messages("User Name cannot be null."); 		
+		//log_error_messages("User Name cannot be null."); 		
+		document.querySelector("#txt_edit_full_names_error").innerHTML = "User Name cannot be null.";
+  		document.querySelector("#txt_edit_full_names_error").style.display = "block";	
 		isvalid = false;
 	}
 	if(pass_word.length == 0)
 	{
-		log_error_messages("Password cannot be null."); 
+		//log_error_messages("Password cannot be null."); 
+		document.querySelector("#txt_edit_password_error").innerHTML = "Password cannot be null.";
+  		document.querySelector("#txt_edit_password_error").style.display = "block";	
 		isvalid = false;
 	} 
-	if(secretword.length == 0)
+	if(pass_word.length > 0)
+	{
+		var uppercase = new RegExp('[A-Z]');
+		var lowercase = new RegExp('[a-z]');
+		var numbers = new RegExp('[0-9]');
+		var symbols = new RegExp('[-+_!@#$%^&*.,?]');
+
+		if(!pass_word.match(uppercase))
+		{
+			document.querySelector("#txt_edit_password_error").innerHTML = "Password must have an upper case.";
+	  		document.querySelector("#txt_edit_password_error").style.display = "block";	
+			isvalid = false;
+		}
+		if(!pass_word.match(lowercase))
+		{
+			document.querySelector("#txt_edit_password_error").innerHTML += "<br />Password must have a lower case.";
+	  		document.querySelector("#txt_edit_password_error").style.display = "block";	
+			isvalid = false;
+		}
+		if(!pass_word.match(numbers))
+		{
+			document.querySelector("#txt_edit_password_error").innerHTML += "<br />Password must have a number.";
+	  		document.querySelector("#txt_edit_password_error").style.display = "block";	
+			isvalid = false;
+		}
+		if(!pass_word.match(symbols))
+		{
+			document.querySelector("#txt_edit_password_error").innerHTML += "<br />Password must have a symbol.";
+	  		document.querySelector("#txt_edit_password_error").style.display = "block";	
+			isvalid = false;
+		}
+		if(pass_word.length < 8)
+		{
+			document.querySelector("#txt_edit_password_error").innerHTML += "<br />Password must have atleast 8 characters.";
+	  		document.querySelector("#txt_edit_password_error").style.display = "block";	
+			isvalid = false;
+		}
+	} 
+	if(secret_word.length == 0)
 	{ 
-		log_error_messages("Secret Word cannot be null."); 		
+		//log_error_messages("Secret Word cannot be null."); 		
+		document.querySelector("#txt_edit_secretword_error").innerHTML = "Secret Word cannot be null.";
+  		document.querySelector("#txt_edit_secretword_error").style.display = "block";	
 		isvalid = false;
-	}	
+	}
 	 	
 	if(isvalid == false)
 	{	
@@ -430,8 +645,9 @@ function update_user(){
 			"id": id,
 			"email": email,
 			"full_names": full_names,
-			"password": pass_word, 
-			"secretword": secretword, 
+			"pass_word": pass_word, 
+			"secret_word": secret_word, 
+			"status": status, 
 			"action": "update_user"
 		},//data to be posted
 	}).done(function(response){
@@ -440,6 +656,8 @@ function update_user(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_user_modal').modal('hide'); 
 
 		search_users(1);
 		
@@ -460,7 +678,7 @@ function delete_user(id){
 	 
 	show_progress();
 	
-	var delete_prompt = get_delete_extension_prompt(id);
+	var delete_prompt = get_delete_user_prompt(id);
 	
 	hide_progress();
 	
@@ -502,10 +720,10 @@ function get_delete_user_prompt(id){
 		var data = JSON.parse(response);
 				 
 		var id = data.id;
-		var email = data.email.trim();
-		var full_names = data.full_names.trim();
-		var pass_word = data.password.trim(); 
-		var secretword = data.secretWord.trim(); 
+		var email = data.email;
+		var full_names = data.full_names;
+		var pass_word = data.pass_word; 
+		var secret_word = data.secret_word; 
 		
 		var delete_prompt = "Are you sure you wish to delete User with Email [ " + email + " ] for [ " + full_names + " ].";
 		
@@ -664,6 +882,12 @@ function search_users(page){
 		
 		get_users_search_count();
 		
+		disable_all_actions();
+
+		setTimeout(function() {
+			authorization();
+		}, 1000);
+		
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -803,17 +1027,20 @@ function disable_all_actions()
 			 
 			console.log("rights_obj: " + rights_obj); 
 				 
-			var rights_arr = jQuery.parseJSON(rights_obj);
+			//var rights_arr = jQuery.parseJSON(rights_obj);
  
-			console.log("rights_arr: " + rights_arr); 
+			//console.log("rights_arr: " + rights_arr); 
 				 
-			for (var i = 0; i < rights_arr.length; i++) {
-				var right_code = rights_arr[i].right_code; 
+			for (var i = 0; i < rights_obj.length; i++) {
+				var right_code = rights_obj[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $('"#"' + right_code + '""')[0]; 
-				var dom_element_from_class = $('"."' + right_code + '""')[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -828,7 +1055,18 @@ function disable_all_actions()
 						'display: none',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "none";
+					}
+
 				}
 
 			}
@@ -883,9 +1121,12 @@ function authorization()
 				var right_code = rights_arr[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $("#" + right_code + "")[0]; 
-				var dom_element_from_class = $("." + right_code + "")[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -901,7 +1142,18 @@ function authorization()
 						'display: block',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+					
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "block";
+					}
+				
 				}
 
 			}
@@ -919,21 +1171,6 @@ function authorization()
         console.log(err);
     }	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

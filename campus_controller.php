@@ -2,7 +2,8 @@
 
 require 'campus_dal.php';
 
-if(isset($_POST['action'])){
+if(isset($_POST['action']))
+{
 	if ($_POST['action'] == "create_campus") 
 	{ 
 		create_campus(); 
@@ -36,6 +37,7 @@ function create_campus() {
 	if(isset($_POST)){
 	  
 		$campus_name = trim(htmlspecialchars(strip_tags($_POST['campus_name'])));
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		 
 		if(!isset($campus_name)){
@@ -52,7 +54,7 @@ function create_campus() {
 
 		$campus_dal = new campus_dal();
 
-		echo $campus_dal->create_campus($campus_name, $addedby);
+		echo $campus_dal->create_campus($campus_name, $status, $addedby);
 	 
 	}
 
@@ -66,6 +68,7 @@ function update_campus() {
 	 
 		$id = trim(htmlspecialchars(strip_tags($_POST['id']))); 
 		$campus_name = trim(htmlspecialchars(strip_tags($_POST['campus_name']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
@@ -81,7 +84,7 @@ function update_campus() {
 
 		$campus_dal = new campus_dal();
 
-		echo $campus_dal->update_campus($campus_name, $id);
+		echo $campus_dal->update_campus($campus_name, $status, $id);
 	 
 	}
 

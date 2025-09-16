@@ -152,7 +152,7 @@ class admin_dal
 				return $response;
 			}
 
-			$role_rights_arr = $this->get_role_rights_given_role_id($logged_in_user_email);
+			$role_rights_arr = $this->get_role_rights_given_user_email($logged_in_user_email);
 		
 			// return retrieved row as a json object
 			return json_encode($role_rights_arr);		
@@ -174,10 +174,13 @@ class admin_dal
 			// select query
 			$query = "SELECT * FROM tbl_users 
 			WHERE email = :email";
+
 			// prepare query for execution			
 			$stmt = $this->db->prepare($query);
+
 			// bind the parameters
 			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
+
 			// Execute the query
 			$stmt->execute();
 			
@@ -194,9 +197,9 @@ class admin_dal
     /*
      * Get Role Rights Details
      *
-     * @param $role id
+     * @param $user email
      * */
-    public function get_role_rights_given_role_id($logged_in_user_email)
+    public function get_role_rights_given_user_email($logged_in_user_email)
     {
 		try{
 			// select query
@@ -214,6 +217,7 @@ class admin_dal
 			$stmt->bindParam(":logged_in_user_email", $logged_in_user_email, PDO::PARAM_STR);
 			$status = "active";
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR);
+
 			// Execute the query
 			$stmt->execute();
 			

@@ -1,8 +1,6 @@
  
 $(document).ready(function () {
     
-	disable_all_actions();
-	
 	//listen for enter key event in document.
 	document.addEventListener("keypress", documententerkeyglobalhandler, false);
   
@@ -15,6 +13,8 @@ $(document).ready(function () {
         $('#create_role_right_modal').modal('show'); 
 		$("#cbo_create_role").val(""); 
 		$("#cbo_create_right").val(""); 
+		// $("#chk_create_allowed").prop('checked', true);
+
     });
 	
 	$('#create_role_right_modal').on('shown.bs.modal', function () {
@@ -116,7 +116,20 @@ $(document).ready(function () {
 		return ($('.sidebar').width() - 55) + "px";
 	});
 		
-	authorization();
+	var select_options_arr = "";
+	select_options_arr += '<option value="active">active</option>';
+	select_options_arr += '<option value="inactive">inactive</option>'; 
+	
+	$('#cbo_create_status').html(select_options_arr);	
+	$('#cbo_edit_status').html(select_options_arr);	
+
+	wire_events();
+
+	disable_all_actions();
+		
+	setTimeout(function() {
+		authorization();
+	}, 1000);
 	
 	$("#progress_bar").hide();
 	 
@@ -208,32 +221,44 @@ function create_role_right(){
 	
 	show_progress();
 	clear_logs();
+	document.querySelector("#cbo_create_role_error").innerHTML = "";
+	document.querySelector("#cbo_create_right_error").innerHTML = "";
 	 
 	var role_id = $("#cbo_create_role").val();
 	var right_id = $("#cbo_create_right").val();
+	var allowed = document.querySelector("#chk_create_allowed").checked;
+	var status = $("#cbo_create_status").val();	
 	var addedby = readCookie("loggedinuser"); 
 
 	var isvalid = true;
 	 
 	if(role_id == null)
 	{ 
-		log_error_messages("Select Role."); 		
+		//log_error_messages("Select Role."); 		
+		document.querySelector("#cbo_create_role_error").innerHTML = "Select Role.";
+  		document.querySelector("#cbo_create_role_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(role_id.length == 0)
 		{ 
-			log_error_messages("Select Role."); 		
+			//log_error_messages("Select Role."); 		
+			document.querySelector("#cbo_create_role_error").innerHTML = "Select Role.";
+  			document.querySelector("#cbo_create_role_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
 	if(right_id == null)
 	{ 
-		log_error_messages("Select Right."); 		
+		//log_error_messages("Select Right."); 		
+		document.querySelector("#cbo_create_right_error").innerHTML = "Select Right.";
+  		document.querySelector("#cbo_create_right_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(right_id.length == 0)
 		{ 
-			log_error_messages("Select Right."); 		
+			//log_error_messages("Select Right."); 		
+			document.querySelector("#cbo_create_right_error").innerHTML = "Select Right.";
+  			document.querySelector("#cbo_create_right_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
@@ -262,6 +287,8 @@ function create_role_right(){
 		data: { 
 			"role_id": role_id,
 			"right_id": right_id,
+			"allowed": allowed,
+			"status": status, 
 			"addedby": addedby, 
 			"action": "create_role_right"
 		},//data to be posted
@@ -330,15 +357,18 @@ function edit_role_right(id){
 		var id = data.id; 
 		var role_id = data.role_id; 
 		var right_id = data.right_id; 
+		var status = data.status;
+ 
+		$('#edit_role_right_modal').modal('show'); 
 
-		$('#txt_edit_id').val(id);   
-		$("#cbo_edit_role").val(role_id); 
-		$("#cbo_edit_right").val(right_id);
-		 
-		$('#div_edit_role_right_container').css({'display' : 'block'});
-	 		
-		$('#role_right_container').css({'display' : 'none'});
-	 		 
+		$('#edit_role_right_modal').on('shown.bs.modal', function () {
+			$('#cbo_edit_role').focus();
+			$('#txt_edit_id').val(id);   
+			$("#cbo_edit_role").val(role_id); 
+			$("#cbo_edit_right").val(right_id);
+			$('#cbo_edit_status').val(status); 
+		})  
+
 		hide_progress();
 		
 	}).fail(function(jqXHR, textStatus){
@@ -352,10 +382,13 @@ function update_role_right(){
 	
 	show_progress();
 	clear_logs();  
+	document.querySelector("#cbo_edit_role_error").innerHTML = "";
+	document.querySelector("#cbo_edit_right_error").innerHTML = "";
 	
 	var id = $('#txt_edit_id').val(); 
 	var role_id = $("#cbo_edit_role").val();
-	var right_id = $("#cbo_edit_right").val();
+	var right_id = $("#cbo_edit_right").val(); 
+	var status = $("#cbo_edit_status").val();
 
 	var isvalid = true;
 	
@@ -366,23 +399,31 @@ function update_role_right(){
 	}  
 	if(role_id == null)
 	{ 
-		log_error_messages("Select Role."); 		
+		//log_error_messages("Select Role."); 		
+		document.querySelector("#cbo_edit_role_error").innerHTML = "Select Role.";
+  		document.querySelector("#cbo_edit_role_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(role_id.length == 0)
 		{ 
-			log_error_messages("Select Role."); 		
+			//log_error_messages("Select Role."); 		
+			document.querySelector("#cbo_edit_role_error").innerHTML = "Select Role.";
+  			document.querySelector("#cbo_edit_role_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
 	if(right_id == null)
 	{ 
-		log_error_messages("Select Right."); 		
+		//log_error_messages("Select Right."); 		
+		document.querySelector("#cbo_edit_right_error").innerHTML = "Select Right.";
+  		document.querySelector("#cbo_edit_right_error").style.display = "block";	
 		isvalid = false;
 	}else{
 		if(right_id.length == 0)
 		{ 
-			log_error_messages("Select Right."); 		
+			//log_error_messages("Select Right."); 		
+			document.querySelector("#cbo_edit_right_error").innerHTML = "Select Right.";
+  			document.querySelector("#cbo_edit_right_error").style.display = "block";	
 			isvalid = false;
 		}
 	}
@@ -401,6 +442,7 @@ function update_role_right(){
 			"id": id, 
 			"role_id": role_id,
 			"right_id": right_id,
+			"status": status, 
 			"action": "update_role_right"
 		},//data to be posted
 	}).done(function(response){
@@ -409,6 +451,8 @@ function update_role_right(){
 		console.log("response: " + response); 
 
 		log_info_messages(response);  
+
+		$('#edit_role_right_modal').modal('hide'); 
 
 		search_roles_rights(1);
 		
@@ -591,6 +635,12 @@ function search_roles_rights(page){
 		$('#div_content').html(response);
 		
 		get_roles_rights_search_count();
+		
+		disable_all_actions();
+
+		setTimeout(function() {
+			authorization();
+		}, 1000);
 		
 		hide_progress();
 		
@@ -805,17 +855,20 @@ function disable_all_actions()
 			 
 			console.log("rights_obj: " + rights_obj); 
 				 
-			var rights_arr = jQuery.parseJSON(rights_obj);
+			//var rights_arr = jQuery.parseJSON(rights_obj);
  
-			console.log("rights_arr: " + rights_arr); 
+			//console.log("rights_arr: " + rights_arr); 
 				 
-			for (var i = 0; i < rights_arr.length; i++) {
-				var right_code = rights_arr[i].right_code; 
+			for (var i = 0; i < rights_obj.length; i++) {
+				var right_code = rights_obj[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $('"#"' + right_code + '""')[0]; 
-				var dom_element_from_class = $('"."' + right_code + '""')[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -830,7 +883,18 @@ function disable_all_actions()
 						'display: none',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "none";
+					}
+
 				}
 
 			}
@@ -885,9 +949,12 @@ function authorization()
 				var right_code = rights_arr[i].right_code; 
 				console.log(right_code); 
 
-				var dom_element_from_id = $("#" + right_code + "")[0]; 
-				var dom_element_from_class = $("." + right_code + "")[0]; 
-				
+				var dom_element_from_id = document.querySelector('#' + right_code);
+				var dom_element_from_class = document.querySelector('.' + right_code);
+ 
+				console.log(dom_element_from_id); 
+				console.log(dom_element_from_class); 
+
 				if (dom_element_from_id) {
 					//The element exists
 					var style = [
@@ -903,7 +970,18 @@ function authorization()
 						'display: block',
 					].join(';');
 						
-					dom_element_from_class.setAttribute('style', style);					
+					dom_element_from_class.setAttribute('style', style);	
+					
+					var crud_elements = document.querySelectorAll('.' + right_code);
+
+					console.log(crud_elements); 
+
+					for (var t = 0; t < crud_elements.length; t++) {
+						var current_item = crud_elements[t];
+						console.log(current_item); 
+						current_item.style.display = "block";
+					}
+				
 				}
 
 			}
@@ -921,21 +999,6 @@ function authorization()
         console.log(err);
     }	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

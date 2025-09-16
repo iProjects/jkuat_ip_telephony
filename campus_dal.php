@@ -40,13 +40,13 @@ class campus_dal
 	 
      * @return $string
      * */
-	public function create_campus($campus_name, $addedby)
+	public function create_campus($campus_name, $status, $addedby)
     {
 		try{
 			
 			$is_campus_name = $this->check_if_campus_name_exists($campus_name);
 			 
-			if(!empty($is_campus_name))
+			if($is_campus_name)
 			{
 				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Campus [ ' . $campus_name . ' ] exists.</div>';
 				return $response;
@@ -70,7 +70,6 @@ class campus_dal
 			// bind the parameters 
 			$campus_name = ucwords($campus_name);
 			$stmt->bindParam(":campus_name", $campus_name, PDO::PARAM_STR);
-			$status = "active";
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR); 
@@ -133,16 +132,18 @@ class campus_dal
      * Update Record
      * 
 	 * @param $campus_name 
+	 * @param $status
 	 * @param $id
 	 *
      * @return $mixed
      * */
-    public function update_campus($campus_name, $id)
+    public function update_campus($campus_name, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_campuses SET  
-			campus_name = :campus_name 
+			campus_name = :campus_name,  
+			status = :status 
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -151,6 +152,7 @@ class campus_dal
 			// bind the parameters 
 			$campus_name = ucwords($campus_name);
 			$stmt->bindParam(":campus_name", $campus_name, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query
@@ -243,6 +245,81 @@ class campus_dal
 				} 
 			}
 			
+			//check if this campus has an extension associated with it.
+			$extensions_query =  "SELECT * FROM tbl_extensions as extensions  
+			INNER JOIN tbl_campuses as campuses ON extensions.campus_id = campuses.id 
+			WHERE extensions.campus_id = :campus_id";
+
+			// prepare query for execution
+			$extensions_stmt = $this->db->prepare($extensions_query);
+
+			// bind the parameters
+			$extensions_stmt->bindParam(":campus_id", $id, PDO::PARAM_STR);
+
+			// Execute the query
+			$extensions_stmt->execute();
+			
+			$extensions_arr = $extensions_stmt->fetch(PDO::FETCH_ASSOC);
+			
+			$extensions_count = $extensions_stmt->rowCount();
+
+			$response = null;
+			
+			if (!$extensions_arr) {
+				// array is empty.
+				//continue with deletion.
+			}else{
+				//array has something, which means there is atleast an extension tied to this department.
+				//warn the user.
+
+				if($extensions_count > 1)
+				{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $extensions_count . ' ] extensions are associated with this campus.</div>';
+				}else{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $extensions_count . ' ] extension is associated with this campus.</div>';
+				}
+			
+			}
+
+			//check if this capus has a department associated with it.
+			$departments_query =  "SELECT * FROM tbl_departments as departments 
+			INNER JOIN tbl_campuses as campuses ON departments.campus_id = campuses.id 
+			WHERE departments.campus_id = :campus_id";
+
+			// prepare query for execution
+			$departments_stmt = $this->db->prepare($departments_query);
+
+			// bind the parameters
+			$departments_stmt->bindParam(":campus_id", $id, PDO::PARAM_STR);
+
+			// Execute the query
+			$departments_stmt->execute();
+			
+			$departments_arr = $departments_stmt->fetch(PDO::FETCH_ASSOC);
+			
+			$departments_count = $departments_stmt->rowCount();
+
+			if (!$departments_arr) {
+				// array is empty.
+				//continue with deletion.
+			}else{
+				//array has something, which means there is atleast an extension tied to this department.
+				//warn the user.
+
+				if($departments_count > 1)
+				{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $departments_count . ' ] departments are associated with this campus.</div>';
+				}else{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $departments_count . ' ] department is associated with this campus.</div>';
+				}
+			
+			}
+
+			if($response)
+			{
+				return $response;
+			}
+
 			// delete query
 			$query = "DELETE FROM tbl_campuses 
 			WHERE id = :id";

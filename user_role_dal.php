@@ -35,24 +35,27 @@ class user_role_dal
      * Add new Record
      *
 	 * @param $user_id 
-	 * @param $role_id 
+	 * @param $role_id 	 
+	 * @param $status 
+	 * @param $addedby 
 	 *
      * @return $string
      * */
-	public function create_user_role($user_id, $role_id, $addedby)
+	public function create_user_role($user_id, $role_id, $status, $addedby)
     {
 		try{
 			
-			$is_user_role = $this->check_if_user_role_exists($user_id, $role_id);
+			$is_user = $this->check_if_user_exists($user_id);
 			 	
 			$full_names = $this->get_full_names_given_user_id($user_id);
-			$role_name = $this->get_role_name_given_role_id($role_id);
+			$role_name = $this->get_role_name_given_user_id($user_id);
 
-			if(!empty($is_user_role))
+			if($is_user)
 			{
 				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>User [ ' . $full_names . ' ] with Role [ ' . $role_name . ' ] exists.</div>';
+				return $response;
 			}
-			 
+			
 			// insert query
 			$query = "INSERT INTO tbl_users_roles(
 			user_id,  
@@ -73,8 +76,7 @@ class user_role_dal
 			// bind the parameters
 			$stmt->bindParam(":user_id", $user_id, PDO::PARAM_STR); 
 			$stmt->bindParam(":role_id", $role_id, PDO::PARAM_STR); 
-			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR); 
-			$status = "active";
+			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR);  
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  
@@ -85,7 +87,10 @@ class user_role_dal
 			// save lastInsertId in a variable
 			$lastInsertId = $this->db->lastInsertId();
 			
-			$response = "<div class='alert alert-success'>User [ ' . $full_names . ' ] with Role [ ' . $role_name . ' ] was successfully created. <br />Last Insert Id = [ " . $lastInsertId . " ]</div>";
+			$full_names = $this->get_full_names_given_user_id($user_id);
+			$role_name = $this->get_role_name_given_user_id($user_id);
+
+			$response = "<div class='alert alert-success'>User [ " . $full_names . " ] with Role [ " . $role_name . " ] was successfully created. <br />Last Insert Id = [ " . $lastInsertId . " ]</div>";
 			return $response;
 			
 		} catch (Exception $e){
@@ -139,20 +144,62 @@ class user_role_dal
     }
 	 
     /*
+     * Get user_role Details
+     *
+     * @param $user_id  
+	 *
+     * */
+    public function check_if_user_exists($user_id)
+    {
+		try{
+			 
+			$query = "SELECT * FROM tbl_users_roles  
+			WHERE user_id = :user_id";
+
+			// prepare query for execution			
+			$stmt = $this->db->prepare($query);
+
+			// bind the parameters
+			$stmt->bindParam(":user_id", $user_id, PDO::PARAM_STR);  
+
+			// Execute the query
+			$stmt->execute();
+			
+			$arr = $stmt->fetch(PDO::FETCH_ASSOC);
+			
+			if (!$arr) {
+				// array is empty.
+				return null;
+			}
+
+			extract($arr); 
+			
+			return $arr;		
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+	 
+    /*
      * Update Record
      *
 	 * @param $user_id 
 	 * @param $role_id 
+	 * @param $status 
+	 * @param $id 
 	 *
      * @return $mixed
      * */
-    public function update_user_role($user_id, $role_id, $id)
+    public function update_user_role($user_id, $role_id, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_users_roles SET 
 			user_id = :user_id, 
-			role_id = :role_id 			
+			role_id = :role_id, 
+			status = :status    			
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -161,6 +208,7 @@ class user_role_dal
 			// bind the parameters
 			$stmt->bindParam(":user_id", $user_id, PDO::PARAM_STR); 
 			$stmt->bindParam(":role_id", $role_id, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR);
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query
@@ -169,7 +217,7 @@ class user_role_dal
 			$full_names = $this->get_full_names_given_user_id($user_id);
 			$role_name = $this->get_role_name_given_role_id($role_id);
 
-			$response = "<div class='alert alert-success'>User [ ' . $full_names . ' ] with Role [ ' . $role_name . ' ] was successfully updated.</div>";
+			$response = "<div class='alert alert-success'>User [ " . $full_names . " ] with Role [ " . $role_name . " ] was successfully updated.</div>";
 			
 			return $response;
 			
@@ -284,6 +332,9 @@ class user_role_dal
 			foreach ($user_role_record as $key => $value) {
 				if($key == "role_id") {
 					$role_id = $value; 
+				} 
+				if($key == "user_id") {
+					$user_id = $value; 
 				}  
 			}
 			
@@ -292,7 +343,7 @@ class user_role_dal
 
 			if($user_id == 1)
 			{
-				$response = "<div class='alert alert-danger'>Cannot delete User [ ' . $full_names . ' ] with Role [ ' . $role_name . ' ].</div>";		
+				$response = "<div class='alert alert-danger'>Cannot delete User [ " . $full_names . " ] with Role [ " . $role_name . " ].</div>";		
 				return $response;			
 			}
 
@@ -309,7 +360,7 @@ class user_role_dal
 			// Execute the query
 			$stmt->execute();
 			
-			$response = "<div class='alert alert-success'>User [ ' . $full_names . ' ] with Role [ ' . $role_name . ' ] was successfully deleted.</div>";
+			$response = "<div class='alert alert-success'>User [ " . $full_names . " ] with Role [ " . $role_name . " ] was successfully deleted.</div>";
 			
 			return $response;
 			
@@ -368,6 +419,39 @@ class user_role_dal
 
 			// bind the parameters
 			$stmt->bindParam(":role_id", $role_id, PDO::PARAM_STR);
+
+			// Execute the query
+			$stmt->execute();
+
+			// return retrieved row as a json object
+			$role_name = $stmt->fetch(PDO::FETCH_ASSOC);
+			
+			return $role_name["role_name"];
+			
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+	 
+    /*
+     * Get role Details
+     *
+     * @param $user_id
+     * */
+    public function get_role_name_given_user_id($user_id)
+    {
+		try{
+			// select query
+			$query = "SELECT role_name FROM tbl_roles roles 
+			INNER JOIN tbl_users_roles as users_roles ON roles.id = users_roles.role_id 
+			WHERE users_roles.user_id = :user_id";
+
+			// prepare query for execution			
+			$stmt = $this->db->prepare($query);
+
+			// bind the parameters
+			$stmt->bindParam(":user_id", $user_id, PDO::PARAM_STR);
 
 			// Execute the query
 			$stmt->execute();
@@ -746,16 +830,26 @@ class user_role_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM tbl_users ORDER BY full_names ASC";
+			$query = "SELECT * FROM tbl_users 
+			WHERE status = :status 
+			ORDER BY full_names ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
+			// bind the parameters 
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $row;
 			}
+
 			//return $data;
 			return json_encode($data);
 		} catch (Exception $e){
@@ -773,16 +867,26 @@ class user_role_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM tbl_roles ORDER BY role_name ASC";
+			$query = "SELECT * FROM tbl_roles 
+			WHERE status = :status 
+			ORDER BY role_name ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
+			// bind the parameters 
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $row;
 			}
+
 			//return $data;
 			return json_encode($data);
 		} catch (Exception $e){

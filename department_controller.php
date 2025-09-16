@@ -2,7 +2,8 @@
 
 require 'department_dal.php';
 
-if(isset($_POST['action'])){
+if(isset($_POST['action']))
+{
 	if ($_POST['action'] == "create_department") 
 	{ 
 		create_department(); 
@@ -35,15 +36,16 @@ function create_department() {
 
 	if(isset($_POST)){
 	  
-		$department_name = trim(htmlspecialchars(strip_tags($_POST['department_name'])));
 		$campus_id = trim(htmlspecialchars(strip_tags($_POST['campus_id'])));
+		$department_name = trim(htmlspecialchars(strip_tags($_POST['department_name'])));
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		 
-		if(!isset($department_name)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Name is mandatory field.</div>';
-		} 
 		if(!isset($campus_id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Campus is mandatory field.</div>';
+		} 
+		if(!isset($department_name)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Name is mandatory field.</div>';
 		} 
 		if(!isset($addedby)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Added By is mandatory field.</div>';
@@ -56,7 +58,7 @@ function create_department() {
 
 		$department_dal = new department_dal();
 
-		echo $department_dal->create_department($department_name, $campus_id, $addedby);
+		echo $department_dal->create_department($campus_id, $department_name, $status, $addedby);
 	 
 	}
 
@@ -69,18 +71,19 @@ function update_department() {
 	if(isset($_POST)){
 	 
 		$id = trim(htmlspecialchars(strip_tags($_POST['id']))); 
-		$department_name = trim(htmlspecialchars(strip_tags($_POST['department_name']))); 
 		$campus_id = trim(htmlspecialchars(strip_tags($_POST['campus_id'])));
+		$department_name = trim(htmlspecialchars(strip_tags($_POST['department_name']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
 		}  
-		if(!isset($department_name)){
-			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Name is mandatory field.</div>';
-		}  
 		if(!isset($campus_id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Campus is mandatory field.</div>';
 		} 
+		if(!isset($department_name)){
+			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Name is mandatory field.</div>';
+		}  
 
 		if(!empty($response)){
 			echo $response;
@@ -89,7 +92,7 @@ function update_department() {
 
 		$department_dal = new department_dal();
 
-		echo $department_dal->update_department($department_name, $id);
+		echo $department_dal->update_department($campus_id, $department_name, $status, $id);
 	 
 	}
 

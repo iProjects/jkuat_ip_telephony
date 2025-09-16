@@ -8,17 +8,7 @@ if (isset($_COOKIE['loggedinuser']))
 {
 	// 👇 check if cookie exists
 	if (isset($_COOKIE["origin"])) {
-		
-		//get the logged in user role from the session		
-		$logged_in_user_role = $_COOKIE['logged_in_user_role'];
-		
-		if($logged_in_user_role == "LimitedAdmin" || $logged_in_user_role == "Superadmin")
-		{ 
-			$global_path = $_COOKIE["origin"];
-			//echo $global_path; 
-			//header('Location: ' . $global_path . 'extensions.php');
-			//exit(); 
-		}
+		 
 	}else{
 		$cookie_name = "origin";
 		$cookie_value = $server_path;
@@ -227,51 +217,7 @@ if (isset($_COOKIE['loggedinuser']))
 		<div id="div_edit_extension_container">
  
  
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="loginmodallabel">Edit Extension</h4>
-				</div>
-				   
-				<div class="modal-body">
-					<div class="form-group">
-						<h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
-						<div id="div_modal_msg"></div>
-					</div>
-
-					<div class="form-group">						
-						<div class="div_messages_modal"></div>			
-					</div>
-
-					<div class="form-group"> 
-						<input type="text" id="txt_edit_id" name="txt_edit_id" placeholder="id" class="form-control" required placeholder="id" />
-					</div>
-
-					<div class="form-group">
-						<label for="cbo_edit_campus">Campus <span class="text-danger">*</span></label> 
-						<select id="cbo_edit_campus" class="form-control"></select>
-					</div>
-
-					<div class="form-group">
-						<label for="cbo_edit_department">Department <span class="text-danger">*</span></label>
-						<select id="cbo_edit_department" class="form-control"></select>
-					</div>
-	 
-					<div class="form-group">
-						<label for="txt_edit_owner_assigned">Owner Assigned <span class="text-danger">*</span></label>
-						<input type="text" id="txt_edit_owner_assigned" name="txt_edit_owner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
-					</div>
-	 
-					<div class="form-group">
-						<label for="txt_edit_extension_number">Extension No <span class="text-danger">*</span></label>
-						<input type="text" id="txt_edit_extension_number" name="txt_edit_extension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
-					</div>
-
-				</div> 
-				<div class="modal-footer"> 
-					<button id="btnupdate_extension" type="button" class="btn btn-success" ><img src="images/add.png" alt="Update" title="Update" style="vertical-align:bottom;" />Update</button>
-					<button id="btnclose_edit_extension_modal" type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
-				</div>
-			</div>
+			
 
  
 		</div>
@@ -294,7 +240,7 @@ if (isset($_COOKIE['loggedinuser']))
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="loginmodallabel">Create Extension</h4>
+					<h4 class="modal-title" id="create_extension_modal_label">Create Extension</h4>
 				</div>
 				  
 				<div class="modal-body">
@@ -310,23 +256,33 @@ if (isset($_COOKIE['loggedinuser']))
 					<div class="form-group">
 						<label for="cbo_create_campus">Campus <span class="text-danger">*</span></label> 
 						<select id="cbo_create_campus" class="form-control"></select>
+						<p id="cbo_create_campus_error" class="error"></p>
 					</div>
 
 					<div class="form-group">
 						<label for="cbo_create_department">Department <span class="text-danger">*</span></label>
 						<select id="cbo_create_department" class="form-control"></select>
+						<p id="cbo_create_department_error" class="error"></p>
 					</div>
 	 
 					<div class="form-group">
-						<label for="txtowner_assigned">Owner Assigned <span class="text-danger">*</span></label>
-						<input type="text" id="txt_create_owner_assigned" name="txtowner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
+						<label for="txt_create_owner_assigned">Owner Assigned <span class="text-danger">*</span></label>
+						<input type="text" id="txt_create_owner_assigned" name="txt_create_owner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
+						<p id="txt_create_owner_assigned_error" class="error"></p>
 					</div>
 	 
 					<div class="form-group">
-						<label for="txtextension_number">Extension No <span class="text-danger">*</span></label>
-						<input type="text" id="txt_create_extension_number" name="txtextension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
+						<label for="txt_create_extension_number">Extension No <span class="text-danger">*</span></label>
+						<input type="text" id="txt_create_extension_number" name="txt_create_extension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
+						<p id="txt_create_extension_number_error" class="error"></p>
 					</div>
 
+					<div class="form-group">
+						<label for="cbo_create_status">Status <span class="text-danger">*</span></label> 
+						<select id="cbo_create_status" class="form-control"></select>
+						<p id="cbo_create_status_error" class="error"></p>
+					</div>
+ 
 				</div> 
 				<div class="modal-footer"> 
 					<button id="btncreate_extension" type="button" class="btn btn-success" ><img src="images/add.png" alt="Create" title="Create" style="vertical-align:bottom;" />Create</button>
@@ -337,6 +293,70 @@ if (isset($_COOKIE['loggedinuser']))
 		</div>
 	</div>
 	<!-- // create Modal -->
+ 
+	<!-- edit Modal -->
+	<div class="modal fade crud_modal" id="edit_extension_modal" tabindex="-1" role="dialog" aria-labelledby="edit_extension_modal_label">
+		<div class="modal-dialog" role="document">
+		
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="edit_extension_modal_label">Edit Extension</h4>
+				</div>
+				   
+				<div class="modal-body">
+					<div class="form-group">
+						<h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
+						<div id="div_modal_msg"></div>
+					</div>
+
+					<div class="form-group">						
+						<div class="div_messages_modal"></div>			
+					</div>
+
+					<div class="form-group"> 
+						<input type="text" id="txt_edit_id" name="txt_edit_id" placeholder="id" class="form-control" required placeholder="id" />
+					</div>
+
+					<div class="form-group">
+						<label for="cbo_edit_campus">Campus <span class="text-danger">*</span></label> 
+						<select id="cbo_edit_campus" class="form-control"></select>
+						<p id="cbo_edit_campus_error" class="error"></p>
+					</div>
+
+					<div class="form-group">
+						<label for="cbo_edit_department">Department <span class="text-danger">*</span></label>
+						<select id="cbo_edit_department" class="form-control"></select>
+						<p id="cbo_edit_department_error" class="error"></p>
+					</div>
+	 
+					<div class="form-group">
+						<label for="txt_edit_owner_assigned">Owner Assigned <span class="text-danger">*</span></label>
+						<input type="text" id="txt_edit_owner_assigned" name="txt_edit_owner_assigned" placeholder="Owner Assigned" class="form-control" required placeholder="Owner Assigned" />
+						<p id="txt_edit_owner_assigned_error" class="error"></p>
+					</div>
+	 
+					<div class="form-group">
+						<label for="txt_edit_extension_number">Extension No <span class="text-danger">*</span></label>
+						<input type="text" id="txt_edit_extension_number" name="txt_edit_extension_number" placeholder="Extension No" class="form-control" required placeholder="Extension No" />
+						<p id="txt_edit_extension_number_error" class="error"></p>
+					</div>
+
+					<div class="form-group">
+						<label for="cbo_edit_status">Status <span class="text-danger">*</span></label> 
+						<select id="cbo_edit_status" class="form-control"></select>
+						<p id="cbo_edit_status_error" class="error"></p>
+					</div>
+     
+				</div> 
+				<div class="modal-footer"> 
+					<button id="btnupdate_extension" type="button" class="btn btn-success" ><img src="images/add.png" alt="Update" title="Update" style="vertical-align:bottom;" />Update</button>
+					<button id="btnclose_edit_extension_modal" type="button" class="btn btn-danger" data-dismiss="modal"><img src="images/cancel.png" alt="Cancel" title="Cancel" style="vertical-align:bottom;" />Cancel</button>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	<!-- // edit Modal -->
  
 	<!-- // Bootstrap Modals -->
 

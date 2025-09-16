@@ -45,6 +45,8 @@ function create_role_right() {
 	 
 		$role_id = trim(htmlspecialchars(strip_tags($_POST['role_id']))); 
 		$right_id = trim(htmlspecialchars(strip_tags($_POST['right_id']))); 
+		$allowed = trim(htmlspecialchars(strip_tags($_POST['allowed']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		$addedby = trim(htmlspecialchars(strip_tags($_POST['addedby']))); 
 		
 		if(!isset($role_id)){
@@ -61,7 +63,7 @@ function create_role_right() {
 
 		$role_right_dal = new role_right_dal();
 
-		echo $role_right_dal->create_role_right($role_id, $right_id, $addedby);
+		echo $role_right_dal->create_role_right($role_id, $right_id, $allowed, $status, $addedby);
 	 
 	}
 
@@ -76,6 +78,7 @@ function update_role_right() {
 		$id = trim(htmlspecialchars(strip_tags($_POST['id'])));
 		$role_id = trim(htmlspecialchars(strip_tags($_POST['role_id']))); 
 		$right_id = trim(htmlspecialchars(strip_tags($_POST['right_id']))); 
+		$status = trim(htmlspecialchars(strip_tags($_POST['status'])));
 		
 		if(!isset($id)){
 			$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error retrieving the primary key.</div>';
@@ -94,7 +97,7 @@ function update_role_right() {
 
 		$role_right_dal = new role_right_dal();
 
-		echo $role_right_dal->update_role_right($role_id, $right_id, $id);
+		echo $role_right_dal->update_role_right($role_id, $right_id, $status, $id);
 	 
 	}
 

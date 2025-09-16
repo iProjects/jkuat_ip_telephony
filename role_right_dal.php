@@ -36,10 +36,13 @@ class role_right_dal
      *
 	 * @param $role_id 
 	 * @param $right_id 
+	 * @param $allowed 
+	 * @param $status 
+	 * @param $addedby 
 	 *
      * @return $string
      * */
-	public function create_role_right($role_id, $right_id, $addedby)
+	public function create_role_right($role_id, $right_id, $allowed, $status, $addedby)
     {
 		try{
 			
@@ -48,7 +51,7 @@ class role_right_dal
 			$role_name = $this->get_role_name_given_role_id($role_id);
 			$right_name = $this->get_right_name_given_right_id($right_id);
 
-			if(!empty($is_role_right))
+			if($is_role_right)
 			{
 				$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>Right [ ' . $right_name . ' ] for Role [ ' . $role_name . ' ] exists.</div>';
 				return $response;
@@ -57,13 +60,15 @@ class role_right_dal
 			// insert query
 			$query = "INSERT INTO tbl_roles_rights(
 			role_id, 
-			right_id, 			
+			right_id, 
+			allowed, 			
 			addedby,  
 			status, 			
 			created_date) 
 			VALUES(
 			:role_id,  
-			:right_id,  
+			:right_id, 
+			:allowed,  
 			:addedby,  
 			:status,			
 			:created_date)";
@@ -74,8 +79,8 @@ class role_right_dal
 			// bind the parameters
 			$stmt->bindParam(":role_id", $role_id, PDO::PARAM_STR); 
 			$stmt->bindParam(":right_id", $right_id, PDO::PARAM_STR); 
-			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR); 
-			$status = "active";
+			$stmt->bindParam(":allowed", $allowed, PDO::PARAM_INT); 
+			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR);  
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  
@@ -86,6 +91,9 @@ class role_right_dal
 			// save lastInsertId in a variable
 			$lastInsertId = $this->db->lastInsertId();
 			
+			$role_name = $this->get_role_name_given_role_id($role_id);
+			$right_name = $this->get_right_name_given_right_id($right_id);
+
 			$response = "<div class='alert alert-success'>Right [ " . $right_name . " ] for Role [ " . $role_name . " ] was successfully created. <br />Last Insert Id = [ " . $lastInsertId . " ]</div>";
 			return $response;
 			
@@ -141,17 +149,19 @@ class role_right_dal
      *
 	 * @param $role_id 
 	 * @param $right_id 
+	 * @param $status 
 	 * @param $id 
 	 *
      * @return $mixed
      * */
-    public function update_role_right($role_id, $right_id, $id)
+    public function update_role_right($role_id, $right_id, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_roles_rights SET 
 			role_id = :role_id,
-			right_id = :right_id 			
+			right_id = :right_id, 
+			status = :status      			
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -160,6 +170,7 @@ class role_right_dal
 			// bind the parameters
 			$stmt->bindParam(":role_id", $role_id, PDO::PARAM_STR); 
 			$stmt->bindParam(":right_id", $right_id, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query
@@ -607,6 +618,7 @@ class role_right_dal
 				echo "<th scope='col'>#</th>";
 				echo "<th scope='col'>Role</th>"; 
 				echo "<th scope='col'>Right</th>"; 
+				echo "<th scope='col'>Allowed</th>"; 
 				echo "<th scope='col'>Status</th>"; 
 				echo "<th scope='col'>Created Date</th>"; 
 				echo "<th scope='col'></th>";
@@ -630,11 +642,19 @@ class role_right_dal
 				$role_id = $row['role_id']; 
 				$right_id = $row['right_id']; 
 				$status = $row['status'];
+				$allowed = $row['allowed'];
 				$created_date = $row['created_date']; 
   
 				$role_name = $this->get_role_name_given_role_id($role_id);
 				$right_name = $this->get_right_name_given_right_id($right_id);
 				
+				if($allowed)
+				{
+					$allowed_str = "Allowed";
+				}else{
+					$allowed_str = "Not Allowed";
+				}
+
 				// creating new table row per record
 				echo "<tr class='table-primary'>";
 					
@@ -656,6 +676,12 @@ class role_right_dal
 
 				echo "</td>";
 					 
+				echo "<td class='table-success'>";
+					
+				echo htmlspecialchars($allowed_str, ENT_QUOTES);
+
+				echo "</td>"; 
+			 
 				echo "<td class='table-success'>";
 					
 				echo htmlspecialchars($status, ENT_QUOTES);
@@ -748,16 +774,26 @@ class role_right_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM tbl_rights ORDER BY right_name ASC";
+			$query = "SELECT * FROM tbl_rights 
+			WHERE status = :status 
+			ORDER BY right_name ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
+			// bind the parameters 
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $row;
 			}
+			
 			//return $data;
 			return json_encode($data);
 		} catch (Exception $e){
@@ -775,16 +811,26 @@ class role_right_dal
     {
 		try{
 			// select query - select all data
-			$query = "SELECT * FROM tbl_roles ORDER BY role_name ASC";
+			$query = "SELECT * FROM tbl_roles 
+			WHERE status = :status 
+			ORDER BY role_name ASC";
+
 			// prepare query for execution	
 			$stmt = $this->db->prepare($query);
+
+			// bind the parameters 
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+
 			// Execute the query
 			$stmt->execute();
+
 			// return retrieved rows as an array
 			$data = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $row;
 			}
+
 			//return $data;
 			return json_encode($data);
 		} catch (Exception $e){
@@ -795,6 +841,306 @@ class role_right_dal
 
  
  
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+     * Read right ids not saved in role rights given role
+     *
+     * @return $mixed
+     * */
+    public function get_rights_given_role_id_on_create($role_id)
+    {
+		try{
+			
+			// $rights_for_campus = array($this->get_right_ids_array_given_role_id($role_id));
+			// var_dump($departments_for_campus);
+
+			$departments_for_campus = $this->get_right_ids_array_given_role_id($role_id);
+			// var_dump($departments_for_campus);
+
+			$departments_for_campus_arr = json_decode($departments_for_campus, true);
+			// var_dump($departments_for_campus_arr);
+
+			// $departments_in_extensions = array($this->get_rights_ids_array_given_role_id_in_roles_rights($role_id));
+			// var_dump($departments_in_extensions);
+
+
+			$departments_in_extensions = $this->get_rights_ids_array_given_role_id_in_roles_rights($role_id);
+			//var_dump($departments_in_extensions);
+
+			$departments_in_extensions_arr = json_decode($departments_in_extensions, true);
+			// var_dump($departments_in_extensions_arr);
+
+
+			if (is_array($departments_for_campus_arr)){
+
+				$keys = array_keys($departments_for_campus_arr);
+				// var_dump($keys);
+
+				for($i = 0; $i < count($departments_for_campus_arr); $i++) {
+					// echo $keys[$i] . "<br>";
+
+					foreach($departments_for_campus_arr[$keys[$i]] as $key => $value) {
+						//echo $key . " : " . $value . "<br>"; 
+						// echo ($value . "<br>");
+ 
+
+
+ 						if (is_array($departments_in_extensions_arr)){
+							
+							$inner_keys = array_keys($departments_in_extensions_arr);
+							// var_dump($inner_keys);
+
+							for($i = 0; $i < count($departments_in_extensions_arr); $i++) {
+								// echo $inner_keys[$i] . "<br>";
+
+								foreach($departments_in_extensions_arr[$inner_keys[$i]] as $inner_key => $inner_value) {
+									//echo $inner_key . " : " . $inner_value . "<br>";			 
+									// echo ($inner_value . "<br>");
+
+									//var_dump($departments_for_campus_arr[$keys[$i]]);
+
+									// echo ($value . "<br>");
+									// echo ($inner_value . "<br>");
+
+									if($value == $inner_value)
+									{
+										unset($departments_for_campus_arr[$keys[$i]]);
+									}
+
+
+			 
+			 					}
+
+			 				}
+			 				
+			 			}	
+
+					}
+  
+				}
+				//echo "}<br>";
+			}
+
+			$array = array_values($departments_for_campus_arr);
+			var_dump($array);
+
+			//$newArray = array_diff($departments_in_extensions_arr, $departments_for_campus_arr);
+			// var_dump($newArray);
+		
+
+			//$newArray = array_diff($departments_in_extensions_arr, $departments_for_campus_arr);
+			// var_dump($newArray);
+
+			// $keys = array_keys($departments_for_campus);
+ 
+
+			// foreach ($departments_for_campus as $innerArray) {
+			//     //  Check type
+			//     if (is_array($innerArray)){
+			//         //  Scan through inner loop
+			//         foreach ($innerArray as $value) {
+			//             //var_dump($value);
+ 
+			//              foreach ($value as $inner_value) {
+			// 				//var_dump($inner_value);  
+			// 			}
+			//         }
+			//     }else{
+			//         // one, two, three
+			//         echo $innerArray;
+			//     }
+			// }
+
+			// return;
+
+			// foreach ($departments_for_campus as $key => $value) {
+			// 	//var_dump($key);
+			// 	//var_dump($value);
+
+			// 	$myArray = array($value);
+			// 	$joinedArray = array();
+
+			// 	foreach ($myArray as $i) {
+			// 		$joinedArray[] = $i;
+			// 		var_dump($joinedArray);
+			// 	}
+
+			// 	//$keys = array_keys($value);
+			// 	//var_dump($keys);
+				
+			// 	if($key == "id") {
+			// 		$id = $value;
+			// 		//var_dump($id);
+			// 	} 
+			// }
+
+			// return;
+
+			for ($i = 0; $i < count($departments_for_campus); $i++) {
+
+				// var_dump($departments_for_campus[$i]);
+
+				// foreach ($departments_for_campus[$i] as $key => $value) { 
+					
+ 				// 	// var_dump($value);
+
+				// // 	if (is_array($value)){
+						
+				// 		foreach ($value as $key => $item) {
+				// 	        //$value[$key] = escape($item);
+				// 	        var_dump($item);
+				// 	    }
+
+				// 	}
+
+				// 	// foreach ($value as $ikey => $ivalue) { 
+ 
+				// 	// 	//var_dump($ivalue);
+				// 	// }
+
+				// 	// if($key == "id") {
+				// 	// 	$id = $value;
+				// 	// 	//var_dump($id);
+				// 	// } 
+
+				// }
+
+				// $key = $keys[$i];
+
+				// if($key == "id") {
+				// 	$value = $departments_for_campus[$key];
+				// 	var_dump($value);
+				// }
+
+				// $value = $departments_for_campus[$key];
+
+				//var_dump($value);
+
+				// $id = $departments_for_campus[$i];
+
+				// if(array_key_exists($id, $departments_in_extensions))
+				// {
+				// 	unset($departments_for_campus[$i]);
+				// }
+			}
+
+			$data = array();
+			for ($i = 0; $i < count($departments_for_campus); $i++) {
+				$data[] = $departments_for_campus[$i];
+			}
+
+			//return $data;
+			//return json_encode($data);
+
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+    /*
+     * Read right ids given role
+     *
+     * @return $mixed
+     * */
+    public function get_right_ids_array_given_role_id($role_id)
+    {
+		try{
+			// select query
+			$query = "SELECT departments.id FROM tbl_departments as departments  
+			INNER JOIN tbl_campuses as campuses ON departments.campus_id = campuses.id  
+			WHERE departments.campus_id = :campus_id AND departments.status = :status   
+			ORDER BY departments.department_name ASC";
+
+			// prepare query for execution	
+			$stmt = $this->db->prepare($query);
+
+			// bind the parameters
+			$stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR);
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+
+			// Execute the query
+			$stmt->execute();
+
+			// return retrieved rows as an array
+			$data = array();
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$data[] = $row;
+			}
+
+			//return $data;
+			// return $data;
+			return json_encode($data);
+
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+    /*
+     * Read right ids already saved in roles rights given role
+     *
+     * @return $mixed
+     * */
+    public function get_rights_ids_array_given_role_id_in_roles_rights($role_id)
+    {
+		try{
+			// select query - select all data
+			$query = "SELECT departments.id FROM tbl_departments as departments    
+			INNER JOIN tbl_campuses as campuses ON departments.campus_id = campuses.id  
+			INNER JOIN tbl_extensions as extensions ON departments.id = extensions.department_id   
+			WHERE departments.campus_id = :campus_id AND departments.status = :status  
+			ORDER BY departments.department_name ASC";
+
+			// prepare query for execution	
+			$stmt = $this->db->prepare($query);
+
+			// bind the parameters
+			$stmt->bindParam(":campus_id", $campus_id, PDO::PARAM_STR);
+			$status = "active";
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
+
+			// Execute the query
+			$stmt->execute();
+
+			// return retrieved rows as an array
+			$data = array();
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$data[] = $row;
+			}
+
+			//return $data;
+			// return $data;
+			return json_encode($data);
+
+		} catch (Exception $e){
+			$response = '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>' . $e->getMessage() . '</div>';
+			return $response;
+		}
+    }
+
+
+
+
+
+
+
+
+
 
 
 

@@ -35,10 +35,12 @@ class right_dal
      * Add new Record
      *
 	 * @param $right_name 
-	 
+	 * @param $status  
+	 * @param $addedby  
+	 *
      * @return $string
      * */
-	public function create_right($right_name, $addedby)
+	public function create_right($right_name, $status, $addedby)
     {
 		try{
 			
@@ -68,8 +70,7 @@ class right_dal
 			// bind the parameters
 			$right_name = ucwords($right_name); 
 			$stmt->bindParam(":right_name", $right_name, PDO::PARAM_STR); 
-			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR); 
-			$status = "active";
+			$stmt->bindParam(":addedby", $addedby, PDO::PARAM_STR);  
 			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$created_date = date('d-m-Y h:i:s A');
 			$stmt->bindParam(":created_date", $created_date, PDO::PARAM_STR);  
@@ -127,15 +128,18 @@ class right_dal
      * Update Record
      *
 	 * @param $right_name  
-
+	 * @param $status  
+	 * @param $id  
+	 *
      * @return $mixed
      * */
-    public function update_right($right_name, $id)
+    public function update_right($right_name, $status, $id)
     {
 		try{
 			// Update query
 			$query = "UPDATE tbl_rights SET 
-			right_name = :right_name 
+			right_name = :right_name, 
+			status = :status     
 			WHERE id = :id";
 			
 			// prepare query for execution
@@ -144,6 +148,7 @@ class right_dal
 			// bind the parameters
 			$right_name = ucwords($right_name); 
 			$stmt->bindParam(":right_name", $right_name, PDO::PARAM_STR); 
+			$stmt->bindParam(":status", $status, PDO::PARAM_STR); 
 			$stmt->bindParam(":id", $id, PDO::PARAM_STR);
 			
 			// Execute the query
@@ -263,6 +268,47 @@ class right_dal
 				}  
 			}
 			
+			//check if this right has a role associated with it.
+			$roles_rights_query =  "SELECT * FROM tbl_roles_rights as roles_rights  
+			INNER JOIN tbl_rights as rights ON roles_rights.right_id = rights.id 
+			WHERE roles_rights.right_id = :right_id";
+
+			// prepare query for execution
+			$roles_rights_stmt = $this->db->prepare($roles_rights_query);
+
+			// bind the parameters
+			$roles_rights_stmt->bindParam(":right_id", $id, PDO::PARAM_STR);
+
+			// Execute the query
+			$roles_rights_stmt->execute();
+			
+			$roles_rights_arr = $roles_rights_stmt->fetch(PDO::FETCH_ASSOC);
+			
+			$roles_rights_count = $roles_rights_stmt->rowCount();
+
+			$response = null;
+			
+			if (!$roles_rights_arr) {
+				// array is empty.
+				//continue with deletion.
+			}else{
+				//array has something, which means there is atleast a role tied to this right.
+				//warn the user.
+
+				if($roles_rights_count > 1)
+				{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $roles_rights_count . ' ] roles are associated with this right.</div>';
+				}else{
+					$response .= '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>[ ' .  $roles_rights_count . ' ] role is associated with this right.</div>';
+				}
+			
+			}
+
+			if($response)
+			{
+				return $response;
+			}
+
 			// delete query
 			$query = "DELETE FROM tbl_rights WHERE id = :id";
 			// prepare query for execution
