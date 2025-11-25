@@ -1,6 +1,6 @@
 ## 📞 **IP Telephony System**
 
-This project provides a robust, web-based system for a **university's IP telephony network**, allowing school staff to search for extensions across various departments and campuses. It's built with **PHP, HTML, and CSS**, with a focus on a clean, maintainable front-end and a robust back-end for data handling. The solution is designed with a clear **Separation of Concerns**, making it scalable and easy to maintain.
+This project provides a robust, web-based system for a **university's IP telephony network**, allowing school staff to search for extensions across various departments and campuses. It's built with **PHP, JQuery, HTML, and CSS**, with a focus on a clean, maintainable front-end and a robust back-end for data handling. The solution is designed with a clear **Separation of Concerns**, making it scalable and easy to maintain.
 
 -----
 
